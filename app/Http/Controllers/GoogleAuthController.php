@@ -39,7 +39,7 @@ class GoogleAuthController extends Controller
 
             Auth::login($user);
 
-            return redirect('/');
+            return redirect('/dashboard');
 
         } catch (Exception $e) {
             // A good practice would be to log the exception
