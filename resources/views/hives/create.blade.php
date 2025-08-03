@@ -18,10 +18,14 @@
                             <input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus />
                         </div>
 
-                        <!-- Apiary ID -->
+                        <!-- Apiary -->
                         <div class="mt-4">
-                            <label for="apiary_id">{{ __('Apiary ID') }}</label>
-                            <input id="apiary_id" class="block mt-1 w-full" type="text" name="apiary_id" :value="old('apiary_id')" required />
+                            <label for="apiary_id">{{ __('Apiary') }}</label>
+                            <select id="apiary_id" name="apiary_id" class="block mt-1 w-full" required>
+                                @foreach ($apiaries as $apiary)
+                                    <option value="{{ $apiary->id }}">{{ $apiary->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
 
                         <!-- Slug -->

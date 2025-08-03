@@ -19,6 +19,16 @@
                             <input id="name" class="block mt-1 w-full" type="text" name="name" value="{{ old('name', $hive->name) }}" required autofocus />
                         </div>
 
+                        <!-- Apiary -->
+                        <div class="mt-4">
+                            <label for="apiary_id">{{ __('Apiary') }}</label>
+                            <select id="apiary_id" name="apiary_id" class="block mt-1 w-full" required>
+                                @foreach ($apiaries as $apiary)
+                                    <option value="{{ $apiary->id }}" @if (old('apiary_id', $hive->apiary_id) == $apiary->id) selected @endif>{{ $apiary->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         <!-- Slug -->
                         <div class="mt-4">
                             <label for="slug">{{ __('Slug') }}</label>
