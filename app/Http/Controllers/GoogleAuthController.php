@@ -27,6 +27,7 @@ class GoogleAuthController extends Controller
                     'google_id' => $googleUser->getId(),
                     'google_token' => $googleUser->token,
                     'google_refresh_token' => $googleUser->refreshToken,
+                    'avatar' => $googleUser->getAvatar(),
                 ]);
             } else {
                 $user = User::create([
@@ -35,6 +36,7 @@ class GoogleAuthController extends Controller
                     'google_id' => $googleUser->getId(),
                     'google_token' => $googleUser->token,
                     'google_refresh_token' => $googleUser->refreshToken,
+                    'avatar' => $googleUser->getAvatar(),
                 ]);
 
                 // Crear un apiario por defecto para el nuevo usuario
