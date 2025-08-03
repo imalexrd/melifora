@@ -13,7 +13,9 @@ class HiveController extends Controller
      */
     public function index()
     {
-        $hives = Hive::latest()->paginate(10);
+        $hives = Hive::whereHas('apiary', function ($query) {
+            $query->where('user_id', auth()->id());
+        })->latest()->paginate(10);
         return view('hives.index', compact('hives'));
     }
 

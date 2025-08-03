@@ -12,7 +12,7 @@ class ApiaryController extends Controller
      */
     public function index()
     {
-        $apiaries = Apiary::latest()->paginate(10);
+        $apiaries = Apiary::where('user_id', auth()->id())->latest()->paginate(10);
         return view('apiaries.index', compact('apiaries'));
     }
 

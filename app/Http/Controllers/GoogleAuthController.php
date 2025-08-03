@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Apiary;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
@@ -34,6 +35,13 @@ class GoogleAuthController extends Controller
                     'google_id' => $googleUser->getId(),
                     'google_token' => $googleUser->token,
                     'google_refresh_token' => $googleUser->refreshToken,
+                ]);
+
+                // Crear un apiario por defecto para el nuevo usuario
+                Apiary::create([
+                    'user_id' => $user->id,
+                    'name' => 'Mi primer apiario',
+                    'location' => 'Ubicación desconocida',
                 ]);
             }
 
