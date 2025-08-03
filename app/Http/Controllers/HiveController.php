@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Apiary;
 use App\Models\Hive;
 use Illuminate\Http\Request;
 
@@ -21,7 +22,8 @@ class HiveController extends Controller
      */
     public function create()
     {
-        return view('hives.create');
+        $apiaries = Apiary::all();
+        return view('hives.create', compact('apiaries'));
     }
 
     /**
@@ -57,7 +59,8 @@ class HiveController extends Controller
      */
     public function edit(Hive $hive)
     {
-        return view('hives.edit', compact('hive'));
+        $apiaries = Apiary::all();
+        return view('hives.edit', compact('hive', 'apiaries'));
     }
 
     /**
