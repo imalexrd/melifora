@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Edit Apiary') }}: {{ $apiary->name }}
+            {{ __('Editar Apiario') }}: {{ $apiary->name }}
         </h2>
     </x-slot>
 
@@ -15,19 +15,19 @@
 
                         <!-- Name -->
                         <div>
-                            <label for="name">{{ __('Name') }}</label>
+                            <label for="name">{{ __('Nombre') }}</label>
                             <input id="name" class="block mt-1 w-full" type="text" name="name" value="{{ old('name', $apiary->name) }}" required autofocus />
                         </div>
 
                         <!-- Location -->
                         <div class="mt-4">
-                            <label for="location">{{ __('Location') }}</label>
+                            <label for="location">{{ __('Ubicación') }}</label>
                             <input id="location" class="block mt-1 w-full" type="text" name="location" value="{{ old('location', $apiary->location) }}" required />
                         </div>
 
                         <div class="flex items-center justify-end mt-4">
                             <button type="submit" class="ml-4">
-                                {{ __('Update') }}
+                                {{ __('Actualizar') }}
                             </button>
                         </div>
                     </form>
