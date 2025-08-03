@@ -27,3 +27,95 @@
 		transform: translatey(0px);
 	}
 }
+
+.honeycomb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.honeycomb div {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: transparent;
+    border-left: 2px solid #FFC107;
+    border-right: 2px solid #FFC107;
+    animation: animate 10s linear infinite;
+}
+
+.honeycomb div:before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: #FFC107;
+}
+
+.honeycomb div:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: #FFC107;
+}
+
+.honeycomb div:nth-child(1) {
+    top: 10%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.honeycomb div:nth-child(2) {
+    top: 20%;
+    left: 80%;
+    animation-delay: -1s;
+}
+
+.honeycomb div:nth-child(3) {
+    top: 70%;
+    left: 90%;
+    animation-delay: -2s;
+}
+
+.honeycomb div:nth-child(4) {
+    top: 90%;
+    left: 10%;
+    animation-delay: -3s;
+}
+
+.honeycomb div:nth-child(5) {
+    top: 30%;
+    left: 30%;
+    animation-delay: -4s;
+}
+
+.honeycomb div:nth-child(6) {
+    top: 50%;
+    left: 50%;
+    animation-delay: -5s;
+}
+
+.honeycomb div:nth-child(7) {
+    top: 80%;
+    left: 20%;
+    animation-delay: -6s;
+}
+
+@keyframes animate {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-10vh) rotate(720deg);
+        opacity: 0;
+    }
+}
