@@ -24,6 +24,7 @@ class User extends Authenticatable
         'google_id',
         'google_token',
         'google_refresh_token',
+        'role',
     ];
 
     /**
@@ -47,5 +48,30 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function apiaries()
+    {
+        return $this->hasMany(Apiary::class);
+    }
+
+    public function tags()
+    {
+        return $this->hasMany(Tag::class);
+    }
+
+    /**
+     * Check if the user has any of the given roles.
+     *
+     * @param  array|string  $roles
+     * @return bool
+     */
+    public function hasRole($roles)
+    {
+        if (is_string($roles)) {
+            return $this->role === $roles;
+        }
+
+        return in_array($this->role, $roles);
     }
 }

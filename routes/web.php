@@ -8,9 +8,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+use App\Http\Controllers\HiveController;
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::resource('hives', HiveController::class)->middleware(['auth', 'role:admin,superadmin']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
