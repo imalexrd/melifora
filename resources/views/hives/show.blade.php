@@ -2,123 +2,123 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Hive Details') }}: {{ $hive->name }}
+                Detalles de la Colmena: {{ $hive->name }}
             </h2>
-            <div>
-                <a href="{{ route('hives.edit', $hive) }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
-                    {{ __('Edit') }}
-                </a>
-                <form class="inline-block ml-4" action="{{ route('hives.destroy', $hive) }}" method="POST" onsubmit="return confirm('Are you sure?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:border-red-700 focus:ring ring-red-300 disabled:opacity-25 transition ease-in-out duration-150">
-                        {{ __('Delete') }}
-                    </button>
-                </form>
-            </div>
+            <a href="{{ route('hives.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                {{ __('Volver a Colmenas') }}
+            </a>
         </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-12" x-data="{ openTab: 1 }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Main Details -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Main Details</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><strong>Name:</strong> {{ $hive->name }}</div>
-                        <div><strong>Slug:</strong> {{ $hive->slug }}</div>
-                        <div><strong>QR Code:</strong> {{ $hive->qr_code ?: 'N/A' }}</div>
-                        <div><strong>Rating:</strong> {{ $hive->rating }} / 100</div>
-                        <div><strong>Type:</strong> {{ $hive->type }}</div>
-                        <div><strong>Birth Date:</strong> {{ $hive->birth_date ? $hive->birth_date->format('Y-m-d') : 'N/A' }}</div>
-                        <div><strong>Location:</strong> {{ $hive->location ?: 'N/A' }}</div>
-                        <div><strong>Status:</strong> {{ $hive->status }}</div>
-                        <div class="md:col-span-2"><strong>Notes:</strong> {{ $hive->notes ?: 'N/A' }}</div>
+            <!-- Hive Header Card -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+                <div class="p-6 flex items-center">
+                    <img src="https://placehold.co/100x100/FBBF24/333333?text=Colmena" alt="Hive Image" class="w-24 h-24 rounded-lg mr-6">
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-900">{{ $hive->name }}</h3>
+                                <p class="text-gray-600">{{ $hive->type }}</p>
+                            </div>
+                            <span class="px-3 py-1 text-sm font-semibold text-white rounded-full {{
+                                match($hive->status) {
+                                    'Activa' => 'bg-green-500',
+                                    'Invernando' => 'bg-blue-500',
+                                    'Enjambrazon' => 'bg-yellow-500',
+                                    'Despoblada' => 'bg-red-500',
+                                    'Huerfana' => 'bg-purple-500',
+                                    'Zanganera' => 'bg-orange-500',
+                                    default => 'bg-gray-500',
+                                }
+                            }}">{{ $hive->status }}</span>
+                        </div>
+                        <div class="mt-2 text-sm text-gray-500">
+                            <p><strong>Apiario:</strong> {{ $hive->apiary->name }}</p>
+                            <p><strong>Nacimiento:</strong> {{ $hive->birth_date ? $hive->birth_date->format('d/m/Y') : 'N/A' }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Queen Details -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Queen Details</h3>
-                    @if ($hive->queen)
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><strong>Breed:</strong> {{ $hive->queen->breed ?: 'N/A' }}</div>
-                            <div><strong>Introduction Date:</strong> {{ $hive->queen->introduction_date ? $hive->queen->introduction_date->format('Y-m-d') : 'N/A' }}</div>
-                            <div><strong>Age:</strong> {{ $hive->queen->age ? $hive->queen->age . ' months' : 'N/A' }}</div>
-                        </div>
-                    @else
-                        <p>No active queen information available.</p>
-                    @endif
-                </div>
+            <!-- Tab Navigation -->
+            <div class="flex border-b border-gray-200">
+                <button @click="openTab = 1" :class="{'border-b-2 border-yellow-500 text-yellow-600': openTab === 1}" class="px-4 py-2 text-gray-500 font-semibold hover:text-yellow-500 focus:outline-none">Detalles</button>
+                <button @click="openTab = 2" :class="{'border-b-2 border-yellow-500 text-yellow-600': openTab === 2}" class="px-4 py-2 text-gray-500 font-semibold hover:text-yellow-500 focus:outline-none">Reina</button>
+                <button @click="openTab = 3" :class="{'border-b-2 border-yellow-500 text-yellow-600': openTab === 3}" class="px-4 py-2 text-gray-500 font-semibold hover:text-yellow-500 focus:outline-none">Inspecciones</button>
+                <button @click="openTab = 4" :class="{'border-b-2 border-yellow-500 text-yellow-600': openTab === 4}" class="px-4 py-2 text-gray-500 font-semibold hover:text-yellow-500 focus:outline-none">Eventos</button>
             </div>
 
-            <!-- Tags -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Tags</h3>
-                    @forelse ($hive->tags as $tag)
-                        <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{{ $tag->name }}</span>
+            <!-- Tab Content -->
+            <div class="bg-white rounded-b-lg shadow-md p-6">
+                <!-- Details Tab -->
+                <div x-show="openTab === 1">
+                    <h4 class="text-xl font-semibold mb-4">Información Adicional</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <p><strong>Rating:</strong> {{ $hive->rating ?? 'N/A' }}/100</p>
+                        <p><strong>Ubicación Específica:</strong> {{ $hive->location ?? 'N/A' }}</p>
+                        <p><strong>QR Code:</strong> {{ $hive->qr_code ?? 'N/A' }}</p>
+                        <div class="col-span-2">
+                            <p><strong>Notas:</strong></p>
+                            <p class="mt-1 text-gray-700 p-3 bg-gray-50 rounded-md">{{ $hive->notes ?? 'Sin notas.' }}</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Queen Tab -->
+                <div x-show="openTab === 2">
+                    <h4 class="text-xl font-semibold mb-4">Reina Actual e Historial</h4>
+                    <!-- Current Queen -->
+                    <div class="mb-6">
+                        <h5 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-2">Reina Actual</h5>
+                        @if ($hive->queen)
+                            <p><strong>Raza:</strong> {{ $hive->queen->breed ?? 'N/A' }}</p>
+                            <p><strong>Introducida:</strong> {{ $hive->queen->introduction_date ? $hive->queen->introduction_date->format('d/m/Y') : 'N/A' }}</p>
+                        @else
+                            <p>No hay información de la reina actual.</p>
+                        @endif
+                    </div>
+                    <!-- Queen History -->
+                    <div>
+                        <h5 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-2">Historial de Reinas</h5>
+                        @forelse ($hive->queenHistories as $history)
+                            <div class="border-l-4 border-yellow-400 pl-4 mb-4">
+                                <p><strong>Fecha de cambio:</strong> {{ $history->change_date->format('d/m/Y') }}</p>
+                                <p><strong>Razón:</strong> {{ $history->reason }}</p>
+                                <p><strong>Notas:</strong> {{ $history->notes ?? 'Sin notas.' }}</p>
+                            </div>
+                        @empty
+                            <p>No hay historial de reinas.</p>
+                        @endforelse
+                    </div>
+                </div>
+                <!-- Inspections Tab -->
+                <div x-show="openTab === 3">
+                    <h4 class="text-xl font-semibold mb-4">Historial de Inspecciones</h4>
+                    @forelse ($hive->inspections as $inspection)
+                        <div class="border-l-4 border-blue-400 pl-4 mb-4">
+                             <p><strong>Fecha:</strong> {{ $inspection->inspection_date->format('d/m/Y') }}</p>
+                             <p><strong>Población:</strong> {{ $inspection->population }}</p>
+                             <p><strong>Plagas/Enfermedades:</strong> {{ $inspection->pests_diseases }}</p>
+                        </div>
                     @empty
-                        <p>No tags associated with this hive.</p>
+                        <p>No hay inspecciones registradas.</p>
+                    @endforelse
+                </div>
+                <!-- Events Tab -->
+                <div x-show="openTab === 4">
+                    <h4 class="text-xl font-semibold mb-4">Historial de Eventos</h4>
+                    @forelse ($hive->events as $event)
+                        <div class="border-l-4 border-green-400 pl-4 mb-4">
+                            <p><strong>Fecha:</strong> {{ $event->event_date->format('d/m/Y') }}</p>
+                            <p><strong>Tipo:</strong> {{ $event->type }}</p>
+                            <p><strong>Detalles:</strong> {{ $event->details }}</p>
+                        </div>
+                    @empty
+                        <p>No hay eventos registrados.</p>
                     @endforelse
                 </div>
             </div>
-
-            <!-- History Tables -->
-            <!-- Queen History -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Queen History</h3>
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead><tr><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Change Date</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reason</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th></tr></thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse ($hive->queenHistories as $history)
-                                <tr><td class="px-6 py-4">{{ $history->change_date->format('Y-m-d') }}</td><td class="px-6 py-4">{{ $history->reason }}</td><td class="px-6 py-4">{{ $history->notes }}</td></tr>
-                            @empty
-                                <tr><td colspan="3" class="px-6 py-4">No queen history found.</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Inspections -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Inspections</h3>
-                    <table class="min-w-full divide-y divide-gray-200">
-                         <thead><tr><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Population</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pests/Diseases</th></tr></thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse ($hive->inspections as $inspection)
-                                <tr><td class="px-6 py-4">{{ $inspection->inspection_date->format('Y-m-d') }}</td><td class="px-6 py-4">{{ $inspection->population }}</td><td class="px-6 py-4">{{ $inspection->pests_diseases }}</td></tr>
-                            @empty
-                                <tr><td colspan="3" class="px-6 py-4">No inspection history found.</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Events -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Events</h3>
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead><tr><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th></tr></thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse ($hive->events as $event)
-                                <tr><td class="px-6 py-4">{{ $event->event_date->format('Y-m-d') }}</td><td class="px-6 py-4">{{ $event->type }}</td><td class="px-6 py-4">{{ $event->details }}</td></tr>
-                            @empty
-                                <tr><td colspan="3" class="px-6 py-4">No events found.</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
         </div>
     </div>
 </x-app-layout>
