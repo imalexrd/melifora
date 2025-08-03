@@ -35,6 +35,12 @@ class GoogleAuthController extends Controller
                     'google_token' => $googleUser->token,
                     'google_refresh_token' => $googleUser->refreshToken,
                 ]);
+
+                // Create a default apiary for the new user
+                $user->apiaries()->create([
+                    'name' => 'Mi primer apiario',
+                    'location' => 'Ubicación de ejemplo',
+                ]);
             }
 
             Auth::login($user);

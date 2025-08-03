@@ -41,6 +41,12 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        // Create a default apiary for the new user
+        $user->apiaries()->create([
+            'name' => 'Mi primer apiario',
+            'location' => 'Ubicación de ejemplo',
+        ]);
+
         event(new Registered($user));
 
         Auth::login($user);
