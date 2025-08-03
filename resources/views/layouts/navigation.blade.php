@@ -13,13 +13,13 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Panel') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('hives.index')" :active="request()->routeIs('hives.index')">
-                        {{ __('Colmenas') }}
+                        {{ __('Dashboard') }}
                     </x-nav-link>
                     <x-nav-link :href="route('apiaries.index')" :active="request()->routeIs('apiaries.index')">
                         {{ __('Apiarios') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('hives.index')" :active="request()->routeIs('hives.index')">
+                        {{ __('Colmenas') }}
                     </x-nav-link>
                     <x-nav-link :href="route('calendar.index')" :active="request()->routeIs('calendar.index')">
                         {{ __('Calendario') }}
@@ -35,6 +35,9 @@
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-text-light bg-surface hover:text-text-dark focus:outline-none transition ease-in-out duration-150">
+                            @if (Auth::user()->avatar)
+                                <img src="{{ Auth::user()->avatar }}" alt="User Avatar" class="h-8 w-8 rounded-full object-cover mr-2">
+                            @endif
                             <div>{{ Auth::user()->name }}</div>
 
                             <div class="ms-1">
@@ -80,13 +83,13 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Panel') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('hives.index')" :active="request()->routeIs('hives.index')">
-                {{ __('Colmenas') }}
+                {{ __('Dashboard') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('apiaries.index')" :active="request()->routeIs('apiaries.index')">
                 {{ __('Apiarios') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('hives.index')" :active="request()->routeIs('hives.index')">
+                {{ __('Colmenas') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('calendar.index')" :active="request()->routeIs('calendar.index')">
                 {{ __('Calendario') }}
