@@ -12,7 +12,7 @@ class ApiaryController extends Controller
      */
     public function index()
     {
-        $apiaries = Apiary::latest()->paginate(10);
+        $apiaries = auth()->user()->apiaries()->latest()->paginate(10);
         return view('apiaries.index', compact('apiaries'));
     }
 
@@ -46,6 +46,9 @@ class ApiaryController extends Controller
      */
     public function show(Apiary $apiary)
     {
+        if ($apiary->user_id !== auth()->id()) {
+            abort(403);
+        }
         return view('apiaries.show', compact('apiary'));
     }
 
@@ -54,6 +57,9 @@ class ApiaryController extends Controller
      */
     public function edit(Apiary $apiary)
     {
+        if ($apiary->user_id !== auth()->id()) {
+            abort(403);
+        }
         return view('apiaries.edit', compact('apiary'));
     }
 
@@ -62,6 +68,9 @@ class ApiaryController extends Controller
      */
     public function update(Request $request, Apiary $apiary)
     {
+        if ($apiary->user_id !== auth()->id()) {
+            abort(403);
+        }
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
@@ -77,6 +86,9 @@ class ApiaryController extends Controller
      */
     public function destroy(Apiary $apiary)
     {
+        if ($apiary->user_id !== auth()->id()) {
+            abort(403);
+        }
         $apiary->delete();
 
         return redirect()->route('apiaries.index')->with('success', 'Apiary deleted successfully.');

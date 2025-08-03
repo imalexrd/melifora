@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Apiary;
 use App\Models\Hive;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class HiveController extends Controller
 {
@@ -13,7 +14,9 @@ class HiveController extends Controller
      */
     public function index()
     {
-        $hives = Hive::latest()->paginate(10);
+        $hives = Hive::whereHas('apiary', function ($query) {
+            $query->where('user_id', auth()->id());
+        })->latest()->paginate(10);
         return view('hives.index', compact('hives'));
     }
 
@@ -22,7 +25,7 @@ class HiveController extends Controller
      */
     public function create()
     {
-        $apiaries = Apiary::all();
+        $apiaries = auth()->user()->apiaries;
         return view('hives.create', compact('apiaries'));
     }
 
@@ -34,7 +37,7 @@ class HiveController extends Controller
         // Add validation logic here
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'apiary_id' => 'required|exists:apiaries,id',
+            'apiary_id' => ['required', Rule::exists('apiaries', 'id')->where('user_id', auth()->id())],
             'slug' => 'required|string|max:255|unique:hives',
             'type' => 'required|in:Langstroth,Dadant,Layens,Top-Bar,Warre,Flow',
             // Add other validation rules as needed
@@ -50,6 +53,9 @@ class HiveController extends Controller
      */
     public function show(Hive $hive)
     {
+        if ($hive->apiary->user_id !== auth()->id()) {
+            abort(403);
+        }
         $hive->load('queen', 'queenHistories', 'inspections', 'events', 'tags');
         return view('hives.show', compact('hive'));
     }
@@ -59,7 +65,10 @@ class HiveController extends Controller
      */
     public function edit(Hive $hive)
     {
-        $apiaries = Apiary::all();
+        if ($hive->apiary->user_id !== auth()->id()) {
+            abort(403);
+        }
+        $apiaries = auth()->user()->apiaries;
         return view('hives.edit', compact('hive', 'apiaries'));
     }
 
@@ -68,6 +77,9 @@ class HiveController extends Controller
      */
     public function update(Request $request, Hive $hive)
     {
+        if ($hive->apiary->user_id !== auth()->id()) {
+            abort(403);
+        }
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:hives,slug,' . $hive->id,
@@ -90,6 +102,9 @@ class HiveController extends Controller
      */
     public function destroy(Hive $hive)
     {
+        if ($hive->apiary->user_id !== auth()->id()) {
+            abort(403);
+        }
         $hive->delete();
 
         return redirect()->route('hives.index')->with('success', 'Hive deleted successfully.');
