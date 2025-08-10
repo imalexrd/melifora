@@ -41,6 +41,14 @@
                         <div>
                             <p><strong>{{ __('Creado el') }}:</strong> {{ $apiary->created_at->format('d/m/Y H:i') }}</p>
                             <p><strong>{{ __('Actualizado el') }}:</strong> {{ $apiary->updated_at->format('d/m/Y H:i') }}</p>
+                            <p><strong>{{ __('Colmenas') }}:</strong> {{ $hives->total() }}</p>
+                            <p><strong>{{ __('Rating Promedio') }}:</strong>
+                                @if($averageRating)
+                                    <span class="font-bold text-yellow-500">{{ number_format($averageRating, 2) }} ★</span>
+                                @else
+                                    N/A
+                                @endif
+                            </p>
                         </div>
                         <div>
                             @if($apiary->location_gps)

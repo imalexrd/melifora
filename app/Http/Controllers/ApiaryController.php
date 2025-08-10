@@ -74,8 +74,9 @@ class ApiaryController extends Controller
         $types = Hive::getTypeOptions();
         $apiaryStatuses = Apiary::getStatusOptions();
         $apiaryStatusColors = Apiary::getStatusColorMap();
+        $averageRating = $apiary->hives()->avg('rating');
 
-        return view('apiaries.show', compact('apiary', 'hives', 'sort', 'direction', 'perPage', 'allApiariesForMoving', 'allUserApiaries', 'statuses', 'types', 'apiaryStatuses', 'apiaryStatusColors'));
+        return view('apiaries.show', compact('apiary', 'hives', 'sort', 'direction', 'perPage', 'allApiariesForMoving', 'allUserApiaries', 'statuses', 'types', 'apiaryStatuses', 'apiaryStatusColors', 'averageRating'));
     }
 
     /**
