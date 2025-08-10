@@ -44,9 +44,31 @@ class ApiaryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Apiary $apiary)
+    public function show(Request $request, Apiary $apiary)
     {
-        return view('apiaries.show', compact('apiary'));
+        $query = $apiary->hives();
+
+        // Search
+        if ($request->has('search') && $request->search != '') {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        // Sort
+        $sort = $request->get('sort', 'name');
+        $direction = $request->get('direction', 'asc');
+        if (in_array($sort, ['name', 'status', 'type', 'birth_date']) && in_array($direction, ['asc', 'desc'])) {
+            $query->orderBy($sort, $direction);
+        }
+
+        // Pagination size
+        $perPage = $request->get('per_page', 10);
+        if (!is_numeric($perPage) || $perPage > 250) {
+            $perPage = 10;
+        }
+
+        $hives = $query->paginate($perPage)->appends($request->query());
+
+        return view('apiaries.show', compact('apiary', 'hives', 'sort', 'direction', 'perPage'));
     }
 
     /**

@@ -35,35 +35,105 @@
 
             <div class="mt-8">
                 <h3 class="text-2xl font-semibold text-gray-800 mb-4">Colmenas en este Apiario</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @forelse ($apiary->hives as $hive)
-                        <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition-transform duration-300 ease-in-out">
-                            <div class="p-6">
-                                <div class="flex items-center justify-between mb-2">
-                                    <h3 class="text-lg font-bold text-gray-900">{{ $hive->name }}</h3>
-                                    <span class="px-2 py-1 text-xs font-semibold text-white rounded-full {{
-                                        match($hive->status) {
-                                            'Activa' => 'bg-green-500',
-                                            'Invernando' => 'bg-blue-500',
-                                            'Enjambrazon' => 'bg-yellow-500',
-                                            'Despoblada' => 'bg-red-500',
-                                            'Huerfana' => 'bg-purple-500',
-                                            'Zanganera' => 'bg-orange-500',
-                                            default => 'bg-gray-500',
-                                        }
-                                    }}">{{ $hive->status }}</span>
-                                </div>
-                                <p class="text-sm text-gray-600 mb-4">{{ $hive->type }}</p>
-                                <div class="flex justify-end">
-                                    <a href="{{ route('hives.show', $hive) }}" class="text-sm text-green-600 hover:text-green-900 font-semibold">Ver Colmena</a>
-                                </div>
-                            </div>
+
+                <!-- Search and per-page form -->
+                <div class="mb-4">
+                    <form action="{{ route('apiaries.show', $apiary) }}" method="GET" class="flex flex-col sm:flex-row gap-4">
+                        <div class="flex-grow">
+                            <input type="text" name="search" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" placeholder="Buscar colmenas..." value="{{ request('search') }}">
                         </div>
-                    @empty
-                        <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12">
-                            <p class="text-gray-500 text-lg">{{ __('No hay colmenas en este apiario todavía.') }}</p>
+                        <div class="flex items-center gap-2">
+                            <select name="per_page" onchange="this.form.submit()" class="rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50">
+                                <option value="10" @if($perPage == 10) selected @endif>10 por página</option>
+                                <option value="25" @if($perPage == 25) selected @endif>25 por página</option>
+                                <option value="50" @if($perPage == 50) selected @endif>50 por página</option>
+                                <option value="100" @if($perPage == 100) selected @endif>100 por página</option>
+                                <option value="250" @if($perPage == 250) selected @endif>250 por página</option>
+                            </select>
+                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-secondary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-secondary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                Buscar
+                            </button>
                         </div>
-                    @endforelse
+                    </form>
+                </div>
+
+
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white">
+                            <thead class="bg-primary text-text-dark">
+                                <tr>
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm">
+                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'name', 'direction' => $sort === 'name' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                            Nombre
+                                            @if ($sort === 'name')
+                                                <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm">
+                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'type', 'direction' => $sort === 'type' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                            Tipo
+                                            @if ($sort === 'type')
+                                                <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm">
+                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'status', 'direction' => $sort === 'status' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                            Estado
+                                            @if ($sort === 'status')
+                                                <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm">
+                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'birth_date', 'direction' => $sort === 'birth_date' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                            Fecha de nacimiento
+                                            @if ($sort === 'birth_date')
+                                                <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-700">
+                                @forelse ($hives as $hive)
+                                    <tr class="border-b hover:bg-background">
+                                        <td class="py-3 px-4">{{ $hive->name }}</td>
+                                        <td class="py-3 px-4">{{ $hive->type }}</td>
+                                        <td class="py-3 px-4">
+                                            <span class="px-2 py-1 text-xs font-semibold text-white rounded-full {{
+                                                match($hive->status) {
+                                                    'Activa' => 'bg-green-500',
+                                                    'Invernando' => 'bg-blue-500',
+                                                    'Enjambrazon' => 'bg-yellow-500',
+                                                    'Despoblada' => 'bg-red-500',
+                                                    'Huerfana' => 'bg-purple-500',
+                                                    'Zanganera' => 'bg-orange-500',
+                                                    default => 'bg-gray-500',
+                                                }
+                                            }}">{{ $hive->status }}</span>
+                                        </td>
+                                        <td class="py-3 px-4">{{ $hive->birth_date ? $hive->birth_date->format('d/m/Y') : 'N/A' }}</td>
+                                        <td class="py-3 px-4">
+                                            <a href="{{ route('hives.show', $hive) }}" class="text-sm text-green-600 hover:text-green-900 font-semibold">Ver Colmena</a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center py-12">
+                                            <p class="text-gray-500 text-lg">{{ __('No hay colmenas que coincidan con la búsqueda.') }}</p>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-4 bg-white">
+                        {{ $hives->links() }}
+                    </div>
                 </div>
             </div>
         </div>
