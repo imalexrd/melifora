@@ -230,6 +230,14 @@
                                             @endif
                                         </a>
                                     </th>
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm">
+                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'location', 'direction' => $sort === 'location' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                            {{ __('Ubicación') }}
+                                            @if ($sort === 'location')
+                                                <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
+                                            @endif
+                                        </a>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="text-gray-700">
@@ -267,10 +275,18 @@
                                         <td class="py-3 px-4">{{ $hive->birth_date ? $hive->birth_date->format('d/m/Y') : 'N/A' }}</td>
                                         <td class="py-3 px-4">{{ $hive->rating ?? 'N/A' }}</td>
                                         <td class="py-3 px-4">{{ $hive->type }}</td>
+                                        <td class="py-3 px-4">
+                                            {{ $hive->location }}
+                                            @if($hive->location_gps)
+                                            <a href="https://www.google.com/maps/search/?api=1&query={{ $hive->location_gps }}" target="_blank" class="text-blue-500 hover:text-blue-700 ml-1">
+                                                (Ver mapa)
+                                            </a>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center py-12">
+                                        <td colspan="8" class="text-center py-12">
                                             <p class="text-gray-500 text-lg">{{ __('No hay colmenas que coincidan con la búsqueda.') }}</p>
                                         </td>
                                     </tr>
@@ -316,8 +332,14 @@
                         </div>
                     </div>
 
-                    <!-- Location GPS -->
+                    <!-- Location -->
                     <div class="mt-6">
+                        <label for="bulk-location" class="block font-medium text-sm text-gray-700">{{ __('Nombre de la Ubicación (Opcional)') }}</label>
+                        <input id="bulk-location" type="text" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" autocomplete="off">
+                    </div>
+
+                    <!-- Location GPS -->
+                    <div class="mt-4">
                         <label for="bulk-location-gps" class="block font-medium text-sm text-gray-700">{{ __('Coordenadas GPS (Opcional)') }}</label>
                         <div class="flex items-center gap-2 mt-1">
                             <input id="bulk-location-gps" type="text" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" autocomplete="off">
@@ -328,7 +350,7 @@
                                 <span class="hidden md:inline">{{ __('Seleccionar en Mapa') }}</span>
                             </button>
                         </div>
-                        <p class="mt-2 text-sm text-gray-500">Dejar en blanco para no modificar la ubicación de las colmenas.</p>
+                        <p class="mt-2 text-sm text-gray-500">Dejar los campos de ubicación en blanco para no modificarlos.</p>
                     </div>
                 </div>
                 <div class="items-center px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
@@ -671,11 +693,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 const hiveIds = getSelectedHiveIds();
                 const status = document.getElementById('bulk-status').value;
                 const type = document.getElementById('bulk-type').value;
+                const location = document.getElementById('bulk-location').value;
                 const location_gps = bulkLocationGpsInput.value;
 
                 const data = {
                     status,
                     type,
+                    location,
                     location_gps
                 };
 

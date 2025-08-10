@@ -124,6 +124,7 @@ class HiveController extends Controller
             'apiary_id' => 'required_if:action,move|exists:apiaries,id',
             'status' => 'required_if:action,edit|in:' . implode(',', Hive::getStatusOptions()),
             'type' => 'required_if:action,edit|in:' . implode(',', Hive::getTypeOptions()),
+            'location' => 'nullable|string|max:255',
             'location_gps' => 'nullable|string|max:255',
         ]);
 
@@ -141,7 +142,10 @@ class HiveController extends Controller
                     'status' => $validatedData['status'],
                     'type' => $validatedData['type'],
                 ];
-                if (!empty($validatedData['location_gps'])) {
+                if (array_key_exists('location', $validatedData) && !is_null($validatedData['location'])) {
+                    $updateData['location'] = $validatedData['location'];
+                }
+                if (array_key_exists('location_gps', $validatedData) && !is_null($validatedData['location_gps'])) {
                     $updateData['location_gps'] = $validatedData['location_gps'];
                 }
                 Hive::whereIn('id', $hiveIds)->update($updateData);
