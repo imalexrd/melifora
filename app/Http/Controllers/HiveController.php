@@ -118,10 +118,14 @@ class HiveController extends Controller
     public function bulkActions(Request $request)
     {
         $validatedData = $request->validate([
-            'action' => 'required|in:move,delete',
+            'action' => 'required|in:move,delete,edit',
             'hive_ids' => 'required|array',
             'hive_ids.*' => 'exists:hives,id',
             'apiary_id' => 'required_if:action,move|exists:apiaries,id',
+            'status' => 'required_if:action,edit|in:' . implode(',', Hive::getStatusOptions()),
+            'type' => 'required_if:action,edit|in:' . implode(',', Hive::getTypeOptions()),
+            'location' => 'nullable|string|max:255',
+            'location_gps' => 'nullable|string|max:255',
         ]);
 
         $hiveIds = $validatedData['hive_ids'];
@@ -129,10 +133,23 @@ class HiveController extends Controller
         switch ($validatedData['action']) {
             case 'move':
                 Hive::whereIn('id', $hiveIds)->update(['apiary_id' => $validatedData['apiary_id']]);
-                return response()->json(['success' => true, 'message' => 'Hives moved successfully.']);
+                return response()->json(['success' => true, 'message' => 'Colmenas movidas exitosamente.']);
             case 'delete':
                 Hive::whereIn('id', $hiveIds)->delete();
-                return response()->json(['success' => true, 'message' => 'Hives deleted successfully.']);
+                return response()->json(['success' => true, 'message' => 'Colmenas borradas exitosamente.']);
+            case 'edit':
+                $updateData = [
+                    'status' => $validatedData['status'],
+                    'type' => $validatedData['type'],
+                ];
+                if (array_key_exists('location', $validatedData) && !is_null($validatedData['location'])) {
+                    $updateData['location'] = $validatedData['location'];
+                }
+                if (array_key_exists('location_gps', $validatedData) && !is_null($validatedData['location_gps'])) {
+                    $updateData['location_gps'] = $validatedData['location_gps'];
+                }
+                Hive::whereIn('id', $hiveIds)->update($updateData);
+                return response()->json(['success' => true, 'message' => 'Colmenas actualizadas exitosamente.']);
         }
 
         return response()->json(['success' => false, 'message' => 'Invalid action.'], 400);

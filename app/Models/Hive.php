@@ -32,6 +32,7 @@ class Hive extends Model
         'type',
         'birth_date',
         'location',
+        'location_gps',
         'status',
         'notes',
     ];

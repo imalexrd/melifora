@@ -14,12 +14,34 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <div class="flex justify-between items-start">
-                        <div class="flex items-center mb-4">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start">
+                        <!-- Left Side: Image, Name, Location -->
+                        <div class="flex items-center mb-4 sm:mb-0">
                             <img src="https://placehold.co/100x100/FBBF24/333333?text=Apiario" alt="Apiary Image" class="w-24 h-24 rounded-lg mr-6">
-                            <div>
-                                <h2 class="text-2xl font-bold text-gray-900">{{ $apiary->name }}</h2>
-                                <p class="text-gray-600 flex items-center">
+                            <div class="flex-grow">
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+                                    <h2 class="text-2xl font-bold text-gray-900">{{ $apiary->name }}</h2>
+                                    <div class="flex items-center space-x-4 mt-2 sm:mt-0">
+                                        <div class="p-2 bg-yellow-50 rounded-lg text-center">
+                                            <p class="text-xs font-bold text-yellow-800">{{ __('Colmenas') }}</p>
+                                            <p class="text-xl font-extrabold text-yellow-900">{{ $hives->total() }}</p>
+                                        </div>
+                                        <div class="p-2 bg-green-50 rounded-lg text-center">
+                                            <p class="text-xs font-bold text-green-800">{{ __('Rating') }}</p>
+                                            @if($averageRating)
+                                                <p class="text-xl font-extrabold text-green-900 flex items-center justify-center">
+                                                    {{ number_format($averageRating, 1) }}
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                </p>
+                                            @else
+                                                <p class="text-lg font-bold text-green-800">N/A</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 flex items-center mt-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                                     </svg>
@@ -32,24 +54,25 @@
                                 </div>
                             </div>
                         </div>
-                        <button id="toggle-edit-form" class="inline-flex items-center px-4 py-2 bg-secondary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-secondary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
-                            {{ __('Editar') }}
-                        </button>
+                        <!-- Right Side: Buttons -->
+                        <div class="flex items-start space-x-2">
+                             <button type="button" class="open-create-hive-modal-button inline-flex items-center px-4 py-2 bg-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-primary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                {{ __('Añadir Colmena') }}
+                            </button>
+                            <button id="toggle-edit-form" class="inline-flex items-center px-4 py-2 bg-secondary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-secondary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                {{ __('Editar') }}
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 mt-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-600 mt-6">
                         <div>
-                            <p><strong>{{ __('Creado el') }}:</strong> {{ $apiary->created_at->format('d/m/Y H:i') }}</p>
-                            <p><strong>{{ __('Actualizado el') }}:</strong> {{ $apiary->updated_at->format('d/m/Y H:i') }}</p>
-                            <p><strong>{{ __('Colmenas') }}:</strong> {{ $hives->total() }}</p>
-                            <p><strong>{{ __('Rating Promedio') }}:</strong>
-                                @if($averageRating)
-                                    <span class="font-bold text-yellow-500">{{ number_format($averageRating, 2) }} ★</span>
-                                @else
-                                    N/A
-                                @endif
-                            </p>
+                            <p class="text-gray-500">{{ __('Creado el') }}</p>
+                            <p class="font-medium">{{ $apiary->created_at->format('d/m/Y H:i') }}</p>
+                            <p class="text-gray-500 mt-2">{{ __('Actualizado el') }}</p>
+                            <p class="font-medium">{{ $apiary->updated_at->format('d/m/Y H:i') }}</p>
                         </div>
+
                         <div>
                             @if($apiary->location_gps)
                                 <p><strong>{{ __('Coordenadas') }}:</strong> {{ $apiary->location_gps }}</p>
@@ -140,15 +163,13 @@
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-secondary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-secondary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
                                 Buscar
                             </button>
-                            <button type="button" class="open-create-hive-modal-button inline-flex items-center px-4 py-2 bg-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-primary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
-                                {{ __('Añadir Colmena') }}
-                            </button>
                         </div>
                     </form>
                 </div>
 
 
-                <div id="bulk-actions" class="hidden mb-4">
+                <div id="bulk-actions" class="hidden mb-4 flex space-x-2">
+                    <button id="edit-button" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">{{ __('Editar') }}</button>
                     <button id="move-button" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">{{ __('Mover') }}</button>
                     <button id="delete-button" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">{{ __('Borrar') }}</button>
                 </div>
@@ -209,6 +230,14 @@
                                             @endif
                                         </a>
                                     </th>
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm">
+                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'location', 'direction' => $sort === 'location' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                            {{ __('Ubicación') }}
+                                            @if ($sort === 'location')
+                                                <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
+                                            @endif
+                                        </a>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody class="text-gray-700">
@@ -246,10 +275,18 @@
                                         <td class="py-3 px-4">{{ $hive->birth_date ? $hive->birth_date->format('d/m/Y') : 'N/A' }}</td>
                                         <td class="py-3 px-4">{{ $hive->rating ?? 'N/A' }}</td>
                                         <td class="py-3 px-4">{{ $hive->type }}</td>
+                                        <td class="py-3 px-4">
+                                            {{ $hive->location }}
+                                            @if($hive->location_gps)
+                                            <a href="https://www.google.com/maps/search/?api=1&query={{ $hive->location_gps }}" target="_blank" class="text-blue-500 hover:text-blue-700 ml-1">
+                                                (Ver mapa)
+                                            </a>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center py-12">
+                                        <td colspan="8" class="text-center py-12">
                                             <p class="text-gray-500 text-lg">{{ __('No hay colmenas que coincidan con la búsqueda.') }}</p>
                                         </td>
                                     </tr>
@@ -266,6 +303,67 @@
     </div>
 
     <x-create-hive-modal :apiaries="$allUserApiaries" :statuses="$statuses" :types="$types" />
+
+    <!-- Bulk Edit Modal -->
+    <div id="edit-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 text-center">{{ __('Editar Colmenas en Lote') }}</h3>
+                <div class="mt-4 px-7 py-3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Status -->
+                        <div>
+                            <label for="bulk-status" class="block font-medium text-sm text-gray-700">{{ __('Estado') }}</label>
+                            <select id="bulk-status" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50">
+                                @foreach ($statuses as $status)
+                                    <option value="{{ $status }}">{{ $status }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Type -->
+                        <div>
+                            <label for="bulk-type" class="block font-medium text-sm text-gray-700">{{ __('Tipo') }}</label>
+                            <select id="bulk-type" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50">
+                                @foreach ($types as $type)
+                                    <option value="{{ $type }}">{{ $type }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="mt-6">
+                        <label for="bulk-location" class="block font-medium text-sm text-gray-700">{{ __('Nombre de la Ubicación (Opcional)') }}</label>
+                        <input id="bulk-location" type="text" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" autocomplete="off">
+                    </div>
+
+                    <!-- Location GPS -->
+                    <div class="mt-4">
+                        <label for="bulk-location-gps" class="block font-medium text-sm text-gray-700">{{ __('Coordenadas GPS (Opcional)') }}</label>
+                        <div class="flex items-center gap-2 mt-1">
+                            <input id="bulk-location-gps" type="text" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" autocomplete="off">
+                            <button type="button" id="open-bulk-map-modal" class="whitespace-nowrap inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                </svg>
+                                <span class="hidden md:inline">{{ __('Seleccionar en Mapa') }}</span>
+                            </button>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-500">Dejar los campos de ubicación en blanco para no modificarlos.</p>
+                    </div>
+                </div>
+                <div class="items-center px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button id="confirm-edit-button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-yellow-600 text-base font-medium text-white hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        {{ __('Confirmar Cambios') }}
+                    </button>
+                    <button id="cancel-edit-button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm">
+                        {{ __('Cancelar') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Move Modal -->
     <div id="move-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
@@ -391,12 +489,63 @@ document.addEventListener('DOMContentLoaded', function () {
         mapModal.classList.add('hidden');
     }
 
-    openMapModalButton.addEventListener('click', openModal);
+    let activeLocationInput = null;
+
+    function openMapForInput(inputElement) {
+        activeLocationInput = inputElement;
+        mapModal.classList.remove('hidden');
+        const initialPos = parseLatLng(inputElement.value) || { lat: 19.4326, lng: -99.1332 }; // Default to Mexico City
+        selectedPosition = initialPos;
+
+        if (!map) {
+            map = new google.maps.Map(mapElement, {
+                center: initialPos,
+                zoom: inputElement.value ? 15 : 8,
+            });
+
+            marker = new google.maps.Marker({
+                position: initialPos,
+                map: map,
+                draggable: true,
+            });
+
+            searchBox = new google.maps.places.SearchBox(pacInput);
+            map.controls[google.maps.ControlPosition.TOP_LEFT].push(pacInput);
+
+            map.addListener('bounds_changed', () => searchBox.setBounds(map.getBounds()));
+
+            searchBox.addListener('places_changed', () => {
+                const places = searchBox.getPlaces();
+                if (places.length > 0 && places[0].geometry) {
+                    const place = places[0];
+                    map.setCenter(place.geometry.location);
+                    map.setZoom(15);
+                    marker.setPosition(place.geometry.location);
+                    selectedPosition = place.geometry.location.toJSON();
+                }
+            });
+
+            map.addListener('click', (e) => {
+                marker.setPosition(e.latLng);
+                selectedPosition = e.latLng.toJSON();
+            });
+
+            marker.addListener('dragend', (e) => {
+                selectedPosition = e.latLng.toJSON();
+            });
+        } else {
+            map.setCenter(initialPos);
+            marker.setPosition(initialPos);
+            map.setZoom(inputElement.value ? 15 : 8);
+        }
+    }
+
+    openMapModalButton.addEventListener('click', () => openMapForInput(locationGpsInput));
     closeMapModalButton.addEventListener('click', closeModal);
 
     confirmLocationButton.addEventListener('click', () => {
-        if (selectedPosition) {
-            locationGpsInput.value = `${selectedPosition.lat}, ${selectedPosition.lng}`;
+        if (selectedPosition && activeLocationInput) {
+            activeLocationInput.value = `${selectedPosition.lat}, ${selectedPosition.lng}`;
         }
         closeModal();
     });
@@ -478,7 +627,7 @@ document.addEventListener('DOMContentLoaded', function () {
             confirmMoveButton.addEventListener('click', function () {
                 const hiveIds = getSelectedHiveIds();
                 const apiaryId = moveApiarySelect.value;
-                performBulkAction('move', hiveIds, apiaryId);
+                performBulkAction('move', hiveIds, { apiary_id: apiaryId });
             });
 
             confirmDeleteButton.addEventListener('click', function () {
@@ -486,16 +635,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 performBulkAction('delete', hiveIds);
             });
 
-            function performBulkAction(action, hiveIds, apiaryId = null) {
-                const data = {
+            function performBulkAction(action, hiveIds, data = {}) {
+                const payload = {
                     action: action,
                     hive_ids: hiveIds,
-                    _token: '{{ csrf_token() }}'
+                    _token: '{{ csrf_token() }}',
+                    ...data
                 };
-
-                if (apiaryId) {
-                    data.apiary_id = apiaryId;
-                }
 
                 fetch('{{ route("hives.bulkActions") }}', {
                     method: 'POST',
@@ -503,21 +649,63 @@ document.addEventListener('DOMContentLoaded', function () {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(payload)
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw err; });
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
                         window.location.reload();
                     } else {
+                        // This part might not be reached if server throws validation error
                         alert(data.message || 'An error occurred.');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred.');
+                    let errorMessage = 'An error occurred.';
+                    if (error.errors) {
+                        errorMessage = Object.values(error.errors).flat().join('\n');
+                    } else if (error.message) {
+                        errorMessage = error.message;
+                    }
+                    alert(errorMessage);
                 });
             }
+
+            // Bulk Edit Modal Logic
+            const editButton = document.getElementById('edit-button');
+            const editModal = document.getElementById('edit-modal');
+            const cancelEditButton = document.getElementById('cancel-edit-button');
+            const confirmEditButton = document.getElementById('confirm-edit-button');
+            const openBulkMapModalButton = document.getElementById('open-bulk-map-modal');
+            const bulkLocationGpsInput = document.getElementById('bulk-location-gps');
+
+            editButton.addEventListener('click', () => editModal.classList.remove('hidden'));
+            cancelEditButton.addEventListener('click', () => editModal.classList.add('hidden'));
+            openBulkMapModalButton.addEventListener('click', () => openMapForInput(bulkLocationGpsInput));
+
+            confirmEditButton.addEventListener('click', () => {
+                const hiveIds = getSelectedHiveIds();
+                const status = document.getElementById('bulk-status').value;
+                const type = document.getElementById('bulk-type').value;
+                const location = document.getElementById('bulk-location').value;
+                const location_gps = bulkLocationGpsInput.value;
+
+                const data = {
+                    status,
+                    type,
+                    location,
+                    location_gps
+                };
+
+                performBulkAction('edit', hiveIds, data);
+            });
+
         });
     </script>
 
