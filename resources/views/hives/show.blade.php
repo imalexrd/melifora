@@ -2,15 +2,20 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Detalles de la Colmena: {{ $hive->name }}
+                {{ __('Detalles de la Colmena') }}: {{ $hive->name }}
             </h2>
-            <a href="{{ route('hives.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
-                {{ __('Volver a Colmenas') }}
-            </a>
+            <div class="flex items-center space-x-2">
+                <a href="{{ route('hives.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                    {{ __('Volver a Colmenas') }}
+                </a>
+                <button id="toggle-edit-form" class="inline-flex items-center px-4 py-2 bg-secondary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-secondary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                    {{ __('Editar') }}
+                </button>
+            </div>
         </div>
     </x-slot>
 
-    <div class="py-12" x-data="{ openTab: 1 }">
+    <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Hive Header Card -->
             <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
@@ -42,31 +47,152 @@
                 </div>
             </div>
 
+            <!-- Edit Form -->
+            <div id="edit-hive-form" class="hidden bg-white rounded-lg shadow-md overflow-hidden p-6 mb-8">
+                <form method="POST" action="{{ route('hives.update', $hive) }}">
+                    @csrf
+                    @method('PATCH')
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Name -->
+                        <div>
+                            <x-input-label for="name" :value="__('Nombre de la Colmena')" />
+                            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name', $hive->name)" required autofocus />
+                            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                        </div>
+
+                        <!-- Apiary -->
+                        <div>
+                            <x-input-label for="apiary_id" :value="__('Apiario')" />
+                            <select id="apiary_id" name="apiary_id" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+                                @foreach ($apiaries as $apiary)
+                                    <option value="{{ $apiary->id }}" @if (old('apiary_id', $hive->apiary_id) == $apiary->id) selected @endif>{{ $apiary->name }}</option>
+                                @endforeach
+                            </select>
+                            <x-input-error :messages="$errors->get('apiary_id')" class="mt-2" />
+                        </div>
+
+                        <!-- Type -->
+                        <div>
+                            <x-input-label for="type" :value="__('Tipo')" />
+                            <select id="type" name="type" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+                                @foreach ($types as $type)
+                                    <option value="{{ $type }}" @if (old('type', $hive->type) == $type) selected @endif>{{ $type }}</option>
+                                @endforeach
+                            </select>
+                            <x-input-error :messages="$errors->get('type')" class="mt-2" />
+                        </div>
+
+                        <!-- Status -->
+                        <div>
+                            <x-input-label for="status" :value="__('Estado')" />
+                            <select id="status" name="status" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+                                @foreach ($statuses as $status)
+                                    <option value="{{ $status }}" @if (old('status', $hive->status) == $status) selected @endif>{{ $status }}</option>
+                                @endforeach
+                            </select>
+                            <x-input-error :messages="$errors->get('status')" class="mt-2" />
+                        </div>
+
+                        <!-- Birth Date -->
+                        <div>
+                            <x-input-label for="birth_date" :value="__('Fecha de Nacimiento')" />
+                            <x-text-input id="birth_date" class="block mt-1 w-full" type="date" name="birth_date" :value="old('birth_date', $hive->birth_date ? $hive->birth_date->format('Y-m-d') : '')" />
+                            <x-input-error :messages="$errors->get('birth_date')" class="mt-2" />
+                        </div>
+
+                        <!-- Rating -->
+                        <div>
+                            <x-input-label for="rating" :value="__('Rating (0-100)')" />
+                            <x-text-input id="rating" class="block mt-1 w-full" type="number" name="rating" :value="old('rating', $hive->rating)" min="0" max="100" />
+                            <x-input-error :messages="$errors->get('rating')" class="mt-2" />
+                        </div>
+
+                        <!-- QR Code -->
+                        <div>
+                            <x-input-label for="qr_code" :value="__('QR Code')" />
+                            <x-text-input id="qr_code" class="block mt-1 w-full" type="text" name="qr_code" :value="old('qr_code', $hive->qr_code)" />
+                            <x-input-error :messages="$errors->get('qr_code')" class="mt-2" />
+                        </div>
+
+                        <!-- Location -->
+                        <div>
+                            <x-input-label for="location" :value="__('Ubicación Específica')" />
+                            <x-text-input id="location" class="block mt-1 w-full" type="text" name="location" :value="old('location', $hive->location)" />
+                            <x-input-error :messages="$errors->get('location')" class="mt-2" />
+                        </div>
+
+                        <!-- Location GPS -->
+                        <div>
+                            <x-input-label for="location_gps" :value="__('Coordenadas GPS')" />
+                            <div class="flex items-center gap-2">
+                                <x-text-input id="location_gps" class="block mt-1 w-full" type="text" name="location_gps" :value="old('location_gps', $hive->location_gps)" autocomplete="off" />
+                                <button type="button" id="open-map-modal" class="whitespace-nowrap inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span class="hidden md:inline">{{ $hive->location_gps ? __('Ver/Editar') : __('Seleccionar') }}</span>
+                                </button>
+                            </div>
+                            <x-input-error :messages="$errors->get('location_gps')" class="mt-2" />
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end mt-6">
+                        <x-primary-button>
+                            {{ __('Actualizar Colmena') }}
+                        </x-primary-button>
+                    </div>
+                </form>
+            </div>
+
             <!-- Tab Navigation -->
-            <div class="flex border-b border-gray-200">
-                <button @click="openTab = 1" :class="{'border-b-2 border-yellow-500 text-yellow-600': openTab === 1}" class="px-4 py-2 text-gray-500 font-semibold hover:text-yellow-500 focus:outline-none">Detalles</button>
-                <button @click="openTab = 2" :class="{'border-b-2 border-yellow-500 text-yellow-600': openTab === 2}" class="px-4 py-2 text-gray-500 font-semibold hover:text-yellow-500 focus:outline-none">Reina</button>
-                <button @click="openTab = 3" :class="{'border-b-2 border-yellow-500 text-yellow-600': openTab === 3}" class="px-4 py-2 text-gray-500 font-semibold hover:text-yellow-500 focus:outline-none">Inspecciones</button>
-                <button @click="openTab = 4" :class="{'border-b-2 border-yellow-500 text-yellow-600': openTab === 4}" class="px-4 py-2 text-gray-500 font-semibold hover:text-yellow-500 focus:outline-none">Eventos</button>
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-primary text-primary" data-tab="details">
+                        {{ __('Detalles') }}
+                    </button>
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="queen">
+                        {{ __('Reina') }}
+                    </button>
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="inspections">
+                        {{ __('Inspecciones') }}
+                    </button>
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="events">
+                        {{ __('Eventos') }}
+                    </button>
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="notes">
+                        {{ __('Notas') }}
+                    </button>
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="activity">
+                        {{ __('Actividad') }}
+                    </button>
+                </nav>
             </div>
 
             <!-- Tab Content -->
             <div class="bg-white rounded-b-lg shadow-md p-6">
                 <!-- Details Tab -->
-                <div x-show="openTab === 1">
+                <div id="details-content" class="tab-content">
                     <h4 class="text-xl font-semibold mb-4">Información Adicional</h4>
                     <div class="grid grid-cols-2 gap-4">
                         <p><strong>Rating:</strong> {{ $hive->rating ?? 'N/A' }}/100</p>
                         <p><strong>Ubicación Específica:</strong> {{ $hive->location ?? 'N/A' }}</p>
                         <p><strong>QR Code:</strong> {{ $hive->qr_code ?? 'N/A' }}</p>
-                        <div class="col-span-2">
-                            <p><strong>Notas:</strong></p>
-                            <p class="mt-1 text-gray-700 p-3 bg-gray-50 rounded-md">{{ $hive->notes ?? 'Sin notas.' }}</p>
-                        </div>
+                        @if($hive->location_gps)
+                            <p><strong>Coordenadas:</strong> {{ $hive->location_gps }}</p>
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ $hive->location_gps }}" target="_blank" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 mt-1">
+                                {{ __('Ver en Google Maps') }}
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+                        @endif
                     </div>
                 </div>
+
                 <!-- Queen Tab -->
-                <div x-show="openTab === 2">
+                <div id="queen-content" class="tab-content hidden">
                     <h4 class="text-xl font-semibold mb-4">Reina Actual e Historial</h4>
                     <!-- Current Queen -->
                     <div class="mb-6">
@@ -92,8 +218,9 @@
                         @endforelse
                     </div>
                 </div>
+
                 <!-- Inspections Tab -->
-                <div x-show="openTab === 3">
+                <div id="inspections-content" class="tab-content hidden">
                     <h4 class="text-xl font-semibold mb-4">Historial de Inspecciones</h4>
                     @forelse ($hive->inspections as $inspection)
                         <div class="border-l-4 border-blue-400 pl-4 mb-4">
@@ -105,8 +232,9 @@
                         <p>No hay inspecciones registradas.</p>
                     @endforelse
                 </div>
+
                 <!-- Events Tab -->
-                <div x-show="openTab === 4">
+                <div id="events-content" class="tab-content hidden">
                     <h4 class="text-xl font-semibold mb-4">Historial de Eventos</h4>
                     @forelse ($hive->events as $event)
                         <div class="border-l-4 border-green-400 pl-4 mb-4">
@@ -118,7 +246,304 @@
                         <p>No hay eventos registrados.</p>
                     @endforelse
                 </div>
+
+                <!-- Notes Tab -->
+                <div id="notes-content" class="tab-content hidden py-6">
+                    <div class="bg-white rounded-lg shadow-md">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Añadir una Nota</h3>
+                            <form id="add-note-form">
+                                <textarea id="note-content" name="content" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" placeholder="Escribe tu nota aquí..."></textarea>
+                                <div class="flex justify-end mt-4">
+                                    <x-primary-button type="submit">
+                                        {{ __('Guardar Nota') }}
+                                    </x-primary-button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Historial de Notas</h3>
+                        <div id="notes-list" class="space-y-6">
+                            @forelse ($hive->notes as $note)
+                                @include('hives.partials.note', ['note' => $note])
+                            @empty
+                                <div id="no-notes-message" class="text-center py-12">
+                                    <p class="text-gray-500 text-lg">{{ __('No hay notas para esta colmena.') }}</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Tab -->
+                <div id="activity-content" class="tab-content hidden py-6">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Historial de Actividad</h3>
+                        </div>
+                        <ul class="divide-y divide-gray-200">
+                            @forelse ($hive->activities as $activity)
+                                <li class="p-4 sm:p-6">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 bg-gray-200 rounded-full p-2">
+                                             <svg class="h-6 w-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                        <div class="ml-4 flex-grow">
+                                            <p class="text-sm text-gray-800">{{ $activity->description }}</p>
+                                            <p class="text-xs text-gray-500">
+                                                {{ $activity->created_at->diffForHumans() }}
+                                                @if ($activity->user)
+                                                    por {{ $activity->user->name }}
+                                                @endif
+                                            </p>
+                                        </div>
+                                    </div>
+                                </li>
+                            @empty
+                                <li class="p-6 text-center">
+                                    <p class="text-gray-500">{{ __('No hay actividad registrada para esta colmena.') }}</p>
+                                </li>
+                            @endforelse
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <x-google-maps-modal />
+
+    @push('scripts')
+    <script>
+        window.initMap = function() {};
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Edit form toggle
+            const toggleButton = document.getElementById('toggle-edit-form');
+            const editForm = document.getElementById('edit-hive-form');
+
+            toggleButton.addEventListener('click', function () {
+                const isHidden = editForm.classList.contains('hidden');
+                editForm.classList.toggle('hidden');
+                toggleButton.textContent = isHidden ? '{{ __('Ocultar') }}' : '{{ __('Editar') }}';
+            });
+
+            // Auto-open form if there are validation errors
+            @if ($errors->any())
+                editForm.classList.remove('hidden');
+                toggleButton.textContent = '{{ __('Ocultar Formulario') }}';
+            @endif
+
+            // Tab switching logic
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = document.getElementById(tab.dataset.tab + '-content');
+
+                    tabContents.forEach(c => c.classList.add('hidden'));
+                    target.classList.remove('hidden');
+
+                    tabs.forEach(t => {
+                        t.classList.remove('border-primary', 'text-primary');
+                        t.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    });
+                    tab.classList.add('border-primary', 'text-primary');
+                    tab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                });
+            });
+
+            // Google Maps Modal
+            const locationGpsInput = document.getElementById('location_gps');
+            const openMapModalButton = document.getElementById('open-map-modal');
+            const mapModal = document.getElementById('google-maps-modal');
+            const closeMapModalButton = document.getElementById('close-map-modal');
+            const confirmLocationButton = document.getElementById('confirm-location-button');
+            const pacInput = document.getElementById('pac-input');
+            const mapElement = document.getElementById('map');
+
+            let map, marker, searchBox;
+            let selectedPosition = null;
+
+            function parseLatLng(str) {
+                if (!str) return null;
+                const parts = str.split(',');
+                if (parts.length !== 2) return null;
+                const lat = parseFloat(parts[0].trim());
+                const lng = parseFloat(parts[1].trim());
+                if (isNaN(lat) || isNaN(lng)) return null;
+                return { lat, lng };
+            }
+
+            function openMapForInput(inputElement) {
+                activeLocationInput = inputElement;
+                mapModal.classList.remove('hidden');
+                const initialPos = parseLatLng(inputElement.value) || { lat: 19.4326, lng: -99.1332 }; // Default to Mexico City
+                selectedPosition = initialPos;
+
+                if (!map) {
+                    map = new google.maps.Map(mapElement, {
+                        center: initialPos,
+                        zoom: inputElement.value ? 15 : 8,
+                    });
+
+                    marker = new google.maps.Marker({
+                        position: initialPos,
+                        map: map,
+                        draggable: true,
+                    });
+
+                    searchBox = new google.maps.places.SearchBox(pacInput);
+                    map.controls[google.maps.ControlPosition.TOP_LEFT].push(pacInput);
+
+                    map.addListener('bounds_changed', () => searchBox.setBounds(map.getBounds()));
+
+                    searchBox.addListener('places_changed', () => {
+                        const places = searchBox.getPlaces();
+                        if (places.length > 0 && places[0].geometry) {
+                            const place = places[0];
+                            map.setCenter(place.geometry.location);
+                            map.setZoom(15);
+                            marker.setPosition(place.geometry.location);
+                            selectedPosition = place.geometry.location.toJSON();
+                        }
+                    });
+
+                    map.addListener('click', (e) => {
+                        marker.setPosition(e.latLng);
+                        selectedPosition = e.latLng.toJSON();
+                    });
+
+                    marker.addListener('dragend', (e) => {
+                        selectedPosition = e.latLng.toJSON();
+                    });
+                } else {
+                    map.setCenter(initialPos);
+                    marker.setPosition(initialPos);
+                    map.setZoom(inputElement.value ? 15 : 8);
+                }
+            }
+
+            openMapModalButton.addEventListener('click', () => openMapForInput(locationGpsInput));
+            closeMapModalButton.addEventListener('click', () => mapModal.classList.add('hidden'));
+
+            confirmLocationButton.addEventListener('click', () => {
+                if (selectedPosition && activeLocationInput) {
+                    activeLocationInput.value = `${selectedPosition.lat}, ${selectedPosition.lng}`;
+                }
+                mapModal.classList.add('hidden');
+            });
+
+            // Notes CRUD
+            const notesList = document.getElementById('notes-list');
+            const noNotesMessage = document.getElementById('no-notes-message');
+
+            document.getElementById('add-note-form').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const content = document.getElementById('note-content').value;
+
+                fetch('{{ route('hives.notes.store', $hive) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ content: content })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.id) {
+                        const newNoteHtml = `
+                            <div class="flex items-start space-x-4" id="note-${data.id}">
+                                <img class="w-10 h-10 rounded-full" src="${data.user.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.user.name) + '&color=7F9CF5&background=EBF4FF'}" alt="${data.user.name}">
+                                <div class="flex-1">
+                                    <div class="bg-gray-100 rounded-lg p-4">
+                                        <div class="flex items-center justify-between">
+                                            <p class="font-semibold text-gray-900">${data.user.name}</p>
+                                            <div class="text-xs text-gray-500">just now</div>
+                                        </div>
+                                        <p class="text-gray-700 mt-2 note-content">${data.content}</p>
+                                    </div>
+                                    <div class="flex items-center space-x-4 mt-1 text-xs">
+                                        <button class="font-medium text-blue-600 hover:text-blue-800 edit-note-button" data-note-id="${data.id}">Editar</button>
+                                        <button class="font-medium text-red-600 hover:text-red-800 delete-note-button" data-note-id="${data.id}">Eliminar</button>
+                                    </div>
+                                    <div id="edit-note-form-${data.id}" class="hidden mt-2">
+                                        <textarea class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" rows="3">${data.content}</textarea>
+                                        <div class="flex justify-end space-x-2 mt-2">
+                                            <button class="px-3 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 cancel-edit-button" data-note-id="${data.id}">Cancelar</button>
+                                            <button class="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 confirm-edit-button" data-note-id="${data.id}">Guardar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                        notesList.insertAdjacentHTML('afterbegin', newNoteHtml);
+                        document.getElementById('note-content').value = '';
+                        if(noNotesMessage) noNotesMessage.classList.add('hidden');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+
+            notesList.addEventListener('click', function(e) {
+                const noteId = e.target.dataset.noteId;
+                if (!noteId) return;
+
+                const noteElement = document.getElementById(`note-${noteId}`);
+
+                if (e.target.classList.contains('edit-note-button')) {
+                    document.getElementById(`edit-note-form-${noteId}`).classList.remove('hidden');
+                }
+
+                if (e.target.classList.contains('cancel-edit-button')) {
+                    document.getElementById(`edit-note-form-${noteId}`).classList.add('hidden');
+                }
+
+                if (e.target.classList.contains('delete-note-button')) {
+                    if (confirm('¿Estás seguro de que quieres eliminar esta nota?')) {
+                        const url = '{{ route("hives.notes.destroy", ["hive" => $hive, "note" => ":noteId"]) }}'.replace(':noteId', noteId);
+                        fetch(url, {
+                            method: 'DELETE',
+                            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                noteElement.remove();
+                                if (notesList.children.length === 0 && noNotesMessage) {
+                                    noNotesMessage.classList.remove('hidden');
+                                }
+                            }
+                        });
+                    }
+                }
+
+                if (e.target.classList.contains('confirm-edit-button')) {
+                    const newContent = document.querySelector(`#edit-note-form-${noteId} textarea`).value;
+                    const url = '{{ route("hives.notes.update", ["hive" => $hive, "note" => ":noteId"]) }}'.replace(':noteId', noteId);
+                    fetch(url, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ content: newContent })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.id) {
+                            noteElement.querySelector('.note-content').textContent = data.content;
+                            document.getElementById(`edit-note-form-${noteId}`).classList.add('hidden');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>

@@ -5,14 +5,13 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\KnowledgeController;
+use App\Http\Controllers\HiveController;
+use App\Http\Controllers\ApiaryController;
+use App\Http\Controllers\HiveNoteController;
 
 Route::get('/', function () {
     return view('welcome');
 });
-
-use App\Http\Controllers\HiveController;
-
-use App\Http\Controllers\ApiaryController;
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -26,6 +25,10 @@ Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
     Route::post('/apiaries/{apiary}/notes', [ApiaryController::class, 'storeNote'])->name('apiaries.notes.store');
     Route::patch('/apiaries/{apiary}/notes/{note}', [ApiaryController::class, 'updateNote'])->name('apiaries.notes.update');
     Route::delete('/apiaries/{apiary}/notes/{note}', [ApiaryController::class, 'destroyNote'])->name('apiaries.notes.destroy');
+
+    Route::post('/hives/{hive}/notes', [HiveNoteController::class, 'store'])->name('hives.notes.store');
+    Route::patch('/hives/{hive}/notes/{note}', [HiveNoteController::class, 'update'])->name('hives.notes.update');
+    Route::delete('/hives/{hive}/notes/{note}', [HiveNoteController::class, 'destroy'])->name('hives.notes.destroy');
 });
 
 Route::middleware('auth')->group(function () {
