@@ -64,28 +64,28 @@
                                 </select>
                                 <x-input-error :messages="$errors->get('status')" class="mt-2" />
                             </div>
-                        </div>
 
-                        <!-- Location -->
-                        <div class="mt-4">
-                            <x-input-label for="location" :value="__('Ubicación')" />
-                            <x-text-input id="location" class="block mt-1 w-full" type="text" name="location" :value="old('location', $apiary->location)" required autocomplete="location" />
-                            <x-input-error :messages="$errors->get('location')" class="mt-2" />
-                        </div>
-
-                        <!-- Location GPS -->
-                        <div class="mt-4">
-                            <x-input-label for="location_gps" :value="__('Coordenadas GPS')" />
-                            <div class="flex items-center gap-2">
-                                <x-text-input id="location_gps" class="block mt-1 w-full" type="text" name="location_gps" :value="old('location_gps', $apiary->location_gps)" autocomplete="off" />
-                                <button type="button" id="open-map-modal" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                                    </svg>
-                                    {{ $apiary->location_gps ? __('Ver/Editar Ubicación') : __('Seleccionar en Mapa') }}
-                                </button>
+                            <!-- Location -->
+                            <div>
+                                <x-input-label for="location" :value="__('Ubicación')" />
+                                <x-text-input id="location" class="block mt-1 w-full" type="text" name="location" :value="old('location', $apiary->location)" required autocomplete="location" />
+                                <x-input-error :messages="$errors->get('location')" class="mt-2" />
                             </div>
-                            <x-input-error :messages="$errors->get('location_gps')" class="mt-2" />
+
+                            <!-- Location GPS -->
+                            <div>
+                                <x-input-label for="location_gps" :value="__('Coordenadas GPS')" />
+                                <div class="flex items-center gap-2">
+                                    <x-text-input id="location_gps" class="block mt-1 w-full" type="text" name="location_gps" :value="old('location_gps', $apiary->location_gps)" autocomplete="off" />
+                                    <button type="button" id="open-map-modal" class="whitespace-nowrap inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="hidden md:inline">{{ $apiary->location_gps ? __('Ver/Editar') : __('Seleccionar') }}</span>
+                                    </button>
+                                </div>
+                                <x-input-error :messages="$errors->get('location_gps')" class="mt-2" />
+                            </div>
                         </div>
 
                         <div class="flex items-center justify-end mt-6">
