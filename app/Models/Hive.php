@@ -13,7 +13,13 @@ class Hive extends Model
     protected static function booted()
     {
         static::creating(function ($hive) {
-            $hive->slug = (string) Str::uuid();
+            if (empty($hive->slug)) {
+                $uuid = (string) Str::uuid();
+                $hive->slug = $uuid;
+                if (empty($hive->name)) {
+                    $hive->name = $uuid;
+                }
+            }
         });
     }
 

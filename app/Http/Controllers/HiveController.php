@@ -41,7 +41,6 @@ class HiveController extends Controller
 
         for ($i = 0; $i < $validatedData['number_of_hives']; $i++) {
             Hive::create([
-                'name' => 'Colmena #' . ($i + 1),
                 'apiary_id' => $validatedData['apiary_id'],
                 'type' => $validatedData['type'],
             ]);
