@@ -72,8 +72,9 @@ class ApiaryController extends Controller
         $allUserApiaries = Apiary::where('user_id', auth()->id())->get();
         $statuses = Hive::getStatusOptions();
         $types = Hive::getTypeOptions();
+        $apiaryStatuses = Apiary::getStatusOptions();
 
-        return view('apiaries.show', compact('apiary', 'hives', 'sort', 'direction', 'perPage', 'allApiariesForMoving', 'allUserApiaries', 'statuses', 'types'));
+        return view('apiaries.show', compact('apiary', 'hives', 'sort', 'direction', 'perPage', 'allApiariesForMoving', 'allUserApiaries', 'statuses', 'types', 'apiaryStatuses'));
     }
 
     /**
@@ -81,7 +82,7 @@ class ApiaryController extends Controller
      */
     public function edit(Apiary $apiary)
     {
-        return view('apiaries.edit', compact('apiary'));
+        return redirect()->route('apiaries.show', $apiary);
     }
 
     /**
@@ -92,11 +93,13 @@ class ApiaryController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
+            'location_gps' => 'nullable|string|max:255',
+            'status' => 'required|string|in:' . implode(',', Apiary::getStatusOptions()),
         ]);
 
         $apiary->update($validatedData);
 
-        return redirect()->route('apiaries.index')->with('success', 'Apiary updated successfully.');
+        return redirect()->route('apiaries.show', $apiary)->with('success', 'Apiary updated successfully.');
     }
 
     /**

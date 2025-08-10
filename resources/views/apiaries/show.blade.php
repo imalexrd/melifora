@@ -34,6 +34,68 @@
             </div>
 
             <div class="mt-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-semibold text-gray-800">Editar Apiario</h3>
+                    <button id="toggle-edit-form" class="inline-flex items-center px-4 py-2 bg-secondary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-secondary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                        {{ __('Mostrar Formulario') }}
+                    </button>
+                </div>
+
+                <div id="edit-apiary-form" class="hidden bg-white rounded-lg shadow-md overflow-hidden p-6 mb-8">
+                    <form method="POST" action="{{ route('apiaries.update', $apiary) }}">
+                        @csrf
+                        @method('PATCH')
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Name -->
+                            <div>
+                                <x-input-label for="name" :value="__('Nombre del Apiario')" />
+                                <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name', $apiary->name)" required autofocus autocomplete="name" />
+                                <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                            </div>
+
+                            <!-- Status -->
+                            <div>
+                                <x-input-label for="status" :value="__('Estado')" />
+                                <select name="status" id="status" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50">
+                                    @foreach ($apiaryStatuses as $status)
+                                        <option value="{{ $status }}" @if(old('status', $apiary->status) == $status) selected @endif>{{ $status }}</option>
+                                    @endforeach
+                                </select>
+                                <x-input-error :messages="$errors->get('status')" class="mt-2" />
+                            </div>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="mt-4">
+                            <x-input-label for="location" :value="__('Ubicación')" />
+                            <x-text-input id="location" class="block mt-1 w-full" type="text" name="location" :value="old('location', $apiary->location)" required autocomplete="location" />
+                            <x-input-error :messages="$errors->get('location')" class="mt-2" />
+                        </div>
+
+                        <!-- Location GPS -->
+                        <div class="mt-4">
+                            <x-input-label for="location_gps" :value="__('Coordenadas GPS')" />
+                            <div class="flex items-center gap-2">
+                                <x-text-input id="location_gps" class="block mt-1 w-full" type="text" name="location_gps" :value="old('location_gps', $apiary->location_gps)" autocomplete="off" />
+                                <button type="button" id="open-map-modal" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ $apiary->location_gps ? __('Ver/Editar Ubicación') : __('Seleccionar en Mapa') }}
+                                </button>
+                            </div>
+                            <x-input-error :messages="$errors->get('location_gps')" class="mt-2" />
+                        </div>
+
+                        <div class="flex items-center justify-end mt-6">
+                            <x-primary-button>
+                                {{ __('Actualizar Apiario') }}
+                            </x-primary-button>
+                        </div>
+                    </form>
+                </div>
+
                 <h3 class="text-2xl font-semibold text-gray-800 mb-4">Colmenas en este Apiario</h3>
 
                 <!-- Search and per-page form -->
@@ -225,7 +287,110 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+window.initMap = function() {};
+
+document.addEventListener('DOMContentLoaded', function () {
+    const locationGpsInput = document.getElementById('location_gps');
+    const openMapModalButton = document.getElementById('open-map-modal');
+    const mapModal = document.getElementById('google-maps-modal');
+    const closeMapModalButton = document.getElementById('close-map-modal');
+    const confirmLocationButton = document.getElementById('confirm-location-button');
+    const pacInput = document.getElementById('pac-input');
+    const mapElement = document.getElementById('map');
+
+    let map, marker, searchBox;
+    let selectedPosition = null;
+
+    function parseLatLng(str) {
+        if (!str) return null;
+        const parts = str.split(',');
+        if (parts.length !== 2) return null;
+        const lat = parseFloat(parts[0].trim());
+        const lng = parseFloat(parts[1].trim());
+        if (isNaN(lat) || isNaN(lng)) return null;
+        return { lat, lng };
+    }
+
+    function openModal() {
+        mapModal.classList.remove('hidden');
+        const initialPos = parseLatLng(locationGpsInput.value) || { lat: -34.397, lng: 150.644 }; // Default to Sydney
+        selectedPosition = initialPos;
+
+        map = new google.maps.Map(mapElement, {
+            center: initialPos,
+            zoom: locationGpsInput.value ? 15 : 8,
+        });
+
+        marker = new google.maps.Marker({
+            position: initialPos,
+            map: map,
+            draggable: true,
+        });
+
+        searchBox = new google.maps.places.SearchBox(pacInput);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(pacInput);
+
+        map.addListener('bounds_changed', () => {
+            searchBox.setBounds(map.getBounds());
+        });
+
+        searchBox.addListener('places_changed', () => {
+            const places = searchBox.getPlaces();
+
+            if (places.length == 0) {
+                return;
+            }
+
+            const place = places[0];
+            if (!place.geometry || !place.geometry.location) {
+                return;
+            }
+
+            map.setCenter(place.geometry.location);
+            map.setZoom(15);
+            marker.setPosition(place.geometry.location);
+            selectedPosition = place.geometry.location.toJSON();
+        });
+
+        map.addListener('click', (e) => {
+            marker.setPosition(e.latLng);
+            selectedPosition = e.latLng.toJSON();
+        });
+
+        marker.addListener('dragend', (e) => {
+            selectedPosition = e.latLng.toJSON();
+        });
+    }
+
+    function closeModal() {
+        mapModal.classList.add('hidden');
+    }
+
+    openMapModalButton.addEventListener('click', openModal);
+    closeMapModalButton.addEventListener('click', closeModal);
+
+    confirmLocationButton.addEventListener('click', () => {
+        if (selectedPosition) {
+            locationGpsInput.value = `${selectedPosition.lat}, ${selectedPosition.lng}`;
+        }
+        closeModal();
+    });
+
+    const toggleButton = document.getElementById('toggle-edit-form');
+            const editForm = document.getElementById('edit-apiary-form');
+
+            toggleButton.addEventListener('click', function () {
+                const isHidden = editForm.classList.contains('hidden');
+                editForm.classList.toggle('hidden');
+                toggleButton.textContent = isHidden ? '{{ __('Ocultar Formulario') }}' : '{{ __('Mostrar Formulario') }}';
+            });
+
+            // Auto-open form if there are validation errors
+            @if ($errors->any())
+                editForm.classList.remove('hidden');
+                toggleButton.textContent = '{{ __('Ocultar Formulario') }}';
+            @endif
+
             const selectAllCheckbox = document.getElementById('select-all');
             const hiveCheckboxes = document.querySelectorAll('.hive-checkbox');
             const bulkActionsDiv = document.getElementById('bulk-actions');
@@ -330,4 +495,6 @@
             }
         });
     </script>
+
+    <x-google-maps-modal />
 </x-app-layout>

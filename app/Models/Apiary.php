@@ -13,7 +13,18 @@ class Apiary extends Model
         'user_id',
         'name',
         'location',
+        'location_gps',
+        'status',
     ];
+
+    public static function getStatusOptions()
+    {
+        return [
+            'Activo',
+            'Inactivo',
+            'Mantenimiento',
+        ];
+    }
 
     public function user()
     {
