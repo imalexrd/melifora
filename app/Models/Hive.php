@@ -2,19 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class Hive extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
 
     protected static function booted()
     {
         static::creating(function ($hive) {
-            $hive->slug = Str::slug($hive->name . '-' . Str::random(5));
+            $hive->slug = (string) Str::uuid();
         });
     }
 

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('hives', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->foreignId('apiary_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('slug')->unique();
