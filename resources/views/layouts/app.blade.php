@@ -14,6 +14,9 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <!-- Google Maps -->
+        <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&callback=initMap" async defer></script>
     </head>
  <body class="font-sans antialiased">
         <div class="min-h-screen bg-background">
