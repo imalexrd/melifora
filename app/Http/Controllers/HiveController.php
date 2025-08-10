@@ -16,7 +16,10 @@ class HiveController extends Controller
         $hives = Hive::whereHas('apiary', function ($query) {
             $query->where('user_id', auth()->id());
         })->latest()->paginate(10);
-        return view('hives.index', compact('hives'));
+        $apiaries = Apiary::where('user_id', auth()->id())->get();
+        $statuses = Hive::getStatusOptions();
+        $types = Hive::getTypeOptions();
+        return view('hives.index', compact('hives', 'apiaries', 'statuses', 'types'));
     }
 
     /**
@@ -24,8 +27,10 @@ class HiveController extends Controller
      */
     public function create()
     {
-        $apiaries = Apiary::all();
-        return view('hives.create', compact('apiaries'));
+        $apiaries = Apiary::where('user_id', auth()->id())->get();
+        $statuses = Hive::getStatusOptions();
+        $types = Hive::getTypeOptions();
+        return view('hives.create', compact('apiaries', 'statuses', 'types'));
     }
 
     /**
@@ -36,17 +41,29 @@ class HiveController extends Controller
         $validatedData = $request->validate([
             'number_of_hives' => 'required|integer|min:1|max:250',
             'apiary_id' => 'required|exists:apiaries,id',
-            'type' => 'required|in:Langstroth,Dadant,Layens,Top-Bar,Warre,Flow',
+            'type' => 'required|in:' . implode(',', Hive::getTypeOptions()),
+            'status' => 'nullable|in:' . implode(',', Hive::getStatusOptions()),
+            'birth_date' => 'nullable|date',
         ]);
 
         for ($i = 0; $i < $validatedData['number_of_hives']; $i++) {
-            Hive::create([
+            $hiveData = [
                 'apiary_id' => $validatedData['apiary_id'],
                 'type' => $validatedData['type'],
-            ]);
+            ];
+
+            if (!empty($validatedData['status'])) {
+                $hiveData['status'] = $validatedData['status'];
+            }
+
+            if (!empty($validatedData['birth_date'])) {
+                $hiveData['birth_date'] = $validatedData['birth_date'];
+            }
+
+            Hive::create($hiveData);
         }
 
-        return redirect()->route('hives.index')->with('success', $validatedData['number_of_hives'] . ' colmenas creadas exitosamente.');
+        return redirect()->back()->with('success', $validatedData['number_of_hives'] . ' colmenas creadas exitosamente.');
     }
 
     /**

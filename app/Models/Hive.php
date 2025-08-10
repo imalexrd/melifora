@@ -79,4 +79,18 @@ class Hive extends Model
     {
         return 'slug';
     }
+
+    public static function getStatusOptions(): array
+    {
+        return [
+            'Desconocido', 'Activa', 'Invernando', 'Enjambrazon', 'Despoblada', 'Huerfana',
+            'Zanganera', 'En formacion', 'Revision', 'Mantenimiento', 'Alimentacion Artificial',
+            'Crianza de reinas', 'Pillaje', 'Pillera', 'Union', 'Sin uso'
+        ];
+    }
+
+    public static function getTypeOptions(): array
+    {
+        return ['Langstroth', 'Dadant', 'Layens', 'Top-Bar', 'Warre', 'Flow'];
+    }
 }

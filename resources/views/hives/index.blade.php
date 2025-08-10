@@ -4,9 +4,9 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Colmenas') }}
             </h2>
-            <a href="{{ route('hives.create') }}" class="inline-flex items-center px-4 py-2 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-400 active:bg-yellow-600 focus:outline-none focus:border-yellow-700 focus:ring ring-yellow-300 disabled:opacity-25 transition ease-in-out duration-150">
-                {{ __('Crear Colmena') }}
-            </a>
+            <button type="button" class="open-create-hive-modal-button inline-flex items-center px-4 py-2 bg-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-primary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                {{ __('Añadir Colmena') }}
+            </button>
         </div>
     </x-slot>
 
@@ -26,6 +26,15 @@
                                         'Despoblada' => 'bg-red-500',
                                         'Huerfana' => 'bg-purple-500',
                                         'Zanganera' => 'bg-orange-500',
+                                        'En formacion' => 'bg-teal-500',
+                                        'Revision' => 'bg-cyan-500',
+                                        'Mantenimiento' => 'bg-sky-500',
+                                        'Alimentacion Artificial' => 'bg-indigo-500',
+                                        'Crianza de reinas' => 'bg-pink-500',
+                                        'Pillaje' => 'bg-rose-500',
+                                        'Pillera' => 'bg-fuchsia-500',
+                                        'Union' => 'bg-violet-500',
+                                        'Sin uso' => 'bg-gray-400',
                                         default => 'bg-gray-500',
                                     }
                                 }}">{{ $hive->status }}</span>
@@ -54,4 +63,6 @@
             </div>
         </div>
     </div>
+
+    <x-create-hive-modal :apiaries="$apiaries" :statuses="$statuses" :types="$types" />
 </x-app-layout>

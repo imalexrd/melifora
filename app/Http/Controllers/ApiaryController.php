@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Apiary;
+use App\Models\Hive;
 use Illuminate\Http\Request;
 
 class ApiaryController extends Controller
@@ -67,9 +68,12 @@ class ApiaryController extends Controller
         }
 
         $hives = $query->paginate($perPage)->appends($request->query());
-        $allApiaries = Apiary::where('user_id', auth()->id())->where('id', '!=', $apiary->id)->get();
+        $allApiariesForMoving = Apiary::where('user_id', auth()->id())->where('id', '!=', $apiary->id)->get();
+        $allUserApiaries = Apiary::where('user_id', auth()->id())->get();
+        $statuses = Hive::getStatusOptions();
+        $types = Hive::getTypeOptions();
 
-        return view('apiaries.show', compact('apiary', 'hives', 'sort', 'direction', 'perPage', 'allApiaries'));
+        return view('apiaries.show', compact('apiary', 'hives', 'sort', 'direction', 'perPage', 'allApiariesForMoving', 'allUserApiaries', 'statuses', 'types'));
     }
 
     /**
