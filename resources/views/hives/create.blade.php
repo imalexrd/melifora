@@ -12,11 +12,11 @@
                     <form method="POST" action="{{ route('hives.store') }}">
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Name -->
+                            <!-- Number of Hives -->
                             <div>
-                                <x-input-label for="name" :value="__('Nombre de la Colmena')" />
-                                <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus />
-                                <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                                <x-input-label for="number_of_hives" :value="__('Número de Colmenas')" />
+                                <x-text-input id="number_of_hives" class="block mt-1 w-full" type="number" name="number_of_hives" :value="old('number_of_hives', 1)" required min="1" max="250" />
+                                <x-input-error :messages="$errors->get('number_of_hives')" class="mt-2" />
                             </div>
 
                             <!-- Apiary -->
@@ -29,13 +29,6 @@
                                     @endforeach
                                 </select>
                                 <x-input-error :messages="$errors->get('apiary_id')" class="mt-2" />
-                            </div>
-
-                            <!-- Slug -->
-                            <div>
-                                <x-input-label for="slug" :value="__('Slug (Identificador único)')" />
-                                <x-text-input id="slug" class="block mt-1 w-full" type="text" name="slug" :value="old('slug')" required />
-                                <x-input-error :messages="$errors->get('slug')" class="mt-2" />
                             </div>
 
                             <!-- Type -->
@@ -55,7 +48,7 @@
                                 {{ __('Cancelar') }}
                             </a>
                             <x-primary-button>
-                                {{ __('Crear Colmena') }}
+                                {{ __('Crear Colmenas') }}
                             </x-primary-button>
                         </div>
                     </form>

@@ -24,7 +24,7 @@
                             <!-- Slug -->
                             <div>
                                 <x-input-label for="slug" :value="__('Slug')" />
-                                <x-text-input id="slug" class="block mt-1 w-full" type="text" name="slug" :value="old('slug', $hive->slug)" required />
+                                <x-text-input id="slug" class="block mt-1 w-full bg-gray-100" type="text" name="slug" :value="old('slug', $hive->slug)" readonly />
                                 <x-input-error :messages="$errors->get('slug')" class="mt-2" />
                             </div>
 

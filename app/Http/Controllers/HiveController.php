@@ -33,18 +33,20 @@ class HiveController extends Controller
      */
     public function store(Request $request)
     {
-        // Add validation logic here
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
+            'number_of_hives' => 'required|integer|min:1|max:250',
             'apiary_id' => 'required|exists:apiaries,id',
-            'slug' => 'required|string|max:255|unique:hives',
             'type' => 'required|in:Langstroth,Dadant,Layens,Top-Bar,Warre,Flow',
-            // Add other validation rules as needed
         ]);
 
-        $hive = Hive::create($validatedData);
+        for ($i = 0; $i < $validatedData['number_of_hives']; $i++) {
+            Hive::create([
+                'apiary_id' => $validatedData['apiary_id'],
+                'type' => $validatedData['type'],
+            ]);
+        }
 
-        return redirect()->route('hives.show', $hive);
+        return redirect()->route('hives.index')->with('success', $validatedData['number_of_hives'] . ' colmenas creadas exitosamente.');
     }
 
     /**
@@ -72,7 +74,6 @@ class HiveController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:hives,slug,' . $hive->id,
             'qr_code' => 'nullable|string|max:255',
             'rating' => 'nullable|integer|min:0|max:100',
             'type' => 'required|in:Langstroth,Dadant,Layens,Top-Bar,Warre,Flow',

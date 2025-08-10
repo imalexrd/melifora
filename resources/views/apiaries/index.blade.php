@@ -26,11 +26,13 @@
                             <div class="flex justify-end space-x-2">
                                 <a href="{{ route('apiaries.show', $apiary) }}" class="text-sm text-green-600 hover:text-green-900 font-semibold">Ver</a>
                                 <a href="{{ route('apiaries.edit', $apiary) }}" class="text-sm text-blue-600 hover:text-blue-900 font-semibold">Editar</a>
-                                <form action="{{ route('apiaries.destroy', $apiary) }}" method="POST" onsubmit="return confirm('¿Estás seguro?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-sm text-red-600 hover:text-red-900 font-semibold">Eliminar</button>
-                                </form>
+                                @if ($apiary->name !== 'Mi primer apiario')
+                                    <form action="{{ route('apiaries.destroy', $apiary) }}" method="POST" onsubmit="return confirm('¿Estás seguro?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-sm text-red-600 hover:text-red-900 font-semibold">Eliminar</button>
+                                    </form>
+                                @endif
                             </div>
                         </div>
                     </div>
