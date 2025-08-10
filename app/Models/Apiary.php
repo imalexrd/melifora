@@ -50,4 +50,14 @@ class Apiary extends Model
     {
         return $this->hasMany(Hive::class);
     }
+
+    public function notes()
+    {
+        return $this->hasMany(ApiaryNote::class)->latest();
+    }
+
+    public function activities()
+    {
+        return $this->hasMany(ApiaryActivity::class)->latest();
+    }
 }

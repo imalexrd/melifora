@@ -144,10 +144,26 @@
                     </form>
                 </div>
 
-                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Colmenas en este Apiario</h3>
+                <!-- Tab Navigation -->
+                <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                        <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-primary text-primary" data-tab="hives">
+                            Colmenas
+                        </button>
+                        <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="notes">
+                            Notas
+                        </button>
+                        <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="activity">
+                            Actividad
+                        </button>
+                    </nav>
+                </div>
 
-                <!-- Search and per-page form -->
-                <div class="mb-4">
+                <!-- Tab Content -->
+                <div id="hives-content" class="tab-content">
+                    <h3 class="text-2xl font-semibold text-gray-800 my-4">Colmenas en este Apiario</h3>
+                    <!-- Search and per-page form -->
+                    <div class="mb-4">
                     <form action="{{ route('apiaries.show', $apiary) }}" method="GET" class="flex flex-col sm:flex-row gap-4">
                         <div class="flex-grow">
                             <input type="text" name="search" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" placeholder="Buscar colmenas..." value="{{ request('search') }}">
@@ -296,6 +312,71 @@
                     </div>
                     <div class="p-4 bg-white">
                         {{ $hives->links() }}
+                    </div>
+                </div>
+                </div>
+                <!-- Notes Tab -->
+                <div id="notes-content" class="tab-content hidden py-6">
+                    <div class="bg-white rounded-lg shadow-md">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Añadir una Nota</h3>
+                            <form id="add-note-form">
+                                <textarea id="note-content" name="content" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" placeholder="Escribe tu nota aquí..."></textarea>
+                                <div class="flex justify-end mt-4">
+                                    <x-primary-button type="submit">
+                                        {{ __('Guardar Nota') }}
+                                    </x-primary-button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Historial de Notas</h3>
+                        <div id="notes-list" class="space-y-6">
+                            @forelse ($apiary->notes as $note)
+                                @include('apiaries.partials.note', ['note' => $note])
+                            @empty
+                                <div id="no-notes-message" class="text-center py-12">
+                                    <p class="text-gray-500 text-lg">{{ __('No hay notas para este apiario.') }}</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Tab -->
+                <div id="activity-content" class="tab-content hidden py-6">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Historial de Actividad</h3>
+                        </div>
+                        <ul class="divide-y divide-gray-200">
+                            @forelse ($apiary->activities as $activity)
+                                <li class="p-4 sm:p-6">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 bg-gray-200 rounded-full p-2">
+                                             <svg class="h-6 w-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                        <div class="ml-4 flex-grow">
+                                            <p class="text-sm text-gray-800">{{ $activity->description }}</p>
+                                            <p class="text-xs text-gray-500">
+                                                {{ $activity->created_at->diffForHumans() }}
+                                                @if ($activity->user)
+                                                    por {{ $activity->user->name }}
+                                                @endif
+                                            </p>
+                                        </div>
+                                    </div>
+                                </li>
+                            @empty
+                                <li class="p-6 text-center">
+                                    <p class="text-gray-500">{{ __('No hay actividad registrada para este apiario.') }}</p>
+                                </li>
+                            @endforelse
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -710,4 +791,140 @@ document.addEventListener('DOMContentLoaded', function () {
     </script>
 
     <x-google-maps-modal />
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Tab switching logic
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = document.getElementById(tab.dataset.tab + '-content');
+
+                    tabContents.forEach(c => c.classList.add('hidden'));
+                    target.classList.remove('hidden');
+
+                    tabs.forEach(t => {
+                        t.classList.remove('border-primary', 'text-primary');
+                        t.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    });
+                    tab.classList.add('border-primary', 'text-primary');
+                    tab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                });
+            });
+
+            const notesList = document.getElementById('notes-list');
+            const noNotesMessage = document.getElementById('no-notes-message');
+
+            // Handle Add Note form submission
+            document.getElementById('add-note-form').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const content = document.getElementById('note-content').value;
+
+                fetch('{{ route('apiaries.notes.store', $apiary) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ content: content })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.id) {
+                        const newNoteHtml = `
+                            <div class="flex items-start space-x-4" id="note-${data.id}">
+                                <img class="w-10 h-10 rounded-full" src="${data.user.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.user.name) + '&color=7F9CF5&background=EBF4FF'}" alt="${data.user.name}">
+                                <div class="flex-1">
+                                    <div class="bg-gray-100 rounded-lg p-4">
+                                        <div class="flex items-center justify-between">
+                                            <p class="font-semibold text-gray-900">${data.user.name}</p>
+                                            <div class="text-xs text-gray-500">just now</div>
+                                        </div>
+                                        <p class="text-gray-700 mt-2 note-content">${data.content}</p>
+                                    </div>
+                                    <div class="flex items-center space-x-4 mt-1 text-xs">
+                                        <button class="font-medium text-blue-600 hover:text-blue-800 edit-note-button" data-note-id="${data.id}">Editar</button>
+                                        <button class="font-medium text-red-600 hover:text-red-800 delete-note-button" data-note-id="${data.id}">Eliminar</button>
+                                    </div>
+                                    <div id="edit-note-form-${data.id}" class="hidden mt-2">
+                                        <textarea class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" rows="3">${data.content}</textarea>
+                                        <div class="flex justify-end space-x-2 mt-2">
+                                            <button class="px-3 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 cancel-edit-button" data-note-id="${data.id}">Cancelar</button>
+                                            <button class="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 confirm-edit-button" data-note-id="${data.id}">Guardar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                        notesList.insertAdjacentHTML('afterbegin', newNoteHtml);
+                        document.getElementById('note-content').value = '';
+                        if(noNotesMessage) noNotesMessage.classList.add('hidden');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+
+            // Event delegation for edit, delete, cancel, and confirm buttons
+            notesList.addEventListener('click', function(e) {
+                const noteId = e.target.dataset.noteId;
+                if (!noteId) return;
+
+                const noteElement = document.getElementById(`note-${noteId}`);
+
+                // Edit button
+                if (e.target.classList.contains('edit-note-button')) {
+                    document.getElementById(`edit-note-form-${noteId}`).classList.remove('hidden');
+                }
+
+                // Cancel edit button
+                if (e.target.classList.contains('cancel-edit-button')) {
+                    document.getElementById(`edit-note-form-${noteId}`).classList.add('hidden');
+                }
+
+                // Delete button
+                if (e.target.classList.contains('delete-note-button')) {
+                    if (confirm('¿Estás seguro de que quieres eliminar esta nota?')) {
+                        const url = '{{ route("apiaries.notes.destroy", ["apiary" => $apiary, "note" => ":noteId"]) }}'.replace(':noteId', noteId);
+                        fetch(url, {
+                            method: 'DELETE',
+                            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                noteElement.remove();
+                                if (notesList.children.length === 0) {
+                                    if(noNotesMessage) noNotesMessage.classList.remove('hidden');
+                                }
+                            }
+                        });
+                    }
+                }
+
+                // Confirm edit button
+                if (e.target.classList.contains('confirm-edit-button')) {
+                    const newContent = document.querySelector(`#edit-note-form-${noteId} textarea`).value;
+                    const url = '{{ route("apiaries.notes.update", ["apiary" => $apiary, "note" => ":noteId"]) }}'.replace(':noteId', noteId);
+                    fetch(url, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ content: newContent })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.id) {
+                            noteElement.querySelector('.note-content').textContent = data.content;
+                            document.getElementById(`edit-note-form-${noteId}`).classList.add('hidden');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>

@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Apiary;
+use App\Models\ApiaryNote;
 use App\Models\Hive;
+use App\Traits\LogsApiaryActivity;
 use Illuminate\Http\Request;
 
 class ApiaryController extends Controller
 {
+    use LogsApiaryActivity;
     /**
      * Display a listing of the resource.
      */
@@ -39,6 +42,8 @@ class ApiaryController extends Controller
         $apiary->user_id = auth()->id();
         $apiary->save();
 
+        $this->logActivity($apiary, 'Apiario creado.');
+
         return redirect()->route('apiaries.index')->with('success', 'Apiary created successfully.');
     }
 
@@ -47,6 +52,7 @@ class ApiaryController extends Controller
      */
     public function show(Request $request, Apiary $apiary)
     {
+        $apiary->load(['notes.user', 'activities.user']);
         $query = $apiary->hives();
 
         // Search
@@ -99,7 +105,13 @@ class ApiaryController extends Controller
             'status' => 'required|string|in:' . implode(',', Apiary::getStatusOptions()),
         ]);
 
+        $originalStatus = $apiary->status;
+
         $apiary->update($validatedData);
+
+        if ($originalStatus !== $validatedData['status']) {
+            $this->logActivity($apiary, "Estado del apiario actualizado a: {$validatedData['status']}.");
+        }
 
         return redirect()->route('apiaries.show', $apiary)->with('success', 'Apiary updated successfully.');
     }
@@ -113,8 +125,53 @@ class ApiaryController extends Controller
             return redirect()->route('apiaries.index')->with('error', 'El apiario por defecto "Mi primer apiario" no se puede eliminar.');
         }
 
+        if ($apiary->hives()->count() > 0) {
+            return redirect()->route('apiaries.show', $apiary)->with('error', 'No se puede eliminar un apiario con colmenas asociadas.');
+        }
+
+        $this->logActivity($apiary, "Apiario {$apiary->name} eliminado.");
         $apiary->delete();
 
         return redirect()->route('apiaries.index')->with('success', 'Apiary deleted successfully.');
+    }
+
+    public function storeNote(Request $request, Apiary $apiary)
+    {
+        $request->validate(['content' => 'required|string']);
+
+        $note = $apiary->notes()->create([
+            'user_id' => auth()->id(),
+            'content' => $request->content,
+        ]);
+
+        $note->load('user');
+
+        return response()->json($note);
+    }
+
+    public function updateNote(Request $request, Apiary $apiary, ApiaryNote $note)
+    {
+        if ($note->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $request->validate(['content' => 'required|string']);
+
+        $note->update(['content' => $request->content]);
+
+        $note->load('user');
+
+        return response()->json($note);
+    }
+
+    public function destroyNote(Apiary $apiary, ApiaryNote $note)
+    {
+        if ($note->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $note->delete();
+
+        return response()->json(['success' => true]);
     }
 }
