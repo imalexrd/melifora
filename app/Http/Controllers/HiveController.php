@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Apiary;
 use App\Models\Hive;
+use App\Traits\LogsApiaryActivity;
 use Illuminate\Http\Request;
 
 class HiveController extends Controller
 {
+    use LogsApiaryActivity;
     /**
      * Display a listing of the resource.
      */
@@ -46,6 +48,8 @@ class HiveController extends Controller
             'birth_date' => 'nullable|date',
         ]);
 
+        $apiary = Apiary::findOrFail($validatedData['apiary_id']);
+
         for ($i = 0; $i < $validatedData['number_of_hives']; $i++) {
             $hiveData = [
                 'apiary_id' => $validatedData['apiary_id'],
@@ -62,6 +66,8 @@ class HiveController extends Controller
 
             Hive::create($hiveData);
         }
+
+        $this->logActivity($apiary, "Se agregaron {$validatedData['number_of_hives']} colmenas.");
 
         return redirect()->back()->with('success', $validatedData['number_of_hives'] . ' colmenas creadas exitosamente.');
     }
@@ -129,12 +135,28 @@ class HiveController extends Controller
         ]);
 
         $hiveIds = $validatedData['hive_ids'];
+        $hives = Hive::whereIn('id', $hiveIds)->get();
 
         switch ($validatedData['action']) {
             case 'move':
+                $sourceApiary = $hives->first()->apiary;
+                $destinationApiary = Apiary::findOrFail($validatedData['apiary_id']);
+
                 Hive::whereIn('id', $hiveIds)->update(['apiary_id' => $validatedData['apiary_id']]);
+
+                $count = count($hiveIds);
+                $this->logActivity($sourceApiary, "Se movieron {$count} colmenas a {$destinationApiary->name}.");
+                $this->logActivity($destinationApiary, "Se recibieron {$count} colmenas de {$sourceApiary->name}.");
+
                 return response()->json(['success' => true, 'message' => 'Colmenas movidas exitosamente.']);
             case 'delete':
+                foreach ($hives->groupBy('apiary_id') as $apiaryId => $apiaryHives) {
+                    $apiary = Apiary::find($apiaryId);
+                    if ($apiary) {
+                        $count = count($apiaryHives);
+                        $this->logActivity($apiary, "Se eliminaron {$count} colmenas.");
+                    }
+                }
                 Hive::whereIn('id', $hiveIds)->delete();
                 return response()->json(['success' => true, 'message' => 'Colmenas borradas exitosamente.']);
             case 'edit':

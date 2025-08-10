@@ -22,6 +22,12 @@ Route::resource('hives', HiveController::class)->middleware(['auth', 'role:admin
 Route::post('/hives/bulk-actions', [HiveController::class, 'bulkActions'])->name('hives.bulkActions')->middleware(['auth', 'role:admin,superadmin']);
 Route::resource('apiaries', ApiaryController::class)->middleware(['auth', 'role:admin,superadmin']);
 
+Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
+    Route::post('/apiaries/{apiary}/notes', [ApiaryController::class, 'storeNote'])->name('apiaries.notes.store');
+    Route::patch('/apiaries/{apiary}/notes/{note}', [ApiaryController::class, 'updateNote'])->name('apiaries.notes.update');
+    Route::delete('/apiaries/{apiary}/notes/{note}', [ApiaryController::class, 'destroyNote'])->name('apiaries.notes.destroy');
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
