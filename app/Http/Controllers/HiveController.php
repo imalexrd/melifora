@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Apiary;
 use App\Models\Hive;
-use App\Traits\LogsApiaryActivity;
+use App\Traits\LogsHiveActivity;
 use Illuminate\Http\Request;
 
 class HiveController extends Controller
 {
-    use LogsApiaryActivity;
+    use LogsHiveActivity;
     /**
      * Display a listing of the resource.
      */
@@ -64,10 +64,9 @@ class HiveController extends Controller
                 $hiveData['birth_date'] = $validatedData['birth_date'];
             }
 
-            Hive::create($hiveData);
+            $hive = Hive::create($hiveData);
+            $this->logActivity($hive, 'Colmena creada.');
         }
-
-        $this->logActivity($apiary, "Se agregaron {$validatedData['number_of_hives']} colmenas.");
 
         return redirect()->back()->with('success', $validatedData['number_of_hives'] . ' colmenas creadas exitosamente.');
     }
@@ -77,17 +76,11 @@ class HiveController extends Controller
      */
     public function show(Hive $hive)
     {
-        $hive->load('queen', 'queenHistories', 'inspections', 'events', 'tags');
-        return view('hives.show', compact('hive'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Hive $hive)
-    {
-        $apiaries = Apiary::all();
-        return view('hives.edit', compact('hive', 'apiaries'));
+        $hive->load('queen', 'queenHistories', 'inspections', 'events', 'tags', 'notes.user', 'activities.user');
+        $apiaries = Apiary::where('user_id', auth()->id())->get();
+        $statuses = Hive::getStatusOptions();
+        $types = Hive::getTypeOptions();
+        return view('hives.show', compact('hive', 'apiaries', 'statuses', 'types'));
     }
 
     /**
@@ -99,14 +92,16 @@ class HiveController extends Controller
             'name' => 'required|string|max:255',
             'qr_code' => 'nullable|string|max:255',
             'rating' => 'nullable|integer|min:0|max:100',
-            'type' => 'required|in:Langstroth,Dadant,Layens,Top-Bar,Warre,Flow',
+            'type' => 'required|in:' . implode(',', Hive::getTypeOptions()),
             'birth_date' => 'nullable|date',
             'location' => 'nullable|string|max:255',
-            'status' => 'required|in:Desconocido,Activa,Invernando,Enjambrazon,Despoblada,Huerfana,Zanganera,En formacion,Revision,Mantenimiento,Alimentacion Artificial,Crianza de reinas,Pillaje,Pillera,Union,Sin uso',
-            'notes' => 'nullable|string',
+            'location_gps' => 'nullable|string|max:255',
+            'status' => 'required|in:' . implode(',', Hive::getStatusOptions()),
         ]);
 
         $hive->update($validatedData);
+
+        $this->logActivity($hive, 'Colmena actualizada.');
 
         return redirect()->route('hives.show', $hive)->with('success', 'Hive updated successfully.');
     }
@@ -116,6 +111,7 @@ class HiveController extends Controller
      */
     public function destroy(Hive $hive)
     {
+        $this->logActivity($hive, "Colmena {$hive->name} eliminada.");
         $hive->delete();
 
         return redirect()->route('hives.index')->with('success', 'Hive deleted successfully.');
@@ -139,25 +135,19 @@ class HiveController extends Controller
 
         switch ($validatedData['action']) {
             case 'move':
-                $sourceApiary = $hives->first()->apiary;
                 $destinationApiary = Apiary::findOrFail($validatedData['apiary_id']);
 
-                Hive::whereIn('id', $hiveIds)->update(['apiary_id' => $validatedData['apiary_id']]);
-
-                $count = count($hiveIds);
-                $this->logActivity($sourceApiary, "Se movieron {$count} colmenas a {$destinationApiary->name}.");
-                $this->logActivity($destinationApiary, "Se recibieron {$count} colmenas de {$sourceApiary->name}.");
+                foreach ($hives as $hive) {
+                    $this->logActivity($hive, "Movida a {$destinationApiary->name}.");
+                    $hive->update(['apiary_id' => $validatedData['apiary_id']]);
+                }
 
                 return response()->json(['success' => true, 'message' => 'Colmenas movidas exitosamente.']);
             case 'delete':
-                foreach ($hives->groupBy('apiary_id') as $apiaryId => $apiaryHives) {
-                    $apiary = Apiary::find($apiaryId);
-                    if ($apiary) {
-                        $count = count($apiaryHives);
-                        $this->logActivity($apiary, "Se eliminaron {$count} colmenas.");
-                    }
+                foreach ($hives as $hive) {
+                    $this->logActivity($hive, 'Colmena eliminada.');
+                    $hive->delete();
                 }
-                Hive::whereIn('id', $hiveIds)->delete();
                 return response()->json(['success' => true, 'message' => 'Colmenas borradas exitosamente.']);
             case 'edit':
                 $updateData = [
@@ -170,7 +160,12 @@ class HiveController extends Controller
                 if (array_key_exists('location_gps', $validatedData) && !is_null($validatedData['location_gps'])) {
                     $updateData['location_gps'] = $validatedData['location_gps'];
                 }
-                Hive::whereIn('id', $hiveIds)->update($updateData);
+
+                foreach ($hives as $hive) {
+                    $hive->update($updateData);
+                    $this->logActivity($hive, 'Colmena actualizada en lote.');
+                }
+
                 return response()->json(['success' => true, 'message' => 'Colmenas actualizadas exitosamente.']);
         }
 

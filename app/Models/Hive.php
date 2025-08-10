@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\LogsHiveActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class Hive extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsHiveActivity;
 
     protected static function booted()
     {
@@ -34,7 +35,6 @@ class Hive extends Model
         'location',
         'location_gps',
         'status',
-        'notes',
     ];
 
     protected $casts = [
@@ -69,6 +69,16 @@ class Hive extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    public function notes()
+    {
+        return $this->hasMany(HiveNote::class)->latest();
+    }
+
+    public function activities()
+    {
+        return $this->hasMany(HiveActivity::class)->latest();
     }
 
     /**
