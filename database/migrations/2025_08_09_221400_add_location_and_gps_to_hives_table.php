@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('hives', function (Blueprint $table) {
-            $table->string('location')->nullable()->after('type');
             $table->string('location_gps')->nullable()->after('location');
         });
     }
@@ -23,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('hives', function (Blueprint $table) {
-            $table->dropColumn(['location', 'location_gps']);
+            $table->dropColumn(['location_gps']);
         });
     }
 };
