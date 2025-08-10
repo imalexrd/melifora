@@ -64,7 +64,7 @@
                             <thead class="bg-primary text-text-dark">
                                 <tr>
                                     <th class="py-3 px-4 uppercase font-semibold text-sm">
-                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['sort' => 'name', 'direction' => $sort === 'name' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'name', 'direction' => $sort === 'name' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
                                             Nombre
                                             @if ($sort === 'name')
                                                 <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
@@ -72,7 +72,7 @@
                                         </a>
                                     </th>
                                     <th class="py-3 px-4 uppercase font-semibold text-sm">
-                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['sort' => 'type', 'direction' => $sort === 'type' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'type', 'direction' => $sort === 'type' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
                                             Tipo
                                             @if ($sort === 'type')
                                                 <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
@@ -80,7 +80,7 @@
                                         </a>
                                     </th>
                                     <th class="py-3 px-4 uppercase font-semibold text-sm">
-                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['sort' => 'status', 'direction' => $sort === 'status' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'status', 'direction' => $sort === 'status' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
                                             Estado
                                             @if ($sort === 'status')
                                                 <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
@@ -88,7 +88,7 @@
                                         </a>
                                     </th>
                                     <th class="py-3 px-4 uppercase font-semibold text-sm">
-                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['sort' => 'birth_date', 'direction' => $sort === 'birth_date' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'birth_date', 'direction' => $sort === 'birth_date' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
                                             Fecha de nacimiento
                                             @if ($sort === 'birth_date')
                                                 <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
