@@ -60,9 +60,15 @@ class ApiaryController extends Controller
             $query->orderBy($sort, $direction);
         }
 
-        $hives = $query->paginate(10)->appends($request->query());
+        // Pagination size
+        $perPage = $request->get('per_page', 10);
+        if (!is_numeric($perPage) || $perPage > 250) {
+            $perPage = 10;
+        }
 
-        return view('apiaries.show', compact('apiary', 'hives', 'sort', 'direction'));
+        $hives = $query->paginate($perPage)->appends($request->query());
+
+        return view('apiaries.show', compact('apiary', 'hives', 'sort', 'direction', 'perPage'));
     }
 
     /**
