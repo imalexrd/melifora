@@ -73,8 +73,9 @@ class ApiaryController extends Controller
         $statuses = Hive::getStatusOptions();
         $types = Hive::getTypeOptions();
         $apiaryStatuses = Apiary::getStatusOptions();
+        $apiaryStatusColors = Apiary::getStatusColorMap();
 
-        return view('apiaries.show', compact('apiary', 'hives', 'sort', 'direction', 'perPage', 'allApiariesForMoving', 'allUserApiaries', 'statuses', 'types', 'apiaryStatuses'));
+        return view('apiaries.show', compact('apiary', 'hives', 'sort', 'direction', 'perPage', 'allApiariesForMoving', 'allUserApiaries', 'statuses', 'types', 'apiaryStatuses', 'apiaryStatusColors'));
     }
 
     /**

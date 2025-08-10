@@ -23,6 +23,21 @@ class Apiary extends Model
             'Activo',
             'Inactivo',
             'Mantenimiento',
+            'Cuarentena',
+            'Dividido',
+            'Fusionado',
+        ];
+    }
+
+    public static function getStatusColorMap()
+    {
+        return [
+            'Activo' => 'bg-green-500',
+            'Inactivo' => 'bg-gray-500',
+            'Mantenimiento' => 'bg-blue-500',
+            'Cuarentena' => 'bg-yellow-500',
+            'Dividido' => 'bg-purple-500',
+            'Fusionado' => 'bg-pink-500',
         ];
     }
 
