@@ -77,6 +77,10 @@ class ApiaryController extends Controller
      */
     public function destroy(Apiary $apiary)
     {
+        if ($apiary->name === 'Mi primer apiario') {
+            return redirect()->route('apiaries.index')->with('error', 'El apiario por defecto "Mi primer apiario" no se puede eliminar.');
+        }
+
         $apiary->delete();
 
         return redirect()->route('apiaries.index')->with('success', 'Apiary deleted successfully.');

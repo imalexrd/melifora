@@ -2,12 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Hive extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
+
+    protected static function booted()
+    {
+        static::creating(function ($hive) {
+            $hive->slug = Str::slug($hive->name . '-' . Str::random(5));
+        });
+    }
 
     protected $fillable = [
         'apiary_id',
@@ -54,5 +63,15 @@ class Hive extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
     }
 }
