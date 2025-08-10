@@ -19,6 +19,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::resource('hives', HiveController::class)->middleware(['auth', 'role:admin,superadmin']);
+Route::post('/hives/bulk-actions', [HiveController::class, 'bulkActions'])->name('hives.bulkActions')->middleware(['auth', 'role:admin,superadmin']);
 Route::resource('apiaries', ApiaryController::class)->middleware(['auth', 'role:admin,superadmin']);
 
 Route::middleware('auth')->group(function () {

@@ -54,9 +54,9 @@ class ApiaryController extends Controller
         }
 
         // Sort
-        $sort = $request->get('sort', 'name');
+        $sort = $request->get('sort', 'status');
         $direction = $request->get('direction', 'asc');
-        if (in_array($sort, ['name', 'status', 'type', 'birth_date']) && in_array($direction, ['asc', 'desc'])) {
+        if (in_array($sort, ['name', 'status', 'type', 'birth_date', 'rating', 'updated_at']) && in_array($direction, ['asc', 'desc'])) {
             $query->orderBy($sort, $direction);
         }
 
@@ -67,8 +67,9 @@ class ApiaryController extends Controller
         }
 
         $hives = $query->paginate($perPage)->appends($request->query());
+        $allApiaries = Apiary::where('user_id', auth()->id())->where('id', '!=', $apiary->id)->get();
 
-        return view('apiaries.show', compact('apiary', 'hives', 'sort', 'direction', 'perPage'));
+        return view('apiaries.show', compact('apiary', 'hives', 'sort', 'direction', 'perPage', 'allApiaries'));
     }
 
     /**

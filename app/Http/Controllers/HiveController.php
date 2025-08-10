@@ -97,4 +97,27 @@ class HiveController extends Controller
 
         return redirect()->route('hives.index')->with('success', 'Hive deleted successfully.');
     }
+
+    public function bulkActions(Request $request)
+    {
+        $validatedData = $request->validate([
+            'action' => 'required|in:move,delete',
+            'hive_ids' => 'required|array',
+            'hive_ids.*' => 'exists:hives,id',
+            'apiary_id' => 'required_if:action,move|exists:apiaries,id',
+        ]);
+
+        $hiveIds = $validatedData['hive_ids'];
+
+        switch ($validatedData['action']) {
+            case 'move':
+                Hive::whereIn('id', $hiveIds)->update(['apiary_id' => $validatedData['apiary_id']]);
+                return response()->json(['success' => true, 'message' => 'Hives moved successfully.']);
+            case 'delete':
+                Hive::whereIn('id', $hiveIds)->delete();
+                return response()->json(['success' => true, 'message' => 'Hives deleted successfully.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Invalid action.'], 400);
+    }
 }
