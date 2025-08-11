@@ -80,7 +80,8 @@ class HiveController extends Controller
         $apiaries = Apiary::where('user_id', auth()->id())->get();
         $statuses = Hive::getStatusOptions();
         $types = Hive::getTypeOptions();
-        return view('hives.show', compact('hive', 'apiaries', 'statuses', 'types'));
+        $lastInspection = $hive->inspections()->latest('inspection_date')->first();
+        return view('hives.show', compact('hive', 'apiaries', 'statuses', 'types', 'lastInspection'));
     }
 
     /**
