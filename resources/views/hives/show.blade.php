@@ -668,8 +668,10 @@
                 })
                 .catch(error => console.error('Error:', error));
             });
+        }
 
-            notesList.addEventListener('click', function(e) {
+            if (notesList) {
+                notesList.addEventListener('click', function(e) {
                 const noteId = e.target.dataset.noteId;
                 if (!noteId) return;
 
@@ -722,6 +724,7 @@
                     });
                 }
             });
+        }
         });
     </script>
     @endpush
