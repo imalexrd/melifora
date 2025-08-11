@@ -76,7 +76,7 @@ class HiveController extends Controller
      */
     public function show(Hive $hive)
     {
-        $hive->load('queen', 'queenHistories', 'inspections', 'events', 'tags', 'notes.user', 'activities.user');
+        $hive->load('queen', 'queenHistories', 'inspections', 'harvests', 'latestHarvest', 'tags', 'notes.user', 'activities.user');
         $apiaries = Apiary::where('user_id', auth()->id())->get();
         $statuses = Hive::getStatusOptions();
         $types = Hive::getTypeOptions();
