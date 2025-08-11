@@ -49,6 +49,15 @@
                                 <span class="font-bold text-lg text-gray-800">{{ $hive->rating ?? 'N/A' }}</span>
                                 <span class="text-gray-600">/ 100</span>
                             </div>
+                            @if($hive->latestHarvest)
+                                <div class="flex items-center space-x-1">
+                                    <svg class="h-6 w-6 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10s5 2 5 2l-2.646 2.646a.5.5 0 00.708.708L15 12.5V15a1 1 0 001 1h.5a1 1 0 001-1v-2.5l2.121-2.121a.5.5 0 00-.353-.854H18a1 1 0 00-1 1v1.5l-2.646 2.646a.5.5 0 00.708.708L17.5 15V12a1 1 0 00-1-1h-1.5a1 1 0 00-1 1v1.5l-2.646 2.646a.5.5 0 00.708.708L15 15.5V18a1 1 0 001 1h.5a1 1 0 001-1v-2.5l2.121-2.121a.5.5 0 00-.353-.854H18a1 1 0 00-1 1v1.5l-2.646 2.646a.5.5 0 00.708.708L17.5 18H19a1 1 0 001-1v-1.5l-2.121-2.121a.5.5 0 00-.854.353V15a1 1 0 001 1h.5a1 1 0 001-1v-1.5l-2.121-2.121a.5.5 0 00-.854.353V12a1 1 0 001 1h1.5a1 1 0 001-1V9.5a1 1 0 00-1-1h-1.5a1 1 0 00-1 1V12l-2.646 2.646a.5.5 0 00.708.708L12.5 12H15a1 1 0 001-1V9.5a1 1 0 00-1-1h-1.5a1 1 0 00-1 1V12l-2.646 2.646a.5.5 0 00.708.708L10 12h2.5a1 1 0 001-1V9.5a1 1 0 00-1-1H12a1 1 0 00-1 1v2.5L8.879 9.379a.5.5 0 00-.854.353V12a1 1 0 001 1h1.5a1 1 0 001-1V9.5a1 1 0 00-1-1H9a1 1 0 00-1 1v2.5L5.879 9.379a.5.5 0 00-.854.353V12a1 1 0 001 1h1.5a1 1 0 001-1V9.5a1 1 0 00-1-1H6a1 1 0 00-1 1v2.5L2.879 9.379a.5.5 0 00-.854.353V12a1 1 0 001 1h1.5a1 1 0 001-1V9.5a1 1 0 00-1-1H3a1 1 0 00-1 1v2.5a8 8 0 0115.657 5.157z"/>
+                                    </svg>
+                                    <span class="font-bold text-lg text-gray-800">{{ $hive->latestHarvest->quantity_kg }} kg</span>
+                                    <span class="text-gray-600">({{ $hive->latestHarvest->harvest_date->format('d/m/Y') }})</span>
+                                </div>
+                            @endif
                             @if($hive->location_gps)
                                 <a href="https://www.google.com/maps/search/?api=1&query={{ $hive->location_gps }}" target="_blank" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -160,11 +169,14 @@
                     <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-primary text-primary" data-tab="inspections">
                         {{ __('Inspecciones') }}
                     </button>
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="harvest">
+                        {{ __('Cosecha') }}
+                    </button>
                     <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="queen">
                         {{ __('Reina') }}
                     </button>
-                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="events">
-                        {{ __('Eventos') }}
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="general">
+                        {{ __('General') }}
                     </button>
                     <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="notes">
                         {{ __('Notas') }}
@@ -324,18 +336,16 @@
                 <!-- Inspections Tab -->
                 @include('hives.partials.inspections', ['hive' => $hive])
 
-                <!-- Events Tab -->
-                <div id="events-content" class="tab-content hidden">
-                    <h4 class="text-xl font-semibold mb-4">Historial de Eventos</h4>
-                    @forelse ($hive->events as $event)
-                        <div class="border-l-4 border-green-400 pl-4 mb-4">
-                            <p><strong>Fecha:</strong> {{ $event->event_date->format('d/m/Y') }}</p>
-                            <p><strong>Tipo:</strong> {{ $event->type }}</p>
-                            <p><strong>Detalles:</strong> {{ $event->details }}</p>
-                        </div>
-                    @empty
-                        <p>No hay eventos registrados.</p>
-                    @endforelse
+                <!-- Harvest Tab -->
+                <div id="harvest-content" class="tab-content hidden">
+                    @include('hives.partials.harvest-form', ['hive' => $hive])
+                    @include('hives.partials.harvest-history', ['hive' => $hive])
+                </div>
+
+                <!-- General Tab -->
+                <div id="general-content" class="tab-content hidden">
+                    <h4 class="text-xl font-semibold mb-4">Información General</h4>
+                    <p>Aquí se mostrará información general de la colmena.</p>
                 </div>
 
                 <!-- Notes Tab -->
@@ -699,6 +709,51 @@
                     });
                 }
             });
+        }
+
+        // Harvest form logic
+        const quantityKgInput = document.getElementById('quantity_kg');
+        const quantityLitersInput = document.getElementById('quantity_liters');
+        const densityInput = document.getElementById('density');
+
+        if (quantityKgInput && quantityLitersInput && densityInput) {
+            quantityKgInput.addEventListener('input', () => {
+                if (document.activeElement === quantityKgInput) {
+                    const kg = parseFloat(quantityKgInput.value);
+                    const density = parseFloat(densityInput.value);
+                    if (!isNaN(kg) && !isNaN(density) && density > 0) {
+                        quantityLitersInput.value = (kg / density).toFixed(2);
+                    }
+                }
+            });
+
+            quantityLitersInput.addEventListener('input', () => {
+                if (document.activeElement === quantityLitersInput) {
+                    const liters = parseFloat(quantityLitersInput.value);
+                    const density = parseFloat(densityInput.value);
+                    if (!isNaN(liters) && !isNaN(density)) {
+                        quantityKgInput.value = (liters * density).toFixed(2);
+                    }
+                }
+            });
+        }
+
+        const colorSlider = document.getElementById('color_tone');
+        if(colorSlider){
+            const colorDisplay = document.createElement('div');
+            colorDisplay.className = 'w-full h-4 mt-2 rounded-full';
+            const updateColor = () => {
+                const value = colorSlider.value; // 0-100
+                const lightColor = [255, 235, 59]; // Yellow
+                const darkColor = [183, 28, 28]; // Dark Red
+                const r = Math.round(lightColor[0] + (darkColor[0] - lightColor[0]) * (value / 100));
+                const g = Math.round(lightColor[1] + (darkColor[1] - lightColor[1]) * (value / 100));
+                const b = Math.round(lightColor[2] + (darkColor[2] - lightColor[2]) * (value / 100));
+                colorDisplay.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+            };
+            updateColor();
+            colorSlider.parentNode.insertBefore(colorDisplay, colorSlider.nextSibling.nextSibling);
+            colorSlider.addEventListener('input', updateColor);
         }
         });
     </script>

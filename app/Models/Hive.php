@@ -61,6 +61,16 @@ class Hive extends Model
         return $this->hasMany(Inspection::class);
     }
 
+    public function harvests()
+    {
+        return $this->hasMany(Harvest::class);
+    }
+
+    public function latestHarvest()
+    {
+        return $this->hasOne(Harvest::class)->latestOfMany();
+    }
+
     public function events()
     {
         return $this->hasMany(Event::class);

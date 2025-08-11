@@ -9,6 +9,7 @@ use App\Http\Controllers\HiveController;
 use App\Http\Controllers\ApiaryController;
 use App\Http\Controllers\HiveNoteController;
 use App\Http\Controllers\QueenController;
+use App\Http\Controllers\HarvestController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -39,6 +40,9 @@ Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
 
     // Inspection routes
     Route::post('/hives/{hive}/inspections', [App\Http\Controllers\InspectionController::class, 'store'])->name('hives.inspections.store');
+
+    // Harvest routes
+    Route::post('/hives/{hive}/harvests', [HarvestController::class, 'store'])->name('hives.harvests.store');
 });
 
 Route::middleware('auth')->group(function () {
