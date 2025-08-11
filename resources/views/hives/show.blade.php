@@ -43,6 +43,21 @@
                             <p><strong>Apiario:</strong> {{ $hive->apiary->name }}</p>
                             <p><strong>Nacimiento:</strong> {{ $hive->birth_date ? $hive->birth_date->format('d/m/Y') : 'N/A' }}</p>
                         </div>
+                        <div class="mt-4 flex items-center space-x-4">
+                            <div class="flex items-center space-x-1">
+                                <svg class="h-6 w-6 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                <span class="font-bold text-lg text-gray-800">{{ $hive->rating ?? 'N/A' }}</span>
+                                <span class="text-gray-600">/ 100</span>
+                            </div>
+                            @if($hive->location_gps)
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ $hive->location_gps }}" target="_blank" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ __('Ver en Mapa') }}
+                                </a>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -101,13 +116,6 @@
                             <x-input-error :messages="$errors->get('birth_date')" class="mt-2" />
                         </div>
 
-                        <!-- Rating -->
-                        <div>
-                            <x-input-label for="rating" :value="__('Rating (0-100)')" />
-                            <x-text-input id="rating" class="block mt-1 w-full" type="number" name="rating" :value="old('rating', $hive->rating)" min="0" max="100" />
-                            <x-input-error :messages="$errors->get('rating')" class="mt-2" />
-                        </div>
-
                         <!-- QR Code -->
                         <div>
                             <x-input-label for="qr_code" :value="__('QR Code')" />
@@ -149,14 +157,11 @@
             <!-- Tab Navigation -->
             <div class="border-b border-gray-200">
                 <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-primary text-primary" data-tab="details">
-                        {{ __('Detalles') }}
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-primary text-primary" data-tab="inspections">
+                        {{ __('Inspecciones') }}
                     </button>
                     <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="queen">
                         {{ __('Reina') }}
-                    </button>
-                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="inspections">
-                        {{ __('Inspecciones') }}
                     </button>
                     <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="events">
                         {{ __('Eventos') }}
@@ -172,25 +177,6 @@
 
             <!-- Tab Content -->
             <div class="bg-white rounded-b-lg shadow-md p-6">
-                <!-- Details Tab -->
-                <div id="details-content" class="tab-content">
-                    <h4 class="text-xl font-semibold mb-4">Información Adicional</h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <p><strong>Rating:</strong> {{ $hive->rating ?? 'N/A' }}/100</p>
-                        <p><strong>Ubicación Específica:</strong> {{ $hive->location ?? 'N/A' }}</p>
-                        <p><strong>QR Code:</strong> {{ $hive->qr_code ?? 'N/A' }}</p>
-                        @if($hive->location_gps)
-                            <p><strong>Coordenadas:</strong> {{ $hive->location_gps }}</p>
-                            <a href="https://www.google.com/maps/search/?api=1&query={{ $hive->location_gps }}" target="_blank" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 mt-1">
-                                {{ __('Ver en Google Maps') }}
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
-                                  <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </a>
-                        @endif
-                    </div>
-                </div>
-
                 <!-- Queen Tab -->
                 <div id="queen-content" class="tab-content hidden">
                     <h4 class="text-xl font-semibold mb-4">Reina Actual e Historial</h4>
@@ -336,18 +322,7 @@
                 </div>
 
                 <!-- Inspections Tab -->
-                <div id="inspections-content" class="tab-content hidden">
-                    <h4 class="text-xl font-semibold mb-4">Historial de Inspecciones</h4>
-                    @forelse ($hive->inspections as $inspection)
-                        <div class="border-l-4 border-blue-400 pl-4 mb-4">
-                             <p><strong>Fecha:</strong> {{ $inspection->inspection_date->format('d/m/Y') }}</p>
-                             <p><strong>Población:</strong> {{ $inspection->population }}</p>
-                             <p><strong>Plagas/Enfermedades:</strong> {{ $inspection->pests_diseases }}</p>
-                        </div>
-                    @empty
-                        <p>No hay inspecciones registradas.</p>
-                    @endforelse
-                </div>
+                @include('hives.partials.inspections', ['hive' => $hive])
 
                 <!-- Events Tab -->
                 <div id="events-content" class="tab-content hidden">

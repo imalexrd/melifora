@@ -104,4 +104,56 @@ class Hive extends Model
     {
         return ['Langstroth', 'Dadant', 'Layens', 'Top-Bar', 'Warre', 'Flow'];
     }
+
+    public function updateRating(Inspection $inspection)
+    {
+        $rating = 0;
+
+        // Population: 25%
+        $rating += ($inspection->population / 100) * 25;
+
+        // Honey Stores: 20%
+        $rating += ($inspection->honey_stores / 100) * 20;
+
+        // Pollen Stores: 20%
+        $rating += ($inspection->pollen_stores / 100) * 20;
+
+        // Brood Pattern: 25%
+        $rating += ($inspection->brood_pattern / 100) * 25;
+
+        // Behavior (inverse relationship, less aggressive is better): 10%
+        $rating += ((100 - $inspection->behavior) / 100) * 10;
+
+        // Queen Status: 10%
+        if (in_array($inspection->queen_status, ['Presente', 'Reina Fecundada'])) {
+            $rating += 10;
+        }
+
+        // Pests and Diseases: 10%
+        if ($inspection->pests_diseases === 'Sin plagas') {
+            $rating += 10;
+        }
+
+        // The weights above sum to 120, so we need to normalize to 100.
+        // The maximum possible score is 25+20+20+25+10+10+10 = 120.
+        // Let's adjust the weights to sum to 100.
+        // Population: 20, Honey: 15, Pollen: 15, Brood: 20, Behavior: 10, Queen: 10, Pests: 10 = 100
+
+        $rating = 0;
+        $rating += ($inspection->population / 100) * 20;
+        $rating += ($inspection->honey_stores / 100) * 15;
+        $rating += ($inspection->pollen_stores / 100) * 15;
+        $rating += ($inspection->brood_pattern / 100) * 20;
+        $rating += ((100 - $inspection->behavior) / 100) * 10;
+        if (in_array($inspection->queen_status, ['Presente', 'Reina Fecundada'])) {
+            $rating += 10;
+        }
+        if ($inspection->pests_diseases === 'Sin plagas') {
+            $rating += 10;
+        }
+
+
+        $this->rating = min(100, max(0, round($rating)));
+        $this->save();
+    }
 }
