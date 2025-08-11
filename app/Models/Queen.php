@@ -14,6 +14,7 @@ class Queen extends Model
         'breed',
         'introduction_date',
         'age',
+        'status',
     ];
 
     protected $casts = [

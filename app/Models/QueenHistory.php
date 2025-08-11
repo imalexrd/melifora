@@ -11,6 +11,7 @@ class QueenHistory extends Model
 
     protected $fillable = [
         'hive_id',
+        'queen_id',
         'change_date',
         'reason',
         'notes',
@@ -27,5 +28,10 @@ class QueenHistory extends Model
     public function hive()
     {
         return $this->belongsTo(Hive::class);
+    }
+
+    public function queen()
+    {
+        return $this->belongsTo(Queen::class);
     }
 }

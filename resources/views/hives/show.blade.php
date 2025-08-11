@@ -196,21 +196,137 @@
                     <h4 class="text-xl font-semibold mb-4">Reina Actual e Historial</h4>
                     <!-- Current Queen -->
                     <div class="mb-6">
-                        <h5 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-2">Reina Actual</h5>
+                        <div class="flex justify-between items-center border-b pb-2 mb-4">
+                            <h5 class="text-lg font-semibold text-gray-800">Reina Actual</h5>
+                            <div>
+                                @if ($hive->queen)
+                                    <button id="toggle-edit-queen-form" class="text-sm text-blue-600 hover:underline">Editar</button>
+                                    <button id="toggle-replace-queen-form" class="ml-4 text-sm text-green-600 hover:underline">Reemplazar</button>
+                                    <form action="{{ route('queen.destroy', $hive->queen) }}" method="POST" class="inline ml-4" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta reina? Esto la marcará como eliminada y creará un registro en el historial.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <input type="hidden" name="reason" value="Eliminada">
+                                        <button type="submit" class="text-sm text-red-600 hover:underline">Marcar como Eliminada</button>
+                                    </form>
+                                @else
+                                    <button id="toggle-add-queen-form" class="inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">Añadir Reina</button>
+                                @endif
+                            </div>
+                        </div>
+
                         @if ($hive->queen)
-                            <p><strong>Raza:</strong> {{ $hive->queen->breed ?? 'N/A' }}</p>
-                            <p><strong>Introducida:</strong> {{ $hive->queen->introduction_date ? $hive->queen->introduction_date->format('d/m/Y') : 'N/A' }}</p>
+                            <div id="queen-details">
+                                <p><strong>Raza:</strong> {{ $hive->queen->breed ?? 'N/A' }}</p>
+                                <p><strong>Introducida:</strong> {{ $hive->queen->introduction_date ? $hive->queen->introduction_date->format('d/m/Y') : 'N/A' }}</p>
+                                <p><strong>Edad (meses):</strong> {{ $hive->queen->age ?? 'N/A' }}</p>
+                                <p><strong>Estado:</strong> <span class="capitalize">{{ $hive->queen->status }}</span></p>
+                            </div>
+
+                            <!-- Edit Queen Form -->
+                            <div id="edit-queen-form" class="hidden mt-4 p-4 bg-gray-50 rounded-lg border">
+                                <h6 class="text-md font-semibold text-gray-700 mb-3">Editar Reina Actual</h6>
+                                <form action="{{ route('queen.update', $hive->queen) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <x-input-label for="edit_breed" :value="__('Raza')" />
+                                            <x-text-input id="edit_breed" class="block mt-1 w-full" type="text" name="breed" :value="old('breed', $hive->queen->breed)" />
+                                        </div>
+                                        <div>
+                                            <x-input-label for="edit_introduction_date" :value="__('Fecha de Introducción')" />
+                                            <x-text-input id="edit_introduction_date" class="block mt-1 w-full" type="date" name="introduction_date" :value="old('introduction_date', $hive->queen->introduction_date ? $hive->queen->introduction_date->format('Y-m-d') : '')" />
+                                        </div>
+                                        <div>
+                                            <x-input-label for="edit_age" :value="__('Edad (meses)')" />
+                                            <x-text-input id="edit_age" class="block mt-1 w-full" type="number" name="age" :value="old('age', $hive->queen->age)" />
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-end mt-4">
+                                        <x-secondary-button type="button" id="cancel-edit-queen">Cancelar</x-secondary-button>
+                                        <x-primary-button class="ml-3">Actualizar Reina</x-primary-button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Replace Queen Form -->
+                            <div id="replace-queen-form" class="hidden mt-4 p-4 bg-gray-50 rounded-lg border">
+                                 <h6 class="text-md font-semibold text-gray-700 mb-3">Registrar Nueva Reina (Reemplazo)</h6>
+                                <form action="{{ route('queen.replace', $hive->queen) }}" method="POST">
+                                    @csrf
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <x-input-label for="replace_breed" :value="__('Raza de la Nueva Reina')" />
+                                            <x-text-input id="replace_breed" class="block mt-1 w-full" type="text" name="breed" required />
+                                        </div>
+                                        <div>
+                                            <x-input-label for="replace_introduction_date" :value="__('Fecha de Introducción')" />
+                                            <x-text-input id="replace_introduction_date" class="block mt-1 w-full" type="date" name="introduction_date" required />
+                                        </div>
+                                        <div>
+                                            <x-input-label for="replace_age" :value="__('Edad (meses)')" />
+                                            <x-text-input id="replace_age" class="block mt-1 w-full" type="number" name="age" />
+                                        </div>
+                                         <div class="md:col-span-2">
+                                            <x-input-label for="replace_notes" :value="__('Notas del Reemplazo')" />
+                                            <textarea id="replace_notes" name="notes" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary-light"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-end mt-4">
+                                        <x-secondary-button type="button" id="cancel-replace-queen">Cancelar</x-secondary-button>
+                                        <x-primary-button class="ml-3">Reemplazar Reina</x-primary-button>
+                                    </div>
+                                </form>
+                            </div>
+
                         @else
-                            <p>No hay información de la reina actual.</p>
+                            <div class="text-center py-4">
+                                <p>No hay información de la reina actual.</p>
+                            </div>
+                            <!-- Add Queen Form -->
+                            <div id="add-queen-form" class="hidden mt-4 p-4 bg-gray-50 rounded-lg border">
+                                <h6 class="text-md font-semibold text-gray-700 mb-3">Añadir Nueva Reina</h6>
+                                <form action="{{ route('hives.queen.store', $hive) }}" method="POST">
+                                    @csrf
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <x-input-label for="breed" :value="__('Raza')" />
+                                            <x-text-input id="breed" class="block mt-1 w-full" type="text" name="breed" :value="old('breed')" required />
+                                        </div>
+                                        <div>
+                                            <x-input-label for="introduction_date" :value="__('Fecha de Introducción')" />
+                                            <x-text-input id="introduction_date" class="block mt-1 w-full" type="date" name="introduction_date" :value="old('introduction_date')" required />
+                                        </div>
+                                        <div>
+                                            <x-input-label for="age" :value="__('Edad (meses)')" />
+                                            <x-text-input id="age" class="block mt-1 w-full" type="number" name="age" :value="old('age')" />
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-end mt-4">
+                                         <x-secondary-button type="button" id="cancel-add-queen">Cancelar</x-secondary-button>
+                                        <x-primary-button class="ml-3">Añadir Reina</x-primary-button>
+                                    </div>
+                                </form>
+                            </div>
                         @endif
                     </div>
                     <!-- Queen History -->
                     <div>
                         <h5 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-2">Historial de Reinas</h5>
-                        @forelse ($hive->queenHistories as $history)
+                        @forelse ($hive->queenHistories->sortByDesc('change_date') as $history)
                             <div class="border-l-4 border-yellow-400 pl-4 mb-4">
-                                <p><strong>Fecha de cambio:</strong> {{ $history->change_date->format('d/m/Y') }}</p>
+                                <p class="font-semibold">Fecha de cambio: {{ $history->change_date->format('d/m/Y') }}</p>
                                 <p><strong>Razón:</strong> {{ $history->reason }}</p>
+                                @if($history->queen_breed)
+                                    <div class="text-sm text-gray-600 mt-2">
+                                        <p class="font-medium">Detalles de la reina en ese momento:</p>
+                                        <ul class="list-disc list-inside ml-4">
+                                            <li>Raza: {{ $history->queen_breed }}</li>
+                                            <li>Introducida: {{ $history->queen_introduction_date ? $history->queen_introduction_date->format('d/m/Y') : 'N/A' }}</li>
+                                            <li>Edad: {{ $history->queen_age }} meses</li>
+                                        </ul>
+                                    </div>
+                                @endif
                                 <p><strong>Notas:</strong> {{ $history->notes ?? 'Sin notas.' }}</p>
                             </div>
                         @empty
@@ -443,7 +559,70 @@
             const notesList = document.getElementById('notes-list');
             const noNotesMessage = document.getElementById('no-notes-message');
 
-            document.getElementById('add-note-form').addEventListener('submit', function (e) {
+            // Queen section forms toggle
+            const addQueenForm = document.getElementById('add-queen-form');
+            const toggleAddQueenButton = document.getElementById('toggle-add-queen-form');
+            const cancelAddQueenButton = document.getElementById('cancel-add-queen');
+
+            const editQueenForm = document.getElementById('edit-queen-form');
+            const toggleEditQueenButton = document.getElementById('toggle-edit-queen-form');
+            const cancelEditQueenButton = document.getElementById('cancel-edit-queen');
+            const queenDetails = document.getElementById('queen-details');
+
+            const replaceQueenForm = document.getElementById('replace-queen-form');
+            const toggleReplaceQueenButton = document.getElementById('toggle-replace-queen-form');
+            const cancelReplaceQueenButton = document.getElementById('cancel-replace-queen');
+
+            if (toggleAddQueenButton) {
+                toggleAddQueenButton.addEventListener('click', () => {
+                    addQueenForm.classList.remove('hidden');
+                    toggleAddQueenButton.classList.add('hidden');
+                });
+            }
+
+            if (cancelAddQueenButton) {
+                cancelAddQueenButton.addEventListener('click', () => {
+                    addQueenForm.classList.add('hidden');
+                    if (toggleAddQueenButton) toggleAddQueenButton.classList.remove('hidden');
+                });
+            }
+
+            if (toggleEditQueenButton) {
+                toggleEditQueenButton.addEventListener('click', () => {
+                    editQueenForm.classList.remove('hidden');
+                    queenDetails.classList.add('hidden');
+                    toggleEditQueenButton.classList.add('hidden');
+                    toggleReplaceQueenButton.classList.add('hidden');
+                });
+            }
+
+            if (cancelEditQueenButton) {
+                cancelEditQueenButton.addEventListener('click', () => {
+                    editQueenForm.classList.add('hidden');
+                    queenDetails.classList.remove('hidden');
+                    toggleEditQueenButton.classList.remove('hidden');
+                    toggleReplaceQueenButton.classList.remove('hidden');
+                });
+            }
+
+            if (toggleReplaceQueenButton) {
+                toggleReplaceQueenButton.addEventListener('click', () => {
+                    replaceQueenForm.classList.remove('hidden');
+                    toggleEditQueenButton.classList.add('hidden');
+                    toggleReplaceQueenButton.classList.add('hidden');
+                });
+            }
+
+            if (cancelReplaceQueenButton) {
+                cancelReplaceQueenButton.addEventListener('click', () => {
+                    replaceQueenForm.classList.add('hidden');
+                    toggleEditQueenButton.classList.remove('hidden');
+                    toggleReplaceQueenButton.classList.remove('hidden');
+                });
+            }
+
+            if(document.getElementById('add-note-form')) {
+                document.getElementById('add-note-form').addEventListener('submit', function (e) {
                 e.preventDefault();
                 const content = document.getElementById('note-content').value;
 
