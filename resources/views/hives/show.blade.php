@@ -101,13 +101,6 @@
                             <x-input-error :messages="$errors->get('birth_date')" class="mt-2" />
                         </div>
 
-                        <!-- Rating -->
-                        <div>
-                            <x-input-label for="rating" :value="__('Rating (0-100)')" />
-                            <x-text-input id="rating" class="block mt-1 w-full" type="number" name="rating" :value="old('rating', $hive->rating)" min="0" max="100" />
-                            <x-input-error :messages="$errors->get('rating')" class="mt-2" />
-                        </div>
-
                         <!-- QR Code -->
                         <div>
                             <x-input-label for="qr_code" :value="__('QR Code')" />
@@ -336,18 +329,7 @@
                 </div>
 
                 <!-- Inspections Tab -->
-                <div id="inspections-content" class="tab-content hidden">
-                    <h4 class="text-xl font-semibold mb-4">Historial de Inspecciones</h4>
-                    @forelse ($hive->inspections as $inspection)
-                        <div class="border-l-4 border-blue-400 pl-4 mb-4">
-                             <p><strong>Fecha:</strong> {{ $inspection->inspection_date->format('d/m/Y') }}</p>
-                             <p><strong>Población:</strong> {{ $inspection->population }}</p>
-                             <p><strong>Plagas/Enfermedades:</strong> {{ $inspection->pests_diseases }}</p>
-                        </div>
-                    @empty
-                        <p>No hay inspecciones registradas.</p>
-                    @endforelse
-                </div>
+                @include('hives.partials.inspections', ['hive' => $hive])
 
                 <!-- Events Tab -->
                 <div id="events-content" class="tab-content hidden">

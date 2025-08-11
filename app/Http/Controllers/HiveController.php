@@ -91,7 +91,6 @@ class HiveController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'qr_code' => 'nullable|string|max:255',
-            'rating' => 'nullable|integer|min:0|max:100',
             'type' => 'required|in:' . implode(',', Hive::getTypeOptions()),
             'birth_date' => 'nullable|date',
             'location' => 'nullable|string|max:255',

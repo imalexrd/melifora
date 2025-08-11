@@ -31,4 +31,19 @@ class Inspection extends Model
     {
         return $this->belongsTo(Hive::class);
     }
+
+    public static function getQueenStatusOptions(): array
+    {
+        return ['Desconocido', 'Presente', 'Ausente', 'Reina Virgen', 'Reina Fecundada', 'Celulas Reales'];
+    }
+
+    public static function getPestsAndDiseasesOptions(): array
+    {
+        return ['Sin plagas', 'Varroa', 'Loque Americana', 'Loque Europea', 'Polilla de la cera', 'Escarabajo de la colmena', 'Nariz blanca', 'Piojo de la abeja', 'Acaro traqueal'];
+    }
+
+    public static function getTreatmentsOptions(): array
+    {
+        return ['Sin tratamiento', 'Ácido oxálico', 'Timol', 'Ácido fórmico', 'Amitraz', 'Flumetrina'];
+    }
 }

@@ -36,6 +36,9 @@ Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
     Route::patch('/queen/{queen}', [QueenController::class, 'update'])->name('queen.update');
     Route::delete('/queen/{queen}', [QueenController::class, 'destroy'])->name('queen.destroy');
     Route::post('/queen/{queen}/replace', [QueenController::class, 'replace'])->name('queen.replace');
+
+    // Inspection routes
+    Route::post('/hives/{hive}/inspections', [App\Http\Controllers\InspectionController::class, 'store'])->name('hives.inspections.store');
 });
 
 Route::middleware('auth')->group(function () {
