@@ -8,6 +8,7 @@ use App\Http\Controllers\KnowledgeController;
 use App\Http\Controllers\HiveController;
 use App\Http\Controllers\ApiaryController;
 use App\Http\Controllers\HiveNoteController;
+use App\Http\Controllers\QueenController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,6 +30,12 @@ Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
     Route::post('/hives/{hive}/notes', [HiveNoteController::class, 'store'])->name('hives.notes.store');
     Route::patch('/hives/{hive}/notes/{note}', [HiveNoteController::class, 'update'])->name('hives.notes.update');
     Route::delete('/hives/{hive}/notes/{note}', [HiveNoteController::class, 'destroy'])->name('hives.notes.destroy');
+
+    // Queen routes
+    Route::post('/hives/{hive}/queen', [QueenController::class, 'store'])->name('hives.queen.store');
+    Route::patch('/queen/{queen}', [QueenController::class, 'update'])->name('queen.update');
+    Route::delete('/queen/{queen}', [QueenController::class, 'destroy'])->name('queen.destroy');
+    Route::post('/queen/{queen}/replace', [QueenController::class, 'replace'])->name('queen.replace');
 });
 
 Route::middleware('auth')->group(function () {
