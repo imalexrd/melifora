@@ -24,6 +24,9 @@
                 <button id="toggle-edit-form" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
                     {{ __('Editar') }}
                 </button>
+                <button id="open-delete-apiary-modal-button" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:border-red-700 focus:ring ring-red-300 disabled:opacity-25 transition ease-in-out duration-150">
+                    {{ __('Borrar') }}
+                </button>
             </div>
         </div>
     </x-slot>
@@ -800,9 +803,120 @@ document.addEventListener('DOMContentLoaded', function () {
 
     <x-google-maps-modal />
 
+    <!-- Delete Apiary Modal -->
+<div id="delete-apiary-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4">{{ __('Borrar Apiario') }}</h3>
+            <div class="mt-2 px-7 py-3">
+                <p class="text-sm text-gray-500">
+                    {{ __('¿Estás seguro de que quieres borrar este apiario?') }}
+                </p>
+                @if($apiary->hives()->count() > 0)
+                    <div class="mt-4 text-left">
+                        <p class="text-sm font-semibold text-gray-700">{{ __('Este apiario contiene') }} {{ $apiary->hives()->count() }} {{ __('colmena(s).') }}</p>
+                        <p class="text-sm text-gray-600 mt-2">{{ __('¿Qué te gustaría hacer con estas colmenas?') }}</p>
+                        <div class="mt-3 space-y-2">
+                            <label for="delete_hives" class="flex items-center">
+                                <input type="radio" id="delete_hives" name="hives_action" value="delete" class="text-red-600 focus:ring-red-500" checked>
+                                <span class="ml-2 text-sm text-gray-700">{{ __('Borrar todas las colmenas de este apiario') }}</span>
+                            </label>
+                            @if($allApiariesForMoving->count() > 0)
+                            <label for="move_hives" class="flex items-center">
+                                <input type="radio" id="move_hives" name="hives_action" value="move" class="text-yellow-600 focus:ring-yellow-500">
+                                <span class="ml-2 text-sm text-gray-700">{{ __('Mover las colmenas a otro apiario') }}</span>
+                            </label>
+                            <div id="move_hives_to_apiary_selector" class="hidden ml-6 mt-2">
+                                <select id="move_to_apiary_id" name="move_to_apiary_id" class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200">
+                                    @foreach($allApiariesForMoving as $targetApiary)
+                                        <option value="{{ $targetApiary->id }}">{{ $targetApiary->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @else
+                            <label for="move_hives_disabled" class="flex items-center cursor-not-allowed">
+                                <input type="radio" id="move_hives_disabled" name="hives_action" value="move" disabled class="text-gray-400">
+                                <span class="ml-2 text-sm text-gray-500">{{ __('Mover las colmenas a otro apiario (No hay otros apiarios disponibles)') }}</span>
+                            </label>
+                            @endif
+                        </div>
+                    </div>
+                @endif
+            </div>
+            <div class="items-center px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <form id="delete-apiary-form" method="POST" action="{{ route('apiaries.destroy', $apiary) }}">
+                    @csrf
+                    @method('DELETE')
+                    <input type="hidden" name="hives_action" id="hives_action_input">
+                    <input type="hidden" name="move_to_apiary_id" id="move_to_apiary_id_input">
+                    <button type="submit" id="confirm-delete-apiary-button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        {{ __('Confirmar Borrado') }}
+                    </button>
+                </form>
+                <button id="cancel-delete-apiary-button" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm">
+                    {{ __('Cancelar') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
     @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Delete Apiary Modal Logic
+            const openDeleteModalButton = document.getElementById('open-delete-apiary-modal-button');
+            const deleteApiaryModal = document.getElementById('delete-apiary-modal');
+            const cancelDeleteApiaryButton = document.getElementById('cancel-delete-apiary-button');
+            const deleteApiaryForm = document.getElementById('delete-apiary-form');
+            const hivesActionRadios = document.querySelectorAll('input[name="hives_action"]');
+            const moveHivesSelector = document.getElementById('move_hives_to_apiary_selector');
+            const hivesActionInput = document.getElementById('hives_action_input');
+            const moveToApiaryIdInput = document.getElementById('move_to_apiary_id_input');
+            const moveToApiarySelect = document.getElementById('move_to_apiary_id');
+
+            if (openDeleteModalButton) {
+                openDeleteModalButton.addEventListener('click', () => {
+                    deleteApiaryModal.classList.remove('hidden');
+                });
+            }
+
+            if (cancelDeleteApiaryButton) {
+                cancelDeleteApiaryButton.addEventListener('click', () => {
+                    deleteApiaryModal.classList.add('hidden');
+                });
+            }
+
+            hivesActionRadios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    if (e.target.value === 'move') {
+                        moveHivesSelector.classList.remove('hidden');
+                    } else {
+                        moveHivesSelector.classList.add('hidden');
+                    }
+                });
+            });
+
+            if (deleteApiaryForm) {
+                deleteApiaryForm.addEventListener('submit', (e) => {
+                    const selectedAction = document.querySelector('input[name="hives_action"]:checked');
+                    if (selectedAction) {
+                        hivesActionInput.value = selectedAction.value;
+                        if (selectedAction.value === 'move') {
+                            moveToApiaryIdInput.value = moveToApiarySelect.value;
+                        }
+                    } else {
+                         // If there are no hives, this won't be set, which is fine.
+                        hivesActionInput.value = 'delete'; // Default action
+                    }
+                });
+            }
+
             // Tab switching logic
             const tabs = document.querySelectorAll('.tab-button');
             const tabContents = document.querySelectorAll('.tab-content');
