@@ -26,10 +26,8 @@ class InspectionController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $inspection = $hive->inspections()->create($validatedData);
+        $hive->inspections()->create($validatedData);
 
-        $hive->updateRating($inspection);
-
-        return redirect()->route('hives.show', $hive)->with('success', 'Inspección creada y rating de la colmena actualizado.');
+        return redirect()->route('hives.show', $hive)->with('success', 'Inspección creada y estado de la colmena actualizado.');
     }
 }

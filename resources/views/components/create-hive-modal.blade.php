@@ -1,4 +1,4 @@
-@props(['apiaries', 'statuses', 'types'])
+@props(['apiaries', 'types'])
 
 <div id="create-hive-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
     <div class="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
@@ -36,18 +36,6 @@
                                 @endforeach
                             </select>
                             <x-input-error :messages="$errors->get('type')" class="mt-2" />
-                        </div>
-
-                        <!-- Status -->
-                        <div>
-                            <x-input-label for="status" :value="__('Estado (Opcional)')" />
-                            <select id="status" name="status" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                                <option value="">Selecciona un estado</option>
-                                @foreach ($statuses as $status)
-                                    <option value="{{ $status }}" {{ old('status') == $status ? 'selected' : '' }}>{{ $status }}</option>
-                                @endforeach
-                            </select>
-                            <x-input-error :messages="$errors->get('status')" class="mt-2" />
                         </div>
 
                         <!-- Birth Date -->

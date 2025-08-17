@@ -34,7 +34,6 @@ class Hive extends Model
         'birth_date',
         'location',
         'location_gps',
-        'status',
     ];
 
     protected $casts = [
@@ -96,6 +95,11 @@ class Hive extends Model
         return $this->hasMany(HiveSuper::class);
     }
 
+    public function states()
+    {
+        return $this->belongsToMany(State::class, 'hive_state')->withPivot('cause')->withTimestamps();
+    }
+
     /**
      * Get the route key for the model.
      *
@@ -106,14 +110,6 @@ class Hive extends Model
         return 'slug';
     }
 
-    public static function getStatusOptions(): array
-    {
-        return [
-            'Desconocido', 'Activa', 'Invernando', 'Enjambrazon', 'Despoblada', 'Huerfana',
-            'Zanganera', 'En formacion', 'Revision', 'Mantenimiento', 'Alimentacion Artificial',
-            'Crianza de reinas', 'Pillaje', 'Pillera', 'Union', 'Sin uso'
-        ];
-    }
 
     public static function getTypeOptions(): array
     {
