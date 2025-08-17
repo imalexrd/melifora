@@ -16,7 +16,7 @@ class ApiaryController extends Controller
      */
     public function index()
     {
-        $apiaries = Apiary::where('user_id', auth()->id())->latest()->paginate(10);
+        $apiaries = Apiary::withCount('hives')->where('user_id', auth()->id())->oldest()->paginate(10);
         return view('apiaries.index', compact('apiaries'));
     }
 
