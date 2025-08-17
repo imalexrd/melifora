@@ -13,6 +13,7 @@ class State extends Model
         'name',
         'description',
         'type',
+        'category',
     ];
 
     public function hives()
