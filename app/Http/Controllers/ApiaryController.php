@@ -61,9 +61,9 @@ class ApiaryController extends Controller
         }
 
         // Sort
-        $sort = $request->get('sort', 'status');
+        $sort = $request->get('sort', 'name');
         $direction = $request->get('direction', 'asc');
-        if (in_array($sort, ['name', 'status', 'type', 'birth_date', 'rating', 'updated_at']) && in_array($direction, ['asc', 'desc'])) {
+        if (in_array($sort, ['name', 'type', 'birth_date', 'rating', 'updated_at']) && in_array($direction, ['asc', 'desc'])) {
             $query->orderBy($sort, $direction);
         }
 
