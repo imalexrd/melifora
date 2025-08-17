@@ -50,7 +50,7 @@ class HiveSuperController extends Controller
         $assigned = HiveSuper::whereNotNull('hive_id')->count();
         $unassigned = $total - $assigned;
 
-        $allHives = Hive::where('user_id', auth()->id())->get();
+        $allHives = Hive::whereHas('apiary', fn($query) => $query->where('user_id', auth()->id()))->get();
 
         return view('hive_supers.index', compact('hiveSupers', 'total', 'assigned', 'unassigned', 'sort', 'direction', 'perPage', 'allHives'));
     }
