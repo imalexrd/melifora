@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Apiary;
 use App\Models\Hive;
+use App\Models\HiveSuper;
 use App\Traits\LogsHiveActivity;
 use Illuminate\Http\Request;
 
@@ -109,8 +110,6 @@ class HiveController extends Controller
     /**
      * Display the specified resource.
      */
-use App\Models\HiveSuper;
-
     public function show(Hive $hive)
     {
         $hive->load('queen', 'queenHistories', 'inspections', 'harvests', 'latestHarvest', 'tags', 'notes.user', 'activities.user', 'hiveSupers');
