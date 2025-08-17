@@ -119,20 +119,47 @@ class ApiaryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Apiary $apiary)
+    public function destroy(Request $request, Apiary $apiary)
     {
-        if ($apiary->name === 'Mi primer apiario') {
-            return redirect()->route('apiaries.index')->with('error', 'El apiario por defecto "Mi primer apiario" no se puede eliminar.');
+        // Forbid deleting the last apiary
+        if (auth()->user()->apiaries()->count() === 1) {
+            return redirect()->route('apiaries.show', $apiary)->with('error', 'No puedes eliminar tu único apiario. Siempre debe existir al menos uno.');
         }
 
         if ($apiary->hives()->count() > 0) {
-            return redirect()->route('apiaries.show', $apiary)->with('error', 'No se puede eliminar un apiario con colmenas asociadas.');
+            $hivesAction = $request->input('hives_action');
+
+            if ($hivesAction === 'move') {
+                $moveToApiaryId = $request->input('move_to_apiary_id');
+                $moveToApiary = Apiary::where('user_id', auth()->id())->findOrFail($moveToApiaryId);
+
+                // Move hives
+                foreach ($apiary->hives as $hive) {
+                    $hive->apiary_id = $moveToApiary->id;
+                    $hive->save();
+                    $this->logActivity($apiary, "Colmena {$hive->name} movida al apiario {$moveToApiary->name}.");
+                }
+                $this->logActivity($apiary, "Todas las colmenas movidas a {$moveToApiary->name}.");
+
+            } elseif ($hivesAction === 'delete') {
+                // Delete hives
+                foreach ($apiary->hives as $hive) {
+                    $this->logActivity($apiary, "Colmena {$hive->name} eliminada junto con el apiario.");
+                    $hive->delete();
+                }
+            } else {
+                // No action specified, so we prevent deletion
+                return redirect()->route('apiaries.show', $apiary)->with('error', 'Por favor, especifica qué hacer con las colmenas del apiario.');
+            }
         }
 
-        $this->logActivity($apiary, "Apiario {$apiary->name} eliminado.");
+        $apiaryName = $apiary->name;
         $apiary->delete();
 
-        return redirect()->route('apiaries.index')->with('success', 'Apiary deleted successfully.');
+        // We don't log here because the trait will do it, but we prepare the message for the redirect
+        // $this->logActivity($apiary, "Apiario {$apiaryName} eliminado.");
+
+        return redirect()->route('apiaries.index')->with('success', "Apiario '{$apiaryName}' eliminado con éxito.");
     }
 
     public function storeNote(Request $request, Apiary $apiary)
