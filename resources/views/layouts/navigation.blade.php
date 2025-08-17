@@ -1,4 +1,4 @@
-<nav class="bg-surface border-b border-gray-100 sticky top-0 z-50 sm:static">
+<nav class="bg-surface border-b border-gray-100">
     <!-- =================================================================== -->
     <!-- =================== MENÚ PARA ESCRITORIO (Desktop) ================= -->
     <!-- =================================================================== -->

@@ -56,6 +56,31 @@ class HiveSuperController extends Controller
     }
 
     /**
+     * Assign a random number of supers to a hive.
+     */
+    public function assignRandom(Request $request, Hive $hive)
+    {
+        $validatedData = $request->validate([
+            'number_to_assign' => 'required|integer|min:1',
+        ]);
+
+        $numberToAssign = $validatedData['number_to_assign'];
+
+        $unassignedSupers = HiveSuper::whereNull('hive_id')->inRandomOrder()->limit($numberToAssign)->get();
+
+        if ($unassignedSupers->count() < $numberToAssign) {
+            return redirect()->back()->with('error', 'No hay suficientes alzas libres para asignar la cantidad solicitada.');
+        }
+
+        foreach ($unassignedSupers as $super) {
+            $super->hive_id = $hive->id;
+            $super->save();
+        }
+
+        return redirect()->route('hives.show', $hive)->with('success', $numberToAssign . ' alzas asignadas exitosamente.');
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
