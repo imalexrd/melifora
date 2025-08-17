@@ -30,6 +30,9 @@
                     <x-nav-link :href="route('knowledge.index')" :active="request()->routeIs('knowledge.index')">
                         {{ __('Conocimiento') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('hive_supers.index')" :active="request()->routeIs('hive_supers.index')">
+                        {{ __('Inventario') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -167,11 +170,13 @@
             @endif
         </a>
 
-        <!-- Conocimiento (usando icono de "alertas") -->
-        <a href="{{ route('knowledge.index') }}" class="relative inline-flex flex-col items-center justify-center font-medium {{ request()->routeIs('knowledge.*') ? $activeClasses : $inactiveClasses }}">
-            <svg class="w-6 h-6 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
-            <span class="text-xs">Conocimiento</span>
-            @if(request()->routeIs('knowledge.*'))
+        <!-- Inventario -->
+        <a href="{{ route('hive_supers.index') }}" class="relative inline-flex flex-col items-center justify-center font-medium {{ request()->routeIs('hive_supers.index') ? $activeClasses : $inactiveClasses }}">
+            <svg class="w-6 h-6 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4" />
+            </svg>
+            <span class="text-xs">Inventario</span>
+            @if(request()->routeIs('hive_supers.index'))
             <div class="absolute bottom-0 h-1 w-8 bg-blue-600 rounded-t-full"></div>
             @endif
         </a>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Apiary;
 use App\Models\Hive;
+use App\Models\HiveSuper;
 use App\Traits\LogsHiveActivity;
 use Illuminate\Http\Request;
 
@@ -111,12 +112,14 @@ class HiveController extends Controller
      */
     public function show(Hive $hive)
     {
-        $hive->load('queen', 'queenHistories', 'inspections', 'harvests', 'latestHarvest', 'tags', 'notes.user', 'activities.user');
+        $hive->load('queen', 'queenHistories', 'inspections', 'harvests', 'latestHarvest', 'tags', 'notes.user', 'activities.user', 'hiveSupers');
         $apiaries = Apiary::where('user_id', auth()->id())->get();
         $statuses = Hive::getStatusOptions();
         $types = Hive::getTypeOptions();
         $lastInspection = $hive->inspections()->latest('inspection_date')->first();
-        return view('hives.show', compact('hive', 'apiaries', 'statuses', 'types', 'lastInspection'));
+        $unassignedSupers = HiveSuper::whereNull('hive_id')->get();
+
+        return view('hives.show', compact('hive', 'apiaries', 'statuses', 'types', 'lastInspection', 'unassignedSupers'));
     }
 
     /**
@@ -146,6 +149,9 @@ class HiveController extends Controller
      */
     public function destroy(Hive $hive)
     {
+        // Unassign any hive supers before deleting the hive
+        $hive->hiveSupers()->update(['hive_id' => null]);
+
         $this->logActivity($hive, "Colmena {$hive->name} eliminada.");
         $hive->delete();
 
@@ -180,6 +186,7 @@ class HiveController extends Controller
                 return response()->json(['success' => true, 'message' => 'Colmenas movidas exitosamente.']);
             case 'delete':
                 foreach ($hives as $hive) {
+                    $hive->hiveSupers()->update(['hive_id' => null]);
                     $this->logActivity($hive, 'Colmena eliminada.');
                     $hive->delete();
                 }

@@ -172,6 +172,9 @@
                     <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="harvest">
                         {{ __('Cosecha') }}
                     </button>
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="supers">
+                        {{ __('Alzas') }}
+                    </button>
                     <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="queen">
                         {{ __('Reina') }}
                     </button>
@@ -342,6 +345,65 @@
                     @include('hives.partials.harvest-history', ['hive' => $hive])
                 </div>
 
+                <!-- Supers Tab -->
+                <div id="supers-content" class="tab-content hidden">
+                    <h4 class="text-xl font-semibold mb-4">Alzas Asignadas</h4>
+                    <div class="mb-6">
+                        @if ($hive->hiveSupers->count() > 0)
+                            <ul class="divide-y divide-gray-200">
+                                @foreach ($hive->hiveSupers as $super)
+                                    <li class="py-2 flex items-center justify-between">
+                                        <span>{{ $super->tracking_code }}</span>
+                                        <form action="{{ route('hive_supers.unassign', $super) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="text-sm text-red-600 hover:underline">Desasignar</button>
+                                        </form>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p>No hay alzas asignadas a esta colmena.</p>
+                        @endif
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="text-xl font-semibold mb-4">Asignar Alza Específica</h4>
+                            <div class="mb-4">
+                                <input type="text" id="super-search" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" placeholder="Buscar alza por código...">
+                            </div>
+                            <form action="{{ route('hive_supers.assign', $hive) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <div class="flex items-center space-x-4">
+                                    <select name="hive_super_id" id="hive-super-select" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                        <option value="">Selecciona un alza</option>
+                                        @foreach ($unassignedSupers as $super)
+                                            <option value="{{ $super->id }}">{{ $super->tracking_code }}</option>
+                                        @endforeach
+                                    </select>
+                                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-primary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                        Asignar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold mb-4">Asignar Alzas al Azar</h4>
+                            <form action="{{ route('hive_supers.assignRandom', $hive) }}" method="POST">
+                                @csrf
+                                <div class="flex items-center space-x-4">
+                                    <input type="number" name="number_to_assign" value="1" min="1" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-secondary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-secondary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                        Asignar al Azar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- General Tab -->
                 <div id="general-content" class="tab-content hidden">
                     <h4 class="text-xl font-semibold mb-4">Información General</h4>
@@ -423,6 +485,25 @@
         window.initMap = function() {};
 
         document.addEventListener('DOMContentLoaded', function () {
+            // Super search filter
+            const superSearchInput = document.getElementById('super-search');
+            const superSelect = document.getElementById('hive-super-select');
+            const superOptions = Array.from(superSelect.options);
+
+            if (superSearchInput) {
+                superSearchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+
+                    superSelect.innerHTML = '';
+
+                    superOptions.forEach(option => {
+                        if (option.value === '' || option.text.toLowerCase().includes(searchTerm)) {
+                            superSelect.add(option);
+                        }
+                    });
+                });
+            }
+
             // Edit form toggle
             const toggleButton = document.getElementById('toggle-edit-form');
             const editForm = document.getElementById('edit-hive-form');
