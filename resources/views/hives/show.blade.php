@@ -168,15 +168,24 @@
                     @csrf
                     @method('PATCH')
 
-                    <div>
-                        <x-input-label for="states" :value="__('Estados Manuales')" />
-                        <select id="states" name="states[]" multiple class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                            @foreach ($states as $state)
-                                <option value="{{ $state->id }}" @if ($hive->states->where('pivot.cause', 'Manual')->contains($state->id)) selected @endif>{{ $state->name }}</option>
-                            @endforeach
-                        </select>
-                        <x-input-error :messages="$errors->get('states')" class="mt-2" />
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        @foreach ($states as $category => $statesInCategory)
+                            @if($category && !Str::contains($category, 'Inspección'))
+                            <div class="p-4 border rounded-lg">
+                                <h4 class="font-semibold text-lg mb-2">{{ $category }}</h4>
+                                <div class="space-y-2">
+                                    @foreach ($statesInCategory as $state)
+                                        <label for="state-{{ $state->id }}" class="flex items-center">
+                                            <input type="checkbox" id="state-{{ $state->id }}" name="states[]" value="{{ $state->id }}" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" @if ($hive->states->where('pivot.cause', 'Manual')->contains($state->id)) checked @endif>
+                                            <span class="ml-2 text-sm text-gray-600">{{ $state->name }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endif
+                        @endforeach
                     </div>
+                    <x-input-error :messages="$errors->get('states')" class="mt-2" />
 
 
                     <div class="flex items-center justify-end mt-6">

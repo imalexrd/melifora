@@ -145,7 +145,7 @@
     <div class="mt-8">
         <h4 class="text-xl font-semibold mb-4">Historial de Inspecciones</h4>
         <div class="space-y-6">
-            @forelse ($hive->inspections->sortByDesc('inspection_date') as $inspection)
+            @forelse ($hive->inspections as $inspection)
                 <div class="bg-gray-50 rounded-lg shadow-md p-6 border border-gray-200">
                     <div class="flex justify-between items-start">
                         <div>

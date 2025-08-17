@@ -101,14 +101,40 @@ class Inspection extends Model
 
         // Pests and diseases
         if ($this->pests_diseases !== 'Sin plagas') {
-            $state = State::firstOrCreate(['name' => $this->pests_diseases], ['description' => 'Presencia de ' . $this->pests_diseases, 'type' => 'bad']);
+            $state = State::firstOrCreate(['name' => $this->pests_diseases], ['description' => 'Presencia de ' . $this->pests_diseases, 'type' => 'bad', 'category' => 'Plagas y Enfermedades']);
             $statesToSync[$state->id] = ['cause' => $cause];
 
             if ($this->treatments === 'Sin tratamiento') {
-                $state = State::firstOrCreate(['name' => 'Enferma sin tratamiento'], ['description' => 'La colmena está enferma y no está recibiendo tratamiento.', 'type' => 'bad']);
+                $state = State::firstOrCreate(['name' => 'Enferma sin tratamiento'], ['description' => 'La colmena está enferma y no está recibiendo tratamiento.', 'type' => 'bad', 'category' => 'Indicadores de Inspección (Negativo)']);
                 $statesToSync[$state->id] = ['cause' => $cause];
             } else {
-                $state = State::firstOrCreate(['name' => 'Enferma con tratamiento'], ['description' => 'La colmena está enferma y está recibiendo tratamiento.', 'type' => 'neutral']);
+                $state = State::firstOrCreate(['name' => 'Enferma con tratamiento'], ['description' => 'La colmena está enferma y está recibiendo tratamiento.', 'type' => 'neutral', 'category' => 'Indicadores de Inspección (Negativo)']);
+                $statesToSync[$state->id] = ['cause' => $cause];
+            }
+        } else {
+            // Positive states only if there are no pests or diseases
+            if ($this->population > 80 && $this->honey_stores > 80 && $this->pollen_stores > 80 && $this->brood_pattern > 80 && $this->behavior < 20) {
+                $state = State::firstOrCreate(['name' => 'Óptima'], ['description' => 'La colmena está en condiciones óptimas.', 'type' => 'good', 'category' => 'Indicadores de Inspección (Positivo)']);
+                $statesToSync[$state->id] = ['cause' => $cause];
+            } elseif ($this->population > 60 && $this->honey_stores > 60 && $this->pollen_stores > 60 && $this->brood_pattern > 60 && $this->behavior < 40) {
+                $state = State::firstOrCreate(['name' => 'Activa'], ['description' => 'La colmena está activa y saludable.', 'type' => 'good', 'category' => 'Indicadores de Inspección (Positivo)']);
+                $statesToSync[$state->id] = ['cause' => $cause];
+            }
+
+            if ($this->honey_stores > 80) {
+                $state = State::firstOrCreate(['name' => 'Buenas reservas de miel'], ['description' => 'La colmena tiene abundantes reservas de miel.', 'type' => 'good', 'category' => 'Indicadores de Inspección (Positivo)']);
+                $statesToSync[$state->id] = ['cause' => $cause];
+            }
+            if ($this->pollen_stores > 80) {
+                $state = State::firstOrCreate(['name' => 'Buenas reservas de polen'], ['description' => 'La colmena tiene abundantes reservas de polen.', 'type' => 'good', 'category' => 'Indicadores de Inspección (Positivo)']);
+                $statesToSync[$state->id] = ['cause' => $cause];
+            }
+            if ($this->brood_pattern > 80) {
+                $state = State::firstOrCreate(['name' => 'Buena cría'], ['description' => 'El patrón de cría es excelente.', 'type' => 'good', 'category' => 'Indicadores de Inspección (Positivo)']);
+                $statesToSync[$state->id] = ['cause' => $cause];
+            }
+            if ($this->behavior < 20) {
+                $state = State::firstOrCreate(['name' => 'Dócil'], ['description' => 'La colmena tiene un comportamiento muy dócil.', 'type' => 'good', 'category' => 'Indicadores de Inspección (Positivo)']);
                 $statesToSync[$state->id] = ['cause' => $cause];
             }
         }

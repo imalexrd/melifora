@@ -105,12 +105,23 @@ class HiveController extends Controller
      */
     public function show(Hive $hive)
     {
-        $hive->load('queen', 'queenHistories', 'inspections', 'harvests', 'latestHarvest', 'tags', 'notes.user', 'activities.user', 'hiveSupers', 'states');
+        $hive->load([
+            'queen',
+            'queenHistories',
+            'inspections' => fn($query) => $query->orderBy('inspection_date', 'desc'),
+            'harvests',
+            'latestHarvest',
+            'tags',
+            'notes.user',
+            'activities.user',
+            'hiveSupers',
+            'states'
+        ]);
         $apiaries = Apiary::where('user_id', auth()->id())->get();
         $types = Hive::getTypeOptions();
         $lastInspection = $hive->inspections()->latest('inspection_date')->first();
         $unassignedSupers = HiveSuper::whereNull('hive_id')->get();
-        $states = \App\Models\State::all();
+        $states = \App\Models\State::all()->groupBy('category');
 
         return view('hives.show', compact('hive', 'apiaries', 'types', 'lastInspection', 'unassignedSupers', 'states'));
     }
