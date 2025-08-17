@@ -19,9 +19,12 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+use App\Http\Controllers\HiveSuperController;
+
 Route::resource('hives', HiveController::class)->middleware(['auth', 'role:admin,superadmin']);
 Route::post('/hives/bulk-actions', [HiveController::class, 'bulkActions'])->name('hives.bulkActions')->middleware(['auth', 'role:admin,superadmin']);
 Route::resource('apiaries', ApiaryController::class)->middleware(['auth', 'role:admin,superadmin']);
+Route::resource('hive_supers', HiveSuperController::class)->middleware(['auth', 'role:admin,superadmin'])->only(['index', 'store']);
 
 Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
     Route::post('/apiaries/{apiary}/notes', [ApiaryController::class, 'storeNote'])->name('apiaries.notes.store');
@@ -43,6 +46,10 @@ Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
 
     // Harvest routes
     Route::post('/hives/{hive}/harvests', [HarvestController::class, 'store'])->name('hives.harvests.store');
+
+    // Hive Super routes
+    Route::patch('/hives/{hive}/supers/assign', [HiveSuperController::class, 'assign'])->name('hive_supers.assign');
+    Route::patch('/hive_supers/{hive_super}/unassign', [HiveSuperController::class, 'unassign'])->name('hive_supers.unassign');
 });
 
 Route::middleware('auth')->group(function () {

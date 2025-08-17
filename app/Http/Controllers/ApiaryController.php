@@ -144,6 +144,7 @@ class ApiaryController extends Controller
             } elseif ($hivesAction === 'delete') {
                 // Delete hives
                 foreach ($apiary->hives as $hive) {
+                    $hive->hiveSupers()->update(['hive_id' => null]);
                     $this->logActivity($apiary, "Colmena {$hive->name} eliminada junto con el apiario.");
                     $hive->delete();
                 }

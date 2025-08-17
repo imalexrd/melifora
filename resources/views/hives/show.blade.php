@@ -172,6 +172,9 @@
                     <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="harvest">
                         {{ __('Cosecha') }}
                     </button>
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="supers">
+                        {{ __('Alzas') }}
+                    </button>
                     <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="queen">
                         {{ __('Reina') }}
                     </button>
@@ -340,6 +343,46 @@
                 <div id="harvest-content" class="tab-content hidden">
                     @include('hives.partials.harvest-form', ['hive' => $hive])
                     @include('hives.partials.harvest-history', ['hive' => $hive])
+                </div>
+
+                <!-- Supers Tab -->
+                <div id="supers-content" class="tab-content hidden">
+                    <h4 class="text-xl font-semibold mb-4">Alzas Asignadas</h4>
+                    <div class="mb-6">
+                        @if ($hive->hiveSupers->count() > 0)
+                            <ul class="divide-y divide-gray-200">
+                                @foreach ($hive->hiveSupers as $super)
+                                    <li class="py-2 flex items-center justify-between">
+                                        <span>{{ $super->tracking_code }}</span>
+                                        <form action="{{ route('hive_supers.unassign', $super) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="text-sm text-red-600 hover:underline">Desasignar</button>
+                                        </form>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p>No hay alzas asignadas a esta colmena.</p>
+                        @endif
+                    </div>
+
+                    <h4 class="text-xl font-semibold mb-4">Asignar Alza</h4>
+                    <form action="{{ route('hive_supers.assign', $hive) }}" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        <div class="flex items-center space-x-4">
+                            <select name="hive_super_id" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                <option value="">Selecciona un alza</option>
+                                @foreach ($unassignedSupers as $super)
+                                    <option value="{{ $super->id }}">{{ $super->tracking_code }}</option>
+                                @endforeach
+                            </select>
+                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-primary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                Asignar
+                            </button>
+                        </div>
+                    </form>
                 </div>
 
                 <!-- General Tab -->

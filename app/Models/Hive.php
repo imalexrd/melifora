@@ -91,6 +91,11 @@ class Hive extends Model
         return $this->hasMany(HiveActivity::class)->latest();
     }
 
+    public function hiveSupers()
+    {
+        return $this->hasMany(HiveSuper::class);
+    }
+
     /**
      * Get the route key for the model.
      *
