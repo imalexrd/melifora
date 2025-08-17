@@ -13,15 +13,50 @@ class HiveController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $hives = Hive::whereHas('apiary', function ($query) {
+        $query = Hive::whereHas('apiary', function ($query) {
             $query->where('user_id', auth()->id());
-        })->latest()->paginate(10);
+        })->with('apiary');
+
+        // Search
+        if ($request->has('search') && $request->search != '') {
+            $searchTerm = '%' . $request->search . '%';
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', $searchTerm)
+                  ->orWhereHas('apiary', function ($q) use ($searchTerm) {
+                      $q->where('name', 'like', $searchTerm);
+                  });
+            });
+        }
+
+        // Sort
+        $sort = $request->get('sort', 'status');
+        $direction = $request->get('direction', 'asc');
+        $sortableFields = ['name', 'status', 'type', 'birth_date', 'rating', 'updated_at'];
+
+        if (in_array($sort, $sortableFields)) {
+            $query->orderBy($sort, $direction);
+        } elseif ($sort === 'apiary') {
+            $query->join('apiaries', 'hives.apiary_id', '=', 'apiaries.id')
+                  ->orderBy('apiaries.name', $direction)
+                  ->select('hives.*');
+        }
+
+
+        // Pagination size
+        $perPage = $request->get('per_page', 10);
+        if (!is_numeric($perPage) || $perPage > 250) {
+            $perPage = 10;
+        }
+
+        $hives = $query->paginate($perPage)->appends($request->query());
+
         $apiaries = Apiary::where('user_id', auth()->id())->get();
         $statuses = Hive::getStatusOptions();
         $types = Hive::getTypeOptions();
-        return view('hives.index', compact('hives', 'apiaries', 'statuses', 'types'));
+
+        return view('hives.index', compact('hives', 'apiaries', 'statuses', 'types', 'sort', 'direction', 'perPage'));
     }
 
     /**
