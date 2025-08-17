@@ -1,88 +1,97 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ $apiary->name }}
-            </h2>
-            <a href="{{ route('apiaries.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
-                {{ __('Volver a Apiarios') }}
-            </a>
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="{{ route('apiaries.index') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
+                            Apiarios
+                        </a>
+                    </li>
+                    <li aria-current="page">
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                            <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">{{ $apiary->name }}</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+            <div class="flex items-center space-x-2">
+                 <button type="button" class="open-create-hive-modal-button inline-flex items-center px-4 py-2 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-400 active:bg-yellow-600 focus:outline-none focus:border-yellow-700 focus:ring ring-yellow-300 disabled:opacity-25 transition ease-in-out duration-150">
+                    {{ __('Añadir Colmena') }}
+                </button>
+                <button id="toggle-edit-form" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                    {{ __('Editar') }}
+                </button>
+            </div>
         </div>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start">
+                    <div class="flex flex-col md:flex-row md:justify-between">
                         <!-- Left Side: Image, Name, Location -->
-                        <div class="flex items-center mb-4 sm:mb-0">
-                            <img src="https://placehold.co/100x100/FBBF24/333333?text=Apiario" alt="Apiary Image" class="w-24 h-24 rounded-lg mr-6">
+                        <div class="flex items-center mb-4 md:mb-0">
+                            <div class="mr-6 flex-shrink-0">
+                                <svg class="h-24 w-24 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                            </div>
                             <div class="flex-grow">
-                                <div class="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                                    <h2 class="text-2xl font-bold text-gray-900">{{ $apiary->name }}</h2>
-                                    <div class="flex items-center space-x-4 mt-2 sm:mt-0">
-                                        <div class="p-2 bg-yellow-50 rounded-lg text-center">
-                                            <p class="text-xs font-bold text-yellow-800">{{ __('Colmenas') }}</p>
-                                            <p class="text-xl font-extrabold text-yellow-900">{{ $hives->total() }}</p>
-                                        </div>
-                                        <div class="p-2 bg-green-50 rounded-lg text-center">
-                                            <p class="text-xs font-bold text-green-800">{{ __('Rating') }}</p>
-                                            @if($averageRating)
-                                                <p class="text-xl font-extrabold text-green-900 flex items-center justify-center">
-                                                    {{ number_format($averageRating, 1) }}
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-                                                </p>
-                                            @else
-                                                <p class="text-lg font-bold text-green-800">N/A</p>
-                                            @endif
-                                        </div>
-                                    </div>
+                                <div class="flex items-center gap-4">
+                                    <h2 class="text-3xl font-bold text-gray-900">{{ $apiary->name }}</h2>
+                                    <span class="px-3 py-1 text-sm font-semibold text-white rounded-full {{ $apiaryStatusColors[$apiary->status] ?? 'bg-gray-400' }}">
+                                        {{ $apiary->status }}
+                                    </span>
                                 </div>
                                 <p class="text-gray-600 flex items-center mt-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                                     </svg>
                                     {{ $apiary->location }}
                                 </p>
-                                <div class="mt-2">
-                                    <span class="px-2 py-1 text-xs font-semibold text-white rounded-full {{ $apiaryStatusColors[$apiary->status] ?? 'bg-gray-400' }}">
-                                        {{ $apiary->status }}
-                                    </span>
-                                </div>
+                                @if($apiary->location_gps)
+                                    <a href="https://www.google.com/maps/search/?api=1&query={{ $apiary->location_gps }}" target="_blank" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 mt-1">
+                                        {{ $apiary->location_gps }}
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                                          <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </a>
+                                @endif
                             </div>
                         </div>
-                        <!-- Right Side: Buttons -->
-                        <div class="flex items-start space-x-2">
-                             <button type="button" class="open-create-hive-modal-button inline-flex items-center px-4 py-2 bg-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-primary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
-                                {{ __('Añadir Colmena') }}
-                            </button>
-                            <button id="toggle-edit-form" class="inline-flex items-center px-4 py-2 bg-secondary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-secondary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
-                                {{ __('Editar') }}
-                            </button>
+                        <!-- Right Side: Stats -->
+                        <div class="flex items-center space-x-4">
+                            <div class="p-4 bg-yellow-50 rounded-lg text-center shadow">
+                                <p class="text-sm font-bold text-yellow-800">{{ __('Colmenas') }}</p>
+                                <p class="text-3xl font-extrabold text-yellow-900">{{ $hives->total() }}</p>
+                            </div>
+                            <div class="p-4 bg-green-50 rounded-lg text-center shadow">
+                                <p class="text-sm font-bold text-green-800">{{ __('Rating Promedio') }}</p>
+                                @if($averageRating)
+                                    <p class="text-3xl font-extrabold text-green-900 flex items-center justify-center">
+                                        {{ number_format($averageRating, 1) }}
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-1 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
+                                    </p>
+                                @else
+                                    <p class="text-2xl font-bold text-green-800">N/A</p>
+                                @endif
+                            </div>
                         </div>
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-600 mt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-600 mt-6 border-t pt-6">
                         <div>
-                            <p class="text-gray-500">{{ __('Creado el') }}</p>
+                            <p class="text-gray-500 font-semibold">{{ __('Creado el') }}</p>
                             <p class="font-medium">{{ $apiary->created_at->format('d/m/Y H:i') }}</p>
-                            <p class="text-gray-500 mt-2">{{ __('Actualizado el') }}</p>
-                            <p class="font-medium">{{ $apiary->updated_at->format('d/m/Y H:i') }}</p>
                         </div>
-
                         <div>
-                            @if($apiary->location_gps)
-                                <p><strong>{{ __('Coordenadas') }}:</strong> {{ $apiary->location_gps }}</p>
-                                <a href="https://www.google.com/maps/search/?api=1&query={{ $apiary->location_gps }}" target="_blank" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 mt-1">
-                                    {{ __('Ver en Google Maps') }}
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
-                                      <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
-                                </a>
-                            @endif
+                            <p class="text-gray-500 font-semibold">{{ __('Actualizado el') }}</p>
+                            <p class="font-medium">{{ $apiary->updated_at->format('d/m/Y H:i') }}</p>
                         </div>
                     </div>
                 </div>
@@ -105,7 +114,7 @@
                             <!-- Status -->
                             <div>
                                 <x-input-label for="status" :value="__('Estado')" />
-                                <select name="status" id="status" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50">
+                                <select name="status" id="status" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring focus:ring-yellow-200 focus:ring-opacity-50">
                                     @foreach ($apiaryStatuses as $status)
                                         <option value="{{ $status }}" @if(old('status', $apiary->status) == $status) selected @endif>{{ $status }}</option>
                                     @endforeach
@@ -147,7 +156,7 @@
                 <!-- Tab Navigation -->
                 <div class="border-b border-gray-200">
                     <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                        <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-primary text-primary" data-tab="hives">
+                        <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-yellow-500 text-yellow-600" data-tab="hives">
                             Colmenas
                         </button>
                         <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="notes">
@@ -160,23 +169,22 @@
                 </div>
 
                 <!-- Tab Content -->
-                <div id="hives-content" class="tab-content">
-                    <h3 class="text-2xl font-semibold text-gray-800 my-4">Colmenas en este Apiario</h3>
+                <div id="hives-content" class="tab-content mt-6">
                     <!-- Search and per-page form -->
                     <div class="mb-4">
                     <form action="{{ route('apiaries.show', $apiary) }}" method="GET" class="flex flex-col sm:flex-row gap-4">
                         <div class="flex-grow">
-                            <input type="text" name="search" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" placeholder="Buscar colmenas..." value="{{ request('search') }}">
+                            <input type="text" name="search" class="w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200" placeholder="Buscar colmenas..." value="{{ request('search') }}">
                         </div>
                         <div class="flex items-center gap-2">
-                            <select name="per_page" onchange="this.form.submit()" class="rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50">
+                            <select name="per_page" onchange="this.form.submit()" class="rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200">
                                 <option value="10" @if($perPage == 10) selected @endif>10 por página</option>
                                 <option value="25" @if($perPage == 25) selected @endif>25 por página</option>
                                 <option value="50" @if($perPage == 50) selected @endif>50 por página</option>
                                 <option value="100" @if($perPage == 100) selected @endif>100 por página</option>
                                 <option value="250" @if($perPage == 250) selected @endif>250 por página</option>
                             </select>
-                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-secondary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-secondary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-700 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-600 active:bg-gray-800 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
                                 Buscar
                             </button>
                         </div>
@@ -193,61 +201,61 @@
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="min-w-full bg-white">
-                            <thead class="bg-primary text-text-dark">
+                            <thead class="bg-yellow-500 text-white">
                                 <tr>
-                                    <th class="py-3 px-4 uppercase font-semibold text-sm">
-                                        <input type="checkbox" id="select-all">
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm text-left">
+                                        <input type="checkbox" id="select-all" class="rounded border-gray-300 text-yellow-600 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50">
                                     </th>
-                                    <th class="py-3 px-4 uppercase font-semibold text-sm">
-                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'status', 'direction' => $sort === 'status' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm text-left">
+                                        <a class="hover:text-yellow-200" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'status', 'direction' => $sort === 'status' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
                                             {{ __('Estado') }}
                                             @if ($sort === 'status')
                                                 <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
                                             @endif
                                         </a>
                                     </th>
-                                    <th class="py-3 px-4 uppercase font-semibold text-sm">
-                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'name', 'direction' => $sort === 'name' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm text-left">
+                                        <a class="hover:text-yellow-200" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'name', 'direction' => $sort === 'name' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
                                             {{ __('Nombre') }}
                                             @if ($sort === 'name')
                                                 <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
                                             @endif
                                         </a>
                                     </th>
-                                    <th class="py-3 px-4 uppercase font-semibold text-sm">
-                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'updated_at', 'direction' => $sort === 'updated_at' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm text-left">
+                                        <a class="hover:text-yellow-200" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'updated_at', 'direction' => $sort === 'updated_at' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
                                             {{ __('Ultima Modificacion') }}
                                             @if ($sort === 'updated_at')
                                                 <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
                                             @endif
                                         </a>
                                     </th>
-                                    <th class="py-3 px-4 uppercase font-semibold text-sm">
-                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'birth_date', 'direction' => $sort === 'birth_date' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm text-left">
+                                        <a class="hover:text-yellow-200" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'birth_date', 'direction' => $sort === 'birth_date' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
                                             {{ __('Fecha de nacimiento') }}
                                             @if ($sort === 'birth_date')
                                                 <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
                                             @endif
                                         </a>
                                     </th>
-                                    <th class="py-3 px-4 uppercase font-semibold text-sm">
-                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'rating', 'direction' => $sort === 'rating' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm text-left">
+                                        <a class="hover:text-yellow-200" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'rating', 'direction' => $sort === 'rating' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
                                             {{ __('Rating') }}
                                             @if ($sort === 'rating')
                                                 <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
                                             @endif
                                         </a>
                                     </th>
-                                    <th class="py-3 px-4 uppercase font-semibold text-sm">
-                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'type', 'direction' => $sort === 'type' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm text-left">
+                                        <a class="hover:text-yellow-200" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'type', 'direction' => $sort === 'type' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
                                             {{ __('Tipo') }}
                                             @if ($sort === 'type')
                                                 <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
                                             @endif
                                         </a>
                                     </th>
-                                    <th class="py-3 px-4 uppercase font-semibold text-sm">
-                                        <a class="hover:text-primary-dark" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'location', 'direction' => $sort === 'location' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm text-left">
+                                        <a class="hover:text-yellow-200" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'location', 'direction' => $sort === 'location' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
                                             {{ __('Ubicación') }}
                                             @if ($sort === 'location')
                                                 <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
@@ -258,9 +266,9 @@
                             </thead>
                             <tbody class="text-gray-700">
                                 @forelse ($hives as $hive)
-                                    <tr class="border-b hover:bg-background">
+                                    <tr class="border-b hover:bg-yellow-50">
                                         <td class="py-3 px-4">
-                                            <input type="checkbox" class="hive-checkbox" value="{{ $hive->id }}">
+                                            <input type="checkbox" class="hive-checkbox rounded border-gray-300 text-yellow-600 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50" value="{{ $hive->id }}">
                                         </td>
                                         <td class="py-3 px-4">
                                             <span class="px-2 py-1 text-xs font-semibold text-white rounded-full {{
@@ -321,7 +329,7 @@
                         <div class="p-6">
                             <h3 class="text-xl font-semibold text-gray-800 mb-4">Añadir una Nota</h3>
                             <form id="add-note-form">
-                                <textarea id="note-content" name="content" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" placeholder="Escribe tu nota aquí..."></textarea>
+                                <textarea id="note-content" name="content" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200" placeholder="Escribe tu nota aquí..."></textarea>
                                 <div class="flex justify-end mt-4">
                                     <x-primary-button type="submit">
                                         {{ __('Guardar Nota') }}
@@ -395,7 +403,7 @@
                         <!-- Status -->
                         <div>
                             <label for="bulk-status" class="block font-medium text-sm text-gray-700">{{ __('Estado') }}</label>
-                            <select id="bulk-status" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50">
+                            <select id="bulk-status" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200">
                                 @foreach ($statuses as $status)
                                     <option value="{{ $status }}">{{ $status }}</option>
                                 @endforeach
@@ -405,7 +413,7 @@
                         <!-- Type -->
                         <div>
                             <label for="bulk-type" class="block font-medium text-sm text-gray-700">{{ __('Tipo') }}</label>
-                            <select id="bulk-type" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50">
+                            <select id="bulk-type" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200">
                                 @foreach ($types as $type)
                                     <option value="{{ $type }}">{{ $type }}</option>
                                 @endforeach
@@ -416,14 +424,14 @@
                     <!-- Location -->
                     <div class="mt-6">
                         <label for="bulk-location" class="block font-medium text-sm text-gray-700">{{ __('Nombre de la Ubicación (Opcional)') }}</label>
-                        <input id="bulk-location" type="text" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" autocomplete="off">
+                        <input id="bulk-location" type="text" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200" autocomplete="off">
                     </div>
 
                     <!-- Location GPS -->
                     <div class="mt-4">
                         <label for="bulk-location-gps" class="block font-medium text-sm text-gray-700">{{ __('Coordenadas GPS (Opcional)') }}</label>
                         <div class="flex items-center gap-2 mt-1">
-                            <input id="bulk-location-gps" type="text" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" autocomplete="off">
+                            <input id="bulk-location-gps" type="text" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200" autocomplete="off">
                             <button type="button" id="open-bulk-map-modal" class="whitespace-nowrap inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:mr-2" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
@@ -807,10 +815,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     target.classList.remove('hidden');
 
                     tabs.forEach(t => {
-                        t.classList.remove('border-primary', 'text-primary');
+                        t.classList.remove('border-yellow-500', 'text-yellow-600');
                         t.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
                     });
-                    tab.classList.add('border-primary', 'text-primary');
+                    tab.classList.add('border-yellow-500', 'text-yellow-600');
                     tab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
                 });
             });
@@ -850,7 +858,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                         <button class="font-medium text-red-600 hover:text-red-800 delete-note-button" data-note-id="${data.id}">Eliminar</button>
                                     </div>
                                     <div id="edit-note-form-${data.id}" class="hidden mt-2">
-                                        <textarea class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" rows="3">${data.content}</textarea>
+                                        <textarea class="w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200" rows="3">${data.content}</textarea>
                                         <div class="flex justify-end space-x-2 mt-2">
                                             <button class="px-3 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 cancel-edit-button" data-note-id="${data.id}">Cancelar</button>
                                             <button class="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 confirm-edit-button" data-note-id="${data.id}">Guardar</button>
