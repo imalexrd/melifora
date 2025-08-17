@@ -11,6 +11,9 @@
                 <button id="toggle-edit-form" class="inline-flex items-center px-4 py-2 bg-secondary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-secondary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
                     {{ __('Editar') }}
                 </button>
+                <button id="toggle-states-form" class="inline-flex items-center px-4 py-2 bg-info border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-info focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                    {{ __('Gestionar Estados') }}
+                </button>
             </div>
         </div>
     </x-slot>
@@ -27,17 +30,24 @@
                                 <h3 class="text-2xl font-bold text-gray-900">{{ $hive->name }}</h3>
                                 <p class="text-gray-600">{{ $hive->type }}</p>
                             </div>
-                            <span class="px-3 py-1 text-sm font-semibold text-white rounded-full {{
-                                match($hive->status) {
-                                    'Activa' => 'bg-green-500',
-                                    'Invernando' => 'bg-blue-500',
-                                    'Enjambrazon' => 'bg-yellow-500',
-                                    'Despoblada' => 'bg-red-500',
-                                    'Huerfana' => 'bg-purple-500',
-                                    'Zanganera' => 'bg-orange-500',
-                                    default => 'bg-gray-500',
-                                }
-                            }}">{{ $hive->status }}</span>
+                            <div class="flex flex-wrap gap-2">
+                                @forelse ($hive->states as $state)
+                                    <span class="px-3 py-1 text-sm font-semibold text-white rounded-full {{
+                                        match($state->type) {
+                                            'good' => 'bg-green-500',
+                                            'bad' => 'bg-red-500',
+                                            'neutral' => 'bg-yellow-500',
+                                            default => 'bg-gray-500',
+                                        }
+                                    }}" title="{{ $state->description }} - Causa: {{ $state->pivot->cause }}">
+                                        {{ $state->name }}
+                                    </span>
+                                @empty
+                                    <span class="px-3 py-1 text-sm font-semibold text-white rounded-full bg-gray-500">
+                                        Estado desconocido
+                                    </span>
+                                @endforelse
+                            </div>
                         </div>
                         <div class="mt-2 text-sm text-gray-500">
                             <p><strong>Apiario:</strong> {{ $hive->apiary->name }}</p>
@@ -107,17 +117,6 @@
                             <x-input-error :messages="$errors->get('type')" class="mt-2" />
                         </div>
 
-                        <!-- Status -->
-                        <div>
-                            <x-input-label for="status" :value="__('Estado')" />
-                            <select id="status" name="status" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
-                                @foreach ($statuses as $status)
-                                    <option value="{{ $status }}" @if (old('status', $hive->status) == $status) selected @endif>{{ $status }}</option>
-                                @endforeach
-                            </select>
-                            <x-input-error :messages="$errors->get('status')" class="mt-2" />
-                        </div>
-
                         <!-- Birth Date -->
                         <div>
                             <x-input-label for="birth_date" :value="__('Fecha de Nacimiento')" />
@@ -158,6 +157,31 @@
                     <div class="flex items-center justify-end mt-6">
                         <x-primary-button>
                             {{ __('Actualizar Colmena') }}
+                        </x-primary-button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- States Form -->
+            <div id="states-hive-form" class="hidden bg-white rounded-lg shadow-md overflow-hidden p-6 mb-8">
+                <form method="POST" action="{{ route('hives.states.update', $hive) }}">
+                    @csrf
+                    @method('PATCH')
+
+                    <div>
+                        <x-input-label for="states" :value="__('Estados Manuales')" />
+                        <select id="states" name="states[]" multiple class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            @foreach ($states as $state)
+                                <option value="{{ $state->id }}" @if ($hive->states->where('pivot.cause', 'Manual')->contains($state->id)) selected @endif>{{ $state->name }}</option>
+                            @endforeach
+                        </select>
+                        <x-input-error :messages="$errors->get('states')" class="mt-2" />
+                    </div>
+
+
+                    <div class="flex items-center justify-end mt-6">
+                        <x-primary-button>
+                            {{ __('Actualizar Estados') }}
                         </x-primary-button>
                     </div>
                 </form>
@@ -507,11 +531,19 @@
             // Edit form toggle
             const toggleButton = document.getElementById('toggle-edit-form');
             const editForm = document.getElementById('edit-hive-form');
+            const toggleStatesButton = document.getElementById('toggle-states-form');
+            const statesForm = document.getElementById('states-hive-form');
 
             toggleButton.addEventListener('click', function () {
                 const isHidden = editForm.classList.contains('hidden');
                 editForm.classList.toggle('hidden');
                 toggleButton.textContent = isHidden ? '{{ __('Ocultar') }}' : '{{ __('Editar') }}';
+            });
+
+            toggleStatesButton.addEventListener('click', function () {
+                const isHidden = statesForm.classList.contains('hidden');
+                statesForm.classList.toggle('hidden');
+                toggleStatesButton.textContent = isHidden ? '{{ __('Ocultar') }}' : '{{ __('Gestionar Estados') }}';
             });
 
             // Auto-open form if there are validation errors

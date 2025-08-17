@@ -61,9 +61,9 @@ class ApiaryController extends Controller
         }
 
         // Sort
-        $sort = $request->get('sort', 'status');
+        $sort = $request->get('sort', 'name');
         $direction = $request->get('direction', 'asc');
-        if (in_array($sort, ['name', 'status', 'type', 'birth_date', 'rating', 'updated_at']) && in_array($direction, ['asc', 'desc'])) {
+        if (in_array($sort, ['name', 'type', 'birth_date', 'rating', 'updated_at']) && in_array($direction, ['asc', 'desc'])) {
             $query->orderBy($sort, $direction);
         }
 
@@ -76,13 +76,12 @@ class ApiaryController extends Controller
         $hives = $query->paginate($perPage)->appends($request->query());
         $allApiariesForMoving = Apiary::where('user_id', auth()->id())->where('id', '!=', $apiary->id)->get();
         $allUserApiaries = Apiary::where('user_id', auth()->id())->get();
-        $statuses = Hive::getStatusOptions();
         $types = Hive::getTypeOptions();
         $apiaryStatuses = Apiary::getStatusOptions();
         $apiaryStatusColors = Apiary::getStatusColorMap();
         $averageRating = $apiary->hives()->avg('rating');
 
-        return view('apiaries.show', compact('apiary', 'hives', 'sort', 'direction', 'perPage', 'allApiariesForMoving', 'allUserApiaries', 'statuses', 'types', 'apiaryStatuses', 'apiaryStatusColors', 'averageRating'));
+        return view('apiaries.show', compact('apiary', 'hives', 'sort', 'direction', 'perPage', 'allApiariesForMoving', 'allUserApiaries', 'types', 'apiaryStatuses', 'apiaryStatusColors', 'averageRating'));
     }
 
     /**

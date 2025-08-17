@@ -48,12 +48,7 @@
                                     <input type="checkbox" id="select-all">
                                 </th>
                                 <th class="py-3 px-4 uppercase font-semibold text-sm">
-                                    <a class="hover:text-primary-dark" href="{{ route('hives.index', array_merge(request()->query(), ['sort' => 'status', 'direction' => $sort === 'status' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
-                                        {{ __('Estado') }}
-                                        @if ($sort === 'status')
-                                            <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
-                                        @endif
-                                    </a>
+                                    {{ __('Estado') }}
                                 </th>
                                 <th class="py-3 px-4 uppercase font-semibold text-sm">
                                     <a class="hover:text-primary-dark" href="{{ route('hives.index', array_merge(request()->query(), ['sort' => 'name', 'direction' => $sort === 'name' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
@@ -115,26 +110,24 @@
                                         <input type="checkbox" class="hive-checkbox" value="{{ $hive->id }}">
                                     </td>
                                     <td class="py-3 px-4">
-                                        <span class="px-2 py-1 text-xs font-semibold text-white rounded-full {{
-                                            match($hive->status) {
-                                                'Activa' => 'bg-green-500',
-                                                'Invernando' => 'bg-blue-500',
-                                                'Enjambrazon' => 'bg-yellow-500',
-                                                'Despoblada' => 'bg-red-500',
-                                                'Huerfana' => 'bg-purple-500',
-                                                'Zanganera' => 'bg-orange-500',
-                                                'En formacion' => 'bg-teal-500',
-                                                'Revision' => 'bg-cyan-500',
-                                                'Mantenimiento' => 'bg-sky-500',
-                                                'Alimentacion Artificial' => 'bg-indigo-500',
-                                                'Crianza de reinas' => 'bg-pink-500',
-                                                'Pillaje' => 'bg-rose-500',
-                                                'Pillera' => 'bg-fuchsia-500',
-                                                'Union' => 'bg-violet-500',
-                                                'Sin uso' => 'bg-gray-400',
-                                                default => 'bg-gray-500',
-                                            }
-                                        }}">{{ $hive->status }}</span>
+                                        <div class="flex flex-wrap gap-1">
+                                            @forelse ($hive->states as $state)
+                                                <span class="px-2 py-1 text-xs font-semibold text-white rounded-full {{
+                                                    match($state->type) {
+                                                        'good' => 'bg-green-500',
+                                                        'bad' => 'bg-red-500',
+                                                        'neutral' => 'bg-yellow-500',
+                                                        default => 'bg-gray-500',
+                                                    }
+                                                }}" title="{{ $state->description }}">
+                                                    {{ $state->name }}
+                                                </span>
+                                            @empty
+                                                <span class="px-2 py-1 text-xs font-semibold text-white rounded-full bg-gray-500">
+                                                    N/A
+                                                </span>
+                                            @endforelse
+                                        </div>
                                     </td>
                                     <td class="py-3 px-4">
                                         <a href="{{ route('hives.show', $hive) }}" class="text-sm text-green-600 hover:text-green-900 font-semibold">{{ $hive->name }}</a>
@@ -184,7 +177,7 @@
         </div>
     </div>
 
-    <x-create-hive-modal :apiaries="$apiaries" :statuses="$statuses" :types="$types" />
+    <x-create-hive-modal :apiaries="$apiaries" :types="$types" />
 
     <!-- Bulk Edit Modal -->
     <div id="edit-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
@@ -193,16 +186,6 @@
                 <h3 class="text-lg leading-6 font-medium text-gray-900 text-center">{{ __('Editar Colmenas en Lote') }}</h3>
                 <div class="mt-4 px-7 py-3">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Status -->
-                        <div>
-                            <label for="bulk-status" class="block font-medium text-sm text-gray-700">{{ __('Estado') }}</label>
-                            <select id="bulk-status" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50">
-                                @foreach ($statuses as $status)
-                                    <option value="{{ $status }}">{{ $status }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
                         <!-- Type -->
                         <div>
                             <label for="bulk-type" class="block font-medium text-sm text-gray-700">{{ __('Tipo') }}</label>
@@ -359,13 +342,11 @@
 
             confirmEditButton.addEventListener('click', () => {
                 const hiveIds = getSelectedHiveIds();
-                const status = document.getElementById('bulk-status').value;
                 const type = document.getElementById('bulk-type').value;
                 const location = document.getElementById('bulk-location').value;
                 const location_gps = document.getElementById('bulk-location-gps').value;
 
                 const data = {
-                    status,
                     type,
                     location,
                     location_gps

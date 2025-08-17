@@ -45,6 +45,9 @@ Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
     // Inspection routes
     Route::post('/hives/{hive}/inspections', [App\Http\Controllers\InspectionController::class, 'store'])->name('hives.inspections.store');
 
+    // Hive State routes
+    Route::patch('/hives/{hive}/states', [HiveController::class, 'updateStates'])->name('hives.states.update');
+
     // Harvest routes
     Route::post('/hives/{hive}/harvests', [HarvestController::class, 'store'])->name('hives.harvests.store');
 

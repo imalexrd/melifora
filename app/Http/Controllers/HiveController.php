@@ -32,9 +32,9 @@ class HiveController extends Controller
         }
 
         // Sort
-        $sort = $request->get('sort', 'status');
+        $sort = $request->get('sort', 'name');
         $direction = $request->get('direction', 'asc');
-        $sortableFields = ['name', 'status', 'type', 'birth_date', 'rating', 'updated_at'];
+        $sortableFields = ['name', 'type', 'birth_date', 'rating', 'updated_at'];
 
         if (in_array($sort, $sortableFields)) {
             $query->orderBy($sort, $direction);
@@ -54,10 +54,9 @@ class HiveController extends Controller
         $hives = $query->paginate($perPage)->appends($request->query());
 
         $apiaries = Apiary::where('user_id', auth()->id())->get();
-        $statuses = Hive::getStatusOptions();
         $types = Hive::getTypeOptions();
 
-        return view('hives.index', compact('hives', 'apiaries', 'statuses', 'types', 'sort', 'direction', 'perPage'));
+        return view('hives.index', compact('hives', 'apiaries', 'types', 'sort', 'direction', 'perPage'));
     }
 
     /**
@@ -66,9 +65,8 @@ class HiveController extends Controller
     public function create()
     {
         $apiaries = Apiary::where('user_id', auth()->id())->get();
-        $statuses = Hive::getStatusOptions();
         $types = Hive::getTypeOptions();
-        return view('hives.create', compact('apiaries', 'statuses', 'types'));
+        return view('hives.create', compact('apiaries', 'types'));
     }
 
     /**
@@ -80,7 +78,6 @@ class HiveController extends Controller
             'number_of_hives' => 'required|integer|min:1|max:250',
             'apiary_id' => 'required|exists:apiaries,id',
             'type' => 'required|in:' . implode(',', Hive::getTypeOptions()),
-            'status' => 'nullable|in:' . implode(',', Hive::getStatusOptions()),
             'birth_date' => 'nullable|date',
         ]);
 
@@ -91,10 +88,6 @@ class HiveController extends Controller
                 'apiary_id' => $validatedData['apiary_id'],
                 'type' => $validatedData['type'],
             ];
-
-            if (!empty($validatedData['status'])) {
-                $hiveData['status'] = $validatedData['status'];
-            }
 
             if (!empty($validatedData['birth_date'])) {
                 $hiveData['birth_date'] = $validatedData['birth_date'];
@@ -112,14 +105,14 @@ class HiveController extends Controller
      */
     public function show(Hive $hive)
     {
-        $hive->load('queen', 'queenHistories', 'inspections', 'harvests', 'latestHarvest', 'tags', 'notes.user', 'activities.user', 'hiveSupers');
+        $hive->load('queen', 'queenHistories', 'inspections', 'harvests', 'latestHarvest', 'tags', 'notes.user', 'activities.user', 'hiveSupers', 'states');
         $apiaries = Apiary::where('user_id', auth()->id())->get();
-        $statuses = Hive::getStatusOptions();
         $types = Hive::getTypeOptions();
         $lastInspection = $hive->inspections()->latest('inspection_date')->first();
         $unassignedSupers = HiveSuper::whereNull('hive_id')->get();
+        $states = \App\Models\State::all();
 
-        return view('hives.show', compact('hive', 'apiaries', 'statuses', 'types', 'lastInspection', 'unassignedSupers'));
+        return view('hives.show', compact('hive', 'apiaries', 'types', 'lastInspection', 'unassignedSupers', 'states'));
     }
 
     /**
@@ -134,7 +127,6 @@ class HiveController extends Controller
             'birth_date' => 'nullable|date',
             'location' => 'nullable|string|max:255',
             'location_gps' => 'nullable|string|max:255',
-            'status' => 'required|in:' . implode(',', Hive::getStatusOptions()),
         ]);
 
         $hive->update($validatedData);
@@ -165,7 +157,6 @@ class HiveController extends Controller
             'hive_ids' => 'required|array',
             'hive_ids.*' => 'exists:hives,id',
             'apiary_id' => 'required_if:action,move|exists:apiaries,id',
-            'status' => 'required_if:action,edit|in:' . implode(',', Hive::getStatusOptions()),
             'type' => 'required_if:action,edit|in:' . implode(',', Hive::getTypeOptions()),
             'location' => 'nullable|string|max:255',
             'location_gps' => 'nullable|string|max:255',
@@ -193,7 +184,6 @@ class HiveController extends Controller
                 return response()->json(['success' => true, 'message' => 'Colmenas borradas exitosamente.']);
             case 'edit':
                 $updateData = [
-                    'status' => $validatedData['status'],
                     'type' => $validatedData['type'],
                 ];
                 if (array_key_exists('location', $validatedData) && !is_null($validatedData['location'])) {
@@ -212,5 +202,34 @@ class HiveController extends Controller
         }
 
         return response()->json(['success' => false, 'message' => 'Invalid action.'], 400);
+    }
+
+    public function updateStates(Request $request, Hive $hive)
+    {
+        $request->validate([
+            'states' => 'nullable|array',
+            'states.*' => 'exists:states,id',
+        ]);
+
+        $inspectionStates = $hive->states()->wherePivot('cause', 'like', 'Inspección del%')->get();
+        $newManualStates = $request->input('states', []);
+
+        $statesToSync = [];
+
+        // Add inspection states to the sync list
+        foreach ($inspectionStates as $state) {
+            $statesToSync[$state->id] = ['cause' => $state->pivot->cause];
+        }
+
+        // Add new manual states to the sync list
+        foreach ($newManualStates as $stateId) {
+            if (!isset($statesToSync[$stateId])) {
+                $statesToSync[$stateId] = ['cause' => 'Manual'];
+            }
+        }
+
+        $hive->states()->sync($statesToSync);
+
+        return redirect()->route('hives.show', $hive)->with('success', 'Estados de la colmena actualizados.');
     }
 }
