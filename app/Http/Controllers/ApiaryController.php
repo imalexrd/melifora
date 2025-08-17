@@ -76,13 +76,12 @@ class ApiaryController extends Controller
         $hives = $query->paginate($perPage)->appends($request->query());
         $allApiariesForMoving = Apiary::where('user_id', auth()->id())->where('id', '!=', $apiary->id)->get();
         $allUserApiaries = Apiary::where('user_id', auth()->id())->get();
-        $statuses = Hive::getStatusOptions();
         $types = Hive::getTypeOptions();
         $apiaryStatuses = Apiary::getStatusOptions();
         $apiaryStatusColors = Apiary::getStatusColorMap();
         $averageRating = $apiary->hives()->avg('rating');
 
-        return view('apiaries.show', compact('apiary', 'hives', 'sort', 'direction', 'perPage', 'allApiariesForMoving', 'allUserApiaries', 'statuses', 'types', 'apiaryStatuses', 'apiaryStatusColors', 'averageRating'));
+        return view('apiaries.show', compact('apiary', 'hives', 'sort', 'direction', 'perPage', 'allApiariesForMoving', 'allUserApiaries', 'types', 'apiaryStatuses', 'apiaryStatusColors', 'averageRating'));
     }
 
     /**
