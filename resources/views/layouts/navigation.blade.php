@@ -1,4 +1,4 @@
-<nav class="bg-surface border-b border-gray-100">
+<nav class="bg-surface border-b border-gray-100 dark:bg-dark-surface dark:border-gray-700">
     <!-- =================================================================== -->
     <!-- =================== MENÚ PARA ESCRITORIO (Desktop) ================= -->
     <!-- =================================================================== -->
@@ -62,7 +62,7 @@
 
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-text-light bg-surface hover:text-text-dark focus:outline-none transition ease-in-out duration-150">
+                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-text-light bg-surface hover:text-text-dark focus:outline-none transition ease-in-out duration-150 dark:text-dark-text-light dark:bg-dark-surface dark:hover:text-dark-text-dark">
                             @if (Auth::user()->avatar)
                                 <img src="{{ Auth::user()->avatar }}" alt="User Avatar" class="h-8 w-8 rounded-full object-cover mr-2">
                             @endif
@@ -144,13 +144,13 @@
 </nav>
 
 <!-- BARRA DE NAVEGACIÓN INFERIOR (Solo se muestra en pantallas pequeñas) -->
-<div class="sm:hidden fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200">
+<div class="sm:hidden fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200 dark:bg-dark-surface dark:border-gray-700">
     <div class="grid h-full grid-cols-5 mx-auto">
         @php
             // Define los colores para los estados activo e inactivo. Puedes cambiarlos por los de tu tema.
             // Por ejemplo: 'text-primary' para el color activo.
-            $activeClasses = 'text-blue-600';
-            $inactiveClasses = 'text-gray-500 hover:bg-gray-50';
+            $activeClasses = 'text-blue-600 dark:text-dark-primary';
+            $inactiveClasses = 'text-gray-500 hover:bg-gray-50 dark:text-dark-text-light dark:hover:bg-gray-700';
         @endphp
 
         <!-- Dashboard -->
@@ -158,7 +158,7 @@
             <svg class="w-6 h-6 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12.75 9 9 9-9-9-9-9 9Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 21V3" /></svg>
             <span class="text-xs">Dashboard</span>
             @if(request()->routeIs('dashboard'))
-            <div class="absolute bottom-0 h-1 w-8 bg-blue-600 rounded-t-full"></div>
+            <div class="absolute bottom-0 h-1 w-8 bg-blue-600 rounded-t-full dark:bg-dark-primary"></div>
             @endif
         </a>
 

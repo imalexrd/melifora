@@ -73,10 +73,10 @@
             </div>
 
             <!-- Supers Table -->
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden dark:bg-dark-surface">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white">
-                        <thead class="bg-primary text-text-dark">
+                    <table class="min-w-full bg-white dark:bg-dark-surface">
+                        <thead class="bg-primary text-text-dark dark:bg-dark-primary dark:text-gray-800">
                             <tr>
                                 <th class="py-3 px-4 uppercase font-semibold text-sm">
                                     <input type="checkbox" id="select-all">
@@ -107,18 +107,18 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="text-gray-700">
+                        <tbody class="text-gray-700 dark:text-dark-text-light">
                             @forelse ($hiveSupers as $super)
-                                <tr class="border-b hover:bg-background">
+                                <tr class="border-b hover:bg-background dark:hover:bg-dark-background dark:border-gray-700">
                                     <td class="py-3 px-4">
                                         <input type="checkbox" class="hive-super-checkbox" value="{{ $super->id }}">
                                     </td>
                                     <td class="py-3 px-4">{{ $super->tracking_code }}</td>
                                     <td class="py-3 px-4">
                                         @if ($super->hive)
-                                            <a href="{{ route('hives.show', $super->hive) }}" class="text-sm text-blue-600 hover:text-blue-900 font-semibold">{{ $super->hive->name }}</a>
+                                            <a href="{{ route('hives.show', $super->hive) }}" class="text-sm text-blue-600 hover:text-blue-900 font-semibold dark:text-blue-400 dark:hover:text-blue-300">{{ $super->hive->name }}</a>
                                         @else
-                                            <span class="text-sm text-gray-500">{{ __('No asignada') }}</span>
+                                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('No asignada') }}</span>
                                         @endif
                                     </td>
                                     <td class="py-3 px-4">{{ $super->created_at->format('d/m/Y H:i') }}</td>
@@ -126,9 +126,9 @@
                             @empty
                                 <tr>
                                     <td colspan="4" class="text-center py-12">
-                                        <p class="text-gray-500 text-lg">{{ __('No se encontraron alzas.') }}</p>
+                                        <p class="text-gray-500 text-lg dark:text-gray-400">{{ __('No se encontraron alzas.') }}</p>
                                         @if(request('search'))
-                                            <p class="text-gray-400 mt-2">{{ __('Intenta con otra búsqueda.') }}</p>
+                                            <p class="text-gray-400 mt-2 dark:text-gray-500">{{ __('Intenta con otra búsqueda.') }}</p>
                                         @endif
                                     </td>
                                 </tr>
@@ -136,7 +136,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="p-4 bg-white">
+                <div class="p-4 bg-white dark:bg-dark-surface">
                     {{ $hiveSupers->links() }}
                 </div>
             </div>
@@ -145,17 +145,17 @@
 
     <!-- Modals -->
     <div id="delete-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-dark-surface dark:border-gray-700">
             <div class="mt-3 text-center">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">{{ __('Borrar Alzas') }}</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-dark-text-dark">{{ __('Borrar Alzas') }}</h3>
                 <div class="mt-2 px-7 py-3">
-                    <p>{{ __('¿Estás seguro de que quieres borrar las alzas seleccionadas?') }}</p>
+                    <p class="dark:text-dark-text-light">{{ __('¿Estás seguro de que quieres borrar las alzas seleccionadas?') }}</p>
                 </div>
                 <div class="items-center px-4 py-3">
                     <button id="confirm-delete-button" class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300">
                         {{ __('Confirmar') }}
                     </button>
-                    <button id="cancel-delete-button" class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                    <button id="cancel-delete-button" class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500">
                         {{ __('Cancelar') }}
                     </button>
                 </div>
@@ -164,11 +164,11 @@
     </div>
 
     <div id="assign-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-dark-surface dark:border-gray-700">
             <div class="mt-3 text-center">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">{{ __('Asignar Alzas a Colmena') }}</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-dark-text-dark">{{ __('Asignar Alzas a Colmena') }}</h3>
                 <div class="mt-2 px-7 py-3">
-                    <select id="assign-hive-select" class="w-full rounded-md border-gray-300 shadow-sm">
+                    <select id="assign-hive-select" class="w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
                         <option value="">{{ __('Selecciona una colmena') }}</option>
                         @foreach ($allHives as $hive)
                             <option value="{{ $hive->id }}">{{ $hive->name }}</option>
@@ -179,7 +179,7 @@
                     <button id="confirm-assign-button" class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
                         {{ __('Confirmar') }}
                     </button>
-                    <button id="cancel-assign-button" class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                    <button id="cancel-assign-button" class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500">
                         {{ __('Cancelar') }}
                     </button>
                 </div>

@@ -42,7 +42,7 @@
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-white">
-                        <thead class="bg-primary text-text-dark">
+                        <thead class="bg-primary text-text-dark dark:bg-dark-primary dark:text-gray-800">
                             <tr>
                                 <th class="py-3 px-4 uppercase font-semibold text-sm">
                                     <input type="checkbox" id="select-all">
@@ -103,9 +103,9 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="text-gray-700">
+                        <tbody class="text-gray-700 dark:text-dark-text-light">
                             @forelse ($hives as $hive)
-                                <tr class="border-b hover:bg-background">
+                                <tr class="border-b hover:bg-background dark:hover:bg-dark-background dark:border-gray-700">
                                     <td class="py-3 px-4">
                                         <input type="checkbox" class="hive-checkbox" value="{{ $hive->id }}">
                                     </td>
@@ -130,11 +130,11 @@
                                         </div>
                                     </td>
                                     <td class="py-3 px-4">
-                                        <a href="{{ route('hives.show', $hive) }}" class="text-sm text-green-600 hover:text-green-900 font-semibold">{{ $hive->name }}</a>
+                                        <a href="{{ route('hives.show', $hive) }}" class="text-sm text-green-600 hover:text-green-900 font-semibold dark:text-green-400 dark:hover:text-green-300">{{ $hive->name }}</a>
                                     </td>
                                     <td class="py-3 px-4">
                                         @if ($hive->apiary)
-                                            <a href="{{ route('apiaries.show', $hive->apiary) }}" class="text-sm text-blue-600 hover:text-blue-900 font-semibold">{{ $hive->apiary->name }}</a>
+                                            <a href="{{ route('apiaries.show', $hive->apiary) }}" class="text-sm text-blue-600 hover:text-blue-900 font-semibold dark:text-blue-400 dark:hover:text-blue-300">{{ $hive->apiary->name }}</a>
                                         @else
                                             N/A
                                         @endif
@@ -145,12 +145,12 @@
                                     <td class="py-3 px-4">{{ $hive->type }}</td>
                                     <td class="py-3 px-4">
                                         <div class="flex items-center space-x-2">
-                                            <a href="{{ route('hives.show', $hive) }}" class="text-sm text-green-600 hover:text-green-900 font-semibold">Ver</a>
-                                            <a href="{{ route('hives.edit', $hive) }}" class="text-sm text-blue-600 hover:text-blue-900 font-semibold">Editar</a>
+                                            <a href="{{ route('hives.show', $hive) }}" class="text-sm text-green-600 hover:text-green-900 font-semibold dark:text-green-400 dark:hover:text-green-300">Ver</a>
+                                            <a href="{{ route('hives.edit', $hive) }}" class="text-sm text-blue-600 hover:text-blue-900 font-semibold dark:text-blue-400 dark:hover:text-blue-300">Editar</a>
                                             <form action="{{ route('hives.destroy', $hive) }}" method="POST" onsubmit="return confirm('¿Estás seguro?');" class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-sm text-red-600 hover:text-red-900 font-semibold">Eliminar</button>
+                                                <button type="submit" class="text-sm text-red-600 hover:text-red-900 font-semibold dark:text-red-400 dark:hover:text-red-300">Eliminar</button>
                                             </form>
                                         </div>
                                     </td>
@@ -158,11 +158,11 @@
                             @empty
                                 <tr>
                                     <td colspan="9" class="text-center py-12">
-                                        <p class="text-gray-500 text-lg">{{ __('No se encontraron colmenas.') }}</p>
+                                        <p class="text-gray-500 text-lg dark:text-gray-400">{{ __('No se encontraron colmenas.') }}</p>
                                         @if(request('search'))
-                                            <p class="text-gray-400 mt-2">{{ __('Intenta con otra búsqueda.') }}</p>
+                                            <p class="text-gray-400 mt-2 dark:text-gray-500">{{ __('Intenta con otra búsqueda.') }}</p>
                                         @else
-                                            <p class="text-gray-400 mt-2">{{ __('¡Crea tu primera colmena para empezar a gestionar tus abejas!') }}</p>
+                                            <p class="text-gray-400 mt-2 dark:text-gray-500">{{ __('¡Crea tu primera colmena para empezar a gestionar tus abejas!') }}</p>
                                         @endif
                                     </td>
                                 </tr>
@@ -170,7 +170,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="p-4 bg-white">
+                <div class="p-4 bg-white dark:bg-dark-surface">
                     {{ $hives->links() }}
                 </div>
             </div>
