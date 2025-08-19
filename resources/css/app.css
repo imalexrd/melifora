@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    body {
+        @apply bg-background text-text-dark dark:bg-dark-background dark:text-dark-text-dark;
+    }
+}
+
 /* Custom Slider Styles */
 input[type="range"].slider-blue {
     -webkit-appearance: none;

@@ -50,6 +50,16 @@
 
             <!-- Derecha: Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <!-- Theme switcher -->
+                <button @click="toggle()" class="mr-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                    <svg x-show="!isDark" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-12.66l-.707.707M4.34 19.66l-.707.707M21 12h-1M4 12H3m16.66 8.66l-.707-.707M4.34 4.34l-.707-.707" />
+                    </svg>
+                    <svg x-show="isDark" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-text-light bg-surface hover:text-text-dark focus:outline-none transition ease-in-out duration-150">
@@ -94,6 +104,15 @@
     
     <!-- BARRA SUPERIOR MÓVIL (Solo se muestra en pantallas pequeñas) -->
     <div class="sm:hidden flex items-center justify-between h-16 px-4">
+        <!-- Theme switcher -->
+        <button @click="toggle()" class="mr-2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+            <svg x-show="!isDark" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-12.66l-.707.707M4.34 19.66l-.707.707M21 12h-1M4 12H3m16.66 8.66l-.707-.707M4.34 4.34l-.707-.707" />
+            </svg>
+            <svg x-show="isDark" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+        </button>
         <!-- Barra de Búsqueda -->
         <div class="flex-grow mx-2 relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
