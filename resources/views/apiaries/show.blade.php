@@ -4,7 +4,7 @@
             <nav class="flex" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-3">
                     <li class="inline-flex items-center">
-                        <a href="{{ route('apiaries.index') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                        <a href="{{ route('apiaries.index') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-dark-text-light dark:hover:text-white">
                             <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
                             Apiarios
                         </a>
@@ -12,7 +12,7 @@
                     <li aria-current="page">
                         <div class="flex items-center">
                             <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                            <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">{{ $apiary->name }}</span>
+                            <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2 dark:text-gray-400">{{ $apiary->name }}</span>
                         </div>
                     </li>
                 </ol>
@@ -33,8 +33,8 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div class="p-6 bg-white border-b border-gray-200">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden dark:bg-dark-surface">
+                <div class="p-6 bg-white border-b border-gray-200 dark:bg-dark-surface dark:border-gray-700">
                     <div class="flex flex-col md:flex-row md:justify-between">
                         <!-- Left Side: Image, Name, Location -->
                         <div class="flex items-center mb-4 md:mb-0">
@@ -45,12 +45,12 @@
                             </div>
                             <div class="flex-grow">
                                 <div class="flex items-center gap-4">
-                                    <h2 class="text-3xl font-bold text-gray-900">{{ $apiary->name }}</h2>
+                                    <h2 class="text-3xl font-bold text-gray-900 dark:text-dark-text-dark">{{ $apiary->name }}</h2>
                                     <span class="px-3 py-1 text-sm font-semibold text-white rounded-full {{ $apiaryStatusColors[$apiary->status] ?? 'bg-gray-400' }}">
                                         {{ $apiary->status }}
                                     </span>
                                 </div>
-                                <p class="text-gray-600 flex items-center mt-2">
+                                <p class="text-gray-600 flex items-center mt-2 dark:text-dark-text-light">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                                     </svg>
@@ -68,32 +68,32 @@
                         </div>
                         <!-- Right Side: Stats -->
                         <div class="flex items-center space-x-4">
-                            <div class="p-4 bg-yellow-50 rounded-lg text-center shadow">
-                                <p class="text-sm font-bold text-yellow-800">{{ __('Colmenas') }}</p>
-                                <p class="text-3xl font-extrabold text-yellow-900">{{ $hives->total() }}</p>
+                            <div class="p-4 bg-yellow-50 rounded-lg text-center shadow dark:bg-gray-700">
+                                <p class="text-sm font-bold text-yellow-800 dark:text-yellow-300">{{ __('Colmenas') }}</p>
+                                <p class="text-3xl font-extrabold text-yellow-900 dark:text-yellow-100">{{ $hives->total() }}</p>
                             </div>
-                            <div class="p-4 bg-green-50 rounded-lg text-center shadow">
-                                <p class="text-sm font-bold text-green-800">{{ __('Rating Promedio') }}</p>
+                            <div class="p-4 bg-green-50 rounded-lg text-center shadow dark:bg-gray-700">
+                                <p class="text-sm font-bold text-green-800 dark:text-green-300">{{ __('Rating Promedio') }}</p>
                                 @if($averageRating)
-                                    <p class="text-3xl font-extrabold text-green-900 flex items-center justify-center">
+                                    <p class="text-3xl font-extrabold text-green-900 flex items-center justify-center dark:text-green-100">
                                         {{ number_format($averageRating, 1) }}
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-1 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
                                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                         </svg>
                                     </p>
                                 @else
-                                    <p class="text-2xl font-bold text-green-800">N/A</p>
+                                    <p class="text-2xl font-bold text-green-800 dark:text-green-300">N/A</p>
                                 @endif
                             </div>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-600 mt-6 border-t pt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-600 mt-6 border-t pt-6 dark:border-gray-700 dark:text-dark-text-light">
                         <div>
-                            <p class="text-gray-500 font-semibold">{{ __('Creado el') }}</p>
+                            <p class="text-gray-500 font-semibold dark:text-gray-400">{{ __('Creado el') }}</p>
                             <p class="font-medium">{{ $apiary->created_at->format('d/m/Y H:i') }}</p>
                         </div>
                         <div>
-                            <p class="text-gray-500 font-semibold">{{ __('Actualizado el') }}</p>
+                            <p class="text-gray-500 font-semibold dark:text-gray-400">{{ __('Actualizado el') }}</p>
                             <p class="font-medium">{{ $apiary->updated_at->format('d/m/Y H:i') }}</p>
                         </div>
                     </div>
@@ -101,7 +101,7 @@
             </div>
 
             <div class="mt-8">
-                <div id="edit-apiary-form" class="hidden bg-white rounded-lg shadow-md overflow-hidden p-6 mb-8">
+                <div id="edit-apiary-form" class="hidden bg-white rounded-lg shadow-md overflow-hidden p-6 mb-8 dark:bg-dark-surface">
                     <form method="POST" action="{{ route('apiaries.update', $apiary) }}">
                         @csrf
                         @method('PATCH')
@@ -109,15 +109,15 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Name -->
                             <div>
-                                <x-input-label for="name" :value="__('Nombre del Apiario')" />
-                                <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name', $apiary->name)" required autofocus autocomplete="name" />
+                                <x-input-label for="name" :value="__('Nombre del Apiario')" class="dark:text-dark-text-light" />
+                                <x-text-input id="name" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="text" name="name" :value="old('name', $apiary->name)" required autofocus autocomplete="name" />
                                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
                             </div>
 
                             <!-- Status -->
                             <div>
-                                <x-input-label for="status" :value="__('Estado')" />
-                                <select name="status" id="status" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring focus:ring-yellow-200 focus:ring-opacity-50">
+                                <x-input-label for="status" :value="__('Estado')" class="dark:text-dark-text-light" />
+                                <select name="status" id="status" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring focus:ring-yellow-200 focus:ring-opacity-50 dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600">
                                     @foreach ($apiaryStatuses as $status)
                                         <option value="{{ $status }}" @if(old('status', $apiary->status) == $status) selected @endif>{{ $status }}</option>
                                     @endforeach
@@ -127,16 +127,16 @@
 
                             <!-- Location -->
                             <div>
-                                <x-input-label for="location" :value="__('Ubicación')" />
-                                <x-text-input id="location" class="block mt-1 w-full" type="text" name="location" :value="old('location', $apiary->location)" required autocomplete="location" />
+                                <x-input-label for="location" :value="__('Ubicación')" class="dark:text-dark-text-light" />
+                                <x-text-input id="location" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="text" name="location" :value="old('location', $apiary->location)" required autocomplete="location" />
                                 <x-input-error :messages="$errors->get('location')" class="mt-2" />
                             </div>
 
                             <!-- Location GPS -->
                             <div>
-                                <x-input-label for="location_gps" :value="__('Coordenadas GPS')" />
+                                <x-input-label for="location_gps" :value="__('Coordenadas GPS')" class="dark:text-dark-text-light" />
                                 <div class="flex items-center gap-2">
-                                    <x-text-input id="location_gps" class="block mt-1 w-full" type="text" name="location_gps" :value="old('location_gps', $apiary->location_gps)" autocomplete="off" />
+                                    <x-text-input id="location_gps" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="text" name="location_gps" :value="old('location_gps', $apiary->location_gps)" autocomplete="off" />
                                     <button type="button" id="open-map-modal" class="whitespace-nowrap inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:mr-2" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
@@ -157,15 +157,15 @@
                 </div>
 
                 <!-- Tab Navigation -->
-                <div class="border-b border-gray-200">
+                <div class="border-b border-gray-200 dark:border-gray-700">
                     <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                        <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-yellow-500 text-yellow-600" data-tab="hives">
+                        <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-yellow-500 text-yellow-600 dark:border-yellow-400 dark:text-yellow-300" data-tab="hives">
                             Colmenas
                         </button>
-                        <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="notes">
+                        <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-500" data-tab="notes">
                             Notas
                         </button>
-                        <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="activity">
+                        <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-500" data-tab="activity">
                             Actividad
                         </button>
                     </nav>
@@ -177,10 +177,10 @@
                     <div class="mb-4">
                     <form action="{{ route('apiaries.show', $apiary) }}" method="GET" class="flex flex-col sm:flex-row gap-4">
                         <div class="flex-grow">
-                            <input type="text" name="search" class="w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200" placeholder="Buscar colmenas..." value="{{ request('search') }}">
+                            <input type="text" name="search" class="w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200 dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark" placeholder="Buscar colmenas..." value="{{ request('search') }}">
                         </div>
                         <div class="flex items-center gap-2">
-                            <select name="per_page" onchange="this.form.submit()" class="rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200">
+                            <select name="per_page" onchange="this.form.submit()" class="rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200 dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
                                 <option value="10" @if($perPage == 10) selected @endif>10 por página</option>
                                 <option value="25" @if($perPage == 25) selected @endif>25 por página</option>
                                 <option value="50" @if($perPage == 50) selected @endif>50 por página</option>
@@ -201,19 +201,19 @@
                     <button id="delete-button" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">{{ __('Borrar') }}</button>
                 </div>
 
-                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden dark:bg-dark-surface">
                     <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white">
-                            <thead class="bg-yellow-500 text-white">
+                        <table class="min-w-full bg-white dark:bg-dark-surface">
+                            <thead class="bg-yellow-500 text-white dark:bg-dark-primary dark:text-gray-800">
                                 <tr>
                                     <th class="py-3 px-4 uppercase font-semibold text-sm text-left">
-                                        <input type="checkbox" id="select-all" class="rounded border-gray-300 text-yellow-600 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50">
+                                        <input type="checkbox" id="select-all" class="rounded border-gray-300 text-yellow-600 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-yellow-400">
                                     </th>
                                     <th class="py-3 px-4 uppercase font-semibold text-sm text-left">
                                         {{ __('Estado') }}
                                     </th>
                                     <th class="py-3 px-4 uppercase font-semibold text-sm text-left">
-                                        <a class="hover:text-yellow-200" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'name', 'direction' => $sort === 'name' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                        <a class="hover:text-yellow-200 dark:hover:text-yellow-100" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'name', 'direction' => $sort === 'name' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
                                             {{ __('Nombre') }}
                                             @if ($sort === 'name')
                                                 <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
@@ -221,7 +221,7 @@
                                         </a>
                                     </th>
                                     <th class="py-3 px-4 uppercase font-semibold text-sm text-left">
-                                        <a class="hover:text-yellow-200" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'updated_at', 'direction' => $sort === 'updated_at' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                        <a class="hover:text-yellow-200 dark:hover:text-yellow-100" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'updated_at', 'direction' => $sort === 'updated_at' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
                                             {{ __('Ultima Modificacion') }}
                                             @if ($sort === 'updated_at')
                                                 <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
@@ -229,7 +229,7 @@
                                         </a>
                                     </th>
                                     <th class="py-3 px-4 uppercase font-semibold text-sm text-left">
-                                        <a class="hover:text-yellow-200" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'birth_date', 'direction' => $sort === 'birth_date' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                        <a class="hover:text-yellow-200 dark:hover:text-yellow-100" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'birth_date', 'direction' => $sort === 'birth_date' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
                                             {{ __('Fecha de nacimiento') }}
                                             @if ($sort === 'birth_date')
                                                 <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
@@ -237,7 +237,7 @@
                                         </a>
                                     </th>
                                     <th class="py-3 px-4 uppercase font-semibold text-sm text-left">
-                                        <a class="hover:text-yellow-200" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'rating', 'direction' => $sort === 'rating' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                        <a class="hover:text-yellow-200 dark:hover:text-yellow-100" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'rating', 'direction' => $sort === 'rating' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
                                             {{ __('Rating') }}
                                             @if ($sort === 'rating')
                                                 <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
@@ -245,7 +245,7 @@
                                         </a>
                                     </th>
                                     <th class="py-3 px-4 uppercase font-semibold text-sm text-left">
-                                        <a class="hover:text-yellow-200" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'type', 'direction' => $sort === 'type' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                        <a class="hover:text-yellow-200 dark:hover:text-yellow-100" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'type', 'direction' => $sort === 'type' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
                                             {{ __('Tipo') }}
                                             @if ($sort === 'type')
                                                 <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
@@ -253,7 +253,7 @@
                                         </a>
                                     </th>
                                     <th class="py-3 px-4 uppercase font-semibold text-sm text-left">
-                                        <a class="hover:text-yellow-200" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'location', 'direction' => $sort === 'location' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
+                                        <a class="hover:text-yellow-200 dark:hover:text-yellow-100" href="{{ route('apiaries.show', array_merge(request()->query(), ['apiary' => $apiary, 'sort' => 'location', 'direction' => $sort === 'location' && $direction === 'asc' ? 'desc' : 'asc'])) }}">
                                             {{ __('Ubicación') }}
                                             @if ($sort === 'location')
                                                 <span class="ml-1">{{ $direction === 'asc' ? '▲' : '▼' }}</span>
@@ -262,11 +262,11 @@
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="text-gray-700">
+                            <tbody class="text-gray-700 dark:text-dark-text-light">
                                 @forelse ($hives as $hive)
-                                    <tr class="border-b hover:bg-yellow-50">
+                                    <tr class="border-b hover:bg-yellow-50 dark:border-gray-700 dark:hover:bg-gray-700">
                                         <td class="py-3 px-4">
-                                            <input type="checkbox" class="hive-checkbox rounded border-gray-300 text-yellow-600 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50" value="{{ $hive->id }}">
+                                            <input type="checkbox" class="hive-checkbox rounded border-gray-300 text-yellow-600 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-yellow-400" value="{{ $hive->id }}">
                                         </td>
                                         <td class="py-3 px-4">
                                             <div class="flex flex-wrap gap-1">
@@ -289,7 +289,7 @@
                                             </div>
                                         </td>
                                         <td class="py-3 px-4">
-                                            <a href="{{ route('hives.show', $hive) }}" class="text-sm text-green-600 hover:text-green-900 font-semibold">{{ $hive->name }}</a>
+                                            <a href="{{ route('hives.show', $hive) }}" class="text-sm text-green-600 hover:text-green-900 font-semibold dark:text-green-400 dark:hover:text-green-300">{{ $hive->name }}</a>
                                         </td>
                                         <td class="py-3 px-4">{{ $hive->updated_at->format('d/m/Y H:i') }}</td>
                                         <td class="py-3 px-4">{{ $hive->birth_date ? $hive->birth_date->format('d/m/Y') : 'N/A' }}</td>
@@ -298,7 +298,7 @@
                                         <td class="py-3 px-4">
                                             {{ $hive->location }}
                                             @if($hive->location_gps)
-                                            <a href="https://www.google.com/maps/search/?api=1&query={{ $hive->location_gps }}" target="_blank" class="text-blue-500 hover:text-blue-700 ml-1">
+                                            <a href="https://www.google.com/maps/search/?api=1&query={{ $hive->location_gps }}" target="_blank" class="text-blue-500 hover:text-blue-700 ml-1 dark:text-blue-400 dark:hover:text-blue-300">
                                                 (Ver mapa)
                                             </a>
                                             @endif
@@ -307,25 +307,25 @@
                                 @empty
                                     <tr>
                                         <td colspan="8" class="text-center py-12">
-                                            <p class="text-gray-500 text-lg">{{ __('No hay colmenas que coincidan con la búsqueda.') }}</p>
+                                            <p class="text-gray-500 text-lg dark:text-gray-400">{{ __('No hay colmenas que coincidan con la búsqueda.') }}</p>
                                         </td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
-                    <div class="p-4 bg-white">
+                    <div class="p-4 bg-white dark:bg-dark-surface">
                         {{ $hives->links() }}
                     </div>
                 </div>
                 </div>
                 <!-- Notes Tab -->
                 <div id="notes-content" class="tab-content hidden py-6">
-                    <div class="bg-white rounded-lg shadow-md">
+                    <div class="bg-white rounded-lg shadow-md dark:bg-dark-surface">
                         <div class="p-6">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Añadir una Nota</h3>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4 dark:text-dark-text-dark">Añadir una Nota</h3>
                             <form id="add-note-form">
-                                <textarea id="note-content" name="content" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200" placeholder="Escribe tu nota aquí..."></textarea>
+                                <textarea id="note-content" name="content" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200 dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark" placeholder="Escribe tu nota aquí..."></textarea>
                                 <div class="flex justify-end mt-4">
                                     <x-primary-button type="submit">
                                         {{ __('Guardar Nota') }}
@@ -336,13 +336,13 @@
                     </div>
 
                     <div class="mt-8">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Historial de Notas</h3>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 dark:text-dark-text-dark">Historial de Notas</h3>
                         <div id="notes-list" class="space-y-6">
                             @forelse ($apiary->notes as $note)
                                 @include('apiaries.partials.note', ['note' => $note])
                             @empty
                                 <div id="no-notes-message" class="text-center py-12">
-                                    <p class="text-gray-500 text-lg">{{ __('No hay notas para este apiario.') }}</p>
+                                    <p class="text-gray-500 text-lg dark:text-dark-text-light">{{ __('No hay notas para este apiario.') }}</p>
                                 </div>
                             @endforelse
                         </div>
@@ -351,22 +351,22 @@
 
                 <!-- Activity Tab -->
                 <div id="activity-content" class="tab-content hidden py-6">
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden dark:bg-dark-surface">
                         <div class="p-6">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Historial de Actividad</h3>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4 dark:text-dark-text-dark">Historial de Actividad</h3>
                         </div>
-                        <ul class="divide-y divide-gray-200">
+                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                             @forelse ($apiary->activities as $activity)
                                 <li class="p-4 sm:p-6">
                                     <div class="flex items-center">
-                                        <div class="flex-shrink-0 bg-gray-200 rounded-full p-2">
-                                             <svg class="h-6 w-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                        <div class="flex-shrink-0 bg-gray-200 rounded-full p-2 dark:bg-gray-700">
+                                             <svg class="h-6 w-6 text-gray-600 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
                                         </div>
                                         <div class="ml-4 flex-grow">
-                                            <p class="text-sm text-gray-800">{{ $activity->description }}</p>
-                                            <p class="text-xs text-gray-500">
+                                            <p class="text-sm text-gray-800 dark:text-dark-text-dark">{{ $activity->description }}</p>
+                                            <p class="text-xs text-gray-500 dark:text-dark-text-light">
                                                 {{ $activity->created_at->diffForHumans() }}
                                                 @if ($activity->user)
                                                     por {{ $activity->user->name }}
@@ -377,7 +377,7 @@
                                 </li>
                             @empty
                                 <li class="p-6 text-center">
-                                    <p class="text-gray-500">{{ __('No hay actividad registrada para este apiario.') }}</p>
+                                    <p class="text-gray-500 dark:text-dark-text-light">{{ __('No hay actividad registrada para este apiario.') }}</p>
                                 </li>
                             @endforelse
                         </ul>
@@ -391,15 +391,15 @@
 
     <!-- Bulk Edit Modal -->
     <div id="edit-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-dark-surface dark:border-gray-700">
             <div class="mt-3">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 text-center">{{ __('Editar Colmenas en Lote') }}</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 text-center dark:text-dark-text-dark">{{ __('Editar Colmenas en Lote') }}</h3>
                 <div class="mt-4 px-7 py-3">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Type -->
                         <div>
-                            <label for="bulk-type" class="block font-medium text-sm text-gray-700">{{ __('Tipo') }}</label>
-                            <select id="bulk-type" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200">
+                            <label for="bulk-type" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Tipo') }}</label>
+                            <select id="bulk-type" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50 dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
                                 @foreach ($types as $type)
                                     <option value="{{ $type }}">{{ $type }}</option>
                                 @endforeach
@@ -409,15 +409,15 @@
 
                     <!-- Location -->
                     <div class="mt-6">
-                        <label for="bulk-location" class="block font-medium text-sm text-gray-700">{{ __('Nombre de la Ubicación (Opcional)') }}</label>
-                        <input id="bulk-location" type="text" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200" autocomplete="off">
+                        <label for="bulk-location" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Nombre de la Ubicación (Opcional)') }}</label>
+                        <input id="bulk-location" type="text" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50 dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark" autocomplete="off">
                     </div>
 
                     <!-- Location GPS -->
                     <div class="mt-4">
-                        <label for="bulk-location-gps" class="block font-medium text-sm text-gray-700">{{ __('Coordenadas GPS (Opcional)') }}</label>
+                        <label for="bulk-location-gps" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Coordenadas GPS (Opcional)') }}</label>
                         <div class="flex items-center gap-2 mt-1">
-                            <input id="bulk-location-gps" type="text" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200" autocomplete="off">
+                            <input id="bulk-location-gps" type="text" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50 dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark" autocomplete="off">
                             <button type="button" id="open-bulk-map-modal" class="whitespace-nowrap inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:mr-2" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
@@ -425,14 +425,14 @@
                                 <span class="hidden md:inline">{{ __('Seleccionar en Mapa') }}</span>
                             </button>
                         </div>
-                        <p class="mt-2 text-sm text-gray-500">Dejar los campos de ubicación en blanco para no modificarlos.</p>
+                        <p class="mt-2 text-sm text-gray-500 dark:text-dark-text-light">Dejar los campos de ubicación en blanco para no modificarlos.</p>
                     </div>
                 </div>
                 <div class="items-center px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                     <button id="confirm-edit-button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-yellow-600 text-base font-medium text-white hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 sm:ml-3 sm:w-auto sm:text-sm">
                         {{ __('Confirmar Cambios') }}
                     </button>
-                    <button id="cancel-edit-button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm">
+                    <button id="cancel-edit-button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500 dark:border-gray-700">
                         {{ __('Cancelar') }}
                     </button>
                 </div>
@@ -442,11 +442,11 @@
 
     <!-- Move Modal -->
     <div id="move-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-dark-surface dark:border-gray-700">
             <div class="mt-3 text-center">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">{{ __('Mover Colmenas') }}</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-dark-text-dark">{{ __('Mover Colmenas') }}</h3>
                 <div class="mt-2 px-7 py-3">
-                    <select id="move-apiary-select" class="w-full rounded-md border-gray-300 shadow-sm">
+                    <select id="move-apiary-select" class="w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
                         @foreach ($allApiariesForMoving as $apiaryOption)
                             <option value="{{ $apiaryOption->id }}">{{ $apiaryOption->name }}</option>
                         @endforeach
@@ -456,7 +456,7 @@
                     <button id="confirm-move-button" class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
                         {{ __('Confirmar') }}
                     </button>
-                    <button id="cancel-move-button" class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                    <button id="cancel-move-button" class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500">
                         {{ __('Cancelar') }}
                     </button>
                 </div>
@@ -466,17 +466,17 @@
 
     <!-- Delete Modal -->
     <div id="delete-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-dark-surface dark:border-gray-700">
             <div class="mt-3 text-center">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">{{ __('Borrar Colmenas') }}</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-dark-text-dark">{{ __('Borrar Colmenas') }}</h3>
                 <div class="mt-2 px-7 py-3">
-                    <p>{{ __('¿Estás seguro de que quieres borrar las colmenas seleccionadas?') }}</p>
+                    <p class="dark:text-dark-text-light">{{ __('¿Estás seguro de que quieres borrar las colmenas seleccionadas?') }}</p>
                 </div>
                 <div class="items-center px-4 py-3">
                     <button id="confirm-delete-button" class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300">
                         {{ __('Confirmar') }}
                     </button>
-                    <button id="cancel-delete-button" class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                    <button id="cancel-delete-button" class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500">
                         {{ __('Cancelar') }}
                     </button>
                 </div>
@@ -786,34 +786,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
     <!-- Delete Apiary Modal -->
 <div id="delete-apiary-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white dark:bg-dark-surface dark:border-gray-700">
         <div class="mt-3 text-center">
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900">
+                <svg class="h-6 w-6 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
             </div>
-            <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4">{{ __('Borrar Apiario') }}</h3>
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4 dark:text-dark-text-dark">{{ __('Borrar Apiario') }}</h3>
             <div class="mt-2 px-7 py-3">
-                <p class="text-sm text-gray-500">
+                <p class="text-sm text-gray-500 dark:text-dark-text-light">
                     {{ __('¿Estás seguro de que quieres borrar este apiario?') }}
                 </p>
                 @if($apiary->hives()->count() > 0)
                     <div class="mt-4 text-left">
-                        <p class="text-sm font-semibold text-gray-700">{{ __('Este apiario contiene') }} {{ $apiary->hives()->count() }} {{ __('colmena(s).') }}</p>
-                        <p class="text-sm text-gray-600 mt-2">{{ __('¿Qué te gustaría hacer con estas colmenas?') }}</p>
+                        <p class="text-sm font-semibold text-gray-700 dark:text-dark-text-light">{{ __('Este apiario contiene') }} {{ $apiary->hives()->count() }} {{ __('colmena(s).') }}</p>
+                        <p class="text-sm text-gray-600 mt-2 dark:text-dark-text-light">{{ __('¿Qué te gustaría hacer con estas colmenas?') }}</p>
                         <div class="mt-3 space-y-2">
                             <label for="delete_hives" class="flex items-center">
                                 <input type="radio" id="delete_hives" name="hives_action" value="delete" class="text-red-600 focus:ring-red-500" checked>
-                                <span class="ml-2 text-sm text-gray-700">{{ __('Borrar todas las colmenas de este apiario') }}</span>
+                                <span class="ml-2 text-sm text-gray-700 dark:text-dark-text-light">{{ __('Borrar todas las colmenas de este apiario') }}</span>
                             </label>
                             @if($allApiariesForMoving->count() > 0)
                             <label for="move_hives" class="flex items-center">
                                 <input type="radio" id="move_hives" name="hives_action" value="move" class="text-yellow-600 focus:ring-yellow-500">
-                                <span class="ml-2 text-sm text-gray-700">{{ __('Mover las colmenas a otro apiario') }}</span>
+                                <span class="ml-2 text-sm text-gray-700 dark:text-dark-text-light">{{ __('Mover las colmenas a otro apiario') }}</span>
                             </label>
                             <div id="move_hives_to_apiary_selector" class="hidden ml-6 mt-2">
-                                <select id="move_to_apiary_id" name="move_to_apiary_id" class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200">
+                                <select id="move_to_apiary_id" name="move_to_apiary_id" class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring-yellow-200 dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
                                     @foreach($allApiariesForMoving as $targetApiary)
                                         <option value="{{ $targetApiary->id }}">{{ $targetApiary->name }}</option>
                                     @endforeach
@@ -822,7 +822,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             @else
                             <label for="move_hives_disabled" class="flex items-center cursor-not-allowed">
                                 <input type="radio" id="move_hives_disabled" name="hives_action" value="move" disabled class="text-gray-400">
-                                <span class="ml-2 text-sm text-gray-500">{{ __('Mover las colmenas a otro apiario (No hay otros apiarios disponibles)') }}</span>
+                                <span class="ml-2 text-sm text-gray-500 dark:text-dark-text-light">{{ __('Mover las colmenas a otro apiario (No hay otros apiarios disponibles)') }}</span>
                             </label>
                             @endif
                         </div>
@@ -839,7 +839,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         {{ __('Confirmar Borrado') }}
                     </button>
                 </form>
-                <button id="cancel-delete-apiary-button" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm">
+                <button id="cancel-delete-apiary-button" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500 dark:border-gray-700">
                     {{ __('Cancelar') }}
                 </button>
             </div>

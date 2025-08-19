@@ -1,8 +1,8 @@
 <div class="mt-8">
-    <h3 class="text-xl font-semibold text-gray-800 mb-4">Historial de Cosechas</h3>
+    <h3 class="text-xl font-semibold text-gray-800 mb-4 dark:text-dark-text-dark">Historial de Cosechas</h3>
     <div class="space-y-6">
         @forelse ($hive->harvests->sortByDesc('harvest_date') as $harvest)
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden dark:bg-dark-surface">
                 <div class="p-6 sm:flex sm:items-center sm:justify-between">
                     <div class="sm:flex sm:items-center">
                         <div class="flex-shrink-0">
@@ -11,24 +11,24 @@
                             </svg>
                         </div>
                         <div class="mt-4 sm:mt-0 sm:ml-6 text-center sm:text-left">
-                            <p class="text-xl font-bold text-gray-900">{{ $harvest->quantity_kg }} kg</p>
-                            <p class="text-sm text-gray-600">{{ $harvest->harvest_date->format('d/m/Y') }}</p>
+                            <p class="text-xl font-bold text-gray-900 dark:text-dark-text-dark">{{ $harvest->quantity_kg }} kg</p>
+                            <p class="text-sm text-gray-600 dark:text-dark-text-light">{{ $harvest->harvest_date->format('d/m/Y') }}</p>
                         </div>
                     </div>
                     <div class="mt-4 sm:mt-0 text-center sm:text-right">
-                        <p class="text-sm text-gray-600">Origen: {{ $harvest->origin }}</p>
-                        <p class="text-sm text-gray-600">Color: {{ $harvest->color_tone }}</p>
+                        <p class="text-sm text-gray-600 dark:text-dark-text-light">Origen: {{ $harvest->origin }}</p>
+                        <p class="text-sm text-gray-600 dark:text-dark-text-light">Color: {{ $harvest->color_tone }}</p>
                     </div>
                 </div>
                 @if ($harvest->notes)
-                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                    <p class="text-sm text-gray-700">{{ $harvest->notes }}</p>
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
+                    <p class="text-sm text-gray-700 dark:text-dark-text-light">{{ $harvest->notes }}</p>
                 </div>
                 @endif
             </div>
         @empty
             <div class="text-center py-12">
-                <p class="text-gray-500 text-lg">No hay cosechas registradas para esta colmena.</p>
+                <p class="text-gray-500 text-lg dark:text-dark-text-light">No hay cosechas registradas para esta colmena.</p>
             </div>
         @endforelse
     </div>

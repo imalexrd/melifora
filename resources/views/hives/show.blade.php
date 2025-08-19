@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-dark-text-dark">
                 {{ __('Detalles de la Colmena') }}: {{ $hive->name }}
             </h2>
             <div class="flex items-center space-x-2">
@@ -21,14 +21,14 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Hive Header Card -->
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6 dark:bg-dark-surface">
                 <div class="p-6 flex items-center">
                     <img src="https://placehold.co/100x100/FBBF24/333333?text=Colmena" alt="Hive Image" class="w-24 h-24 rounded-lg mr-6">
                     <div class="flex-grow">
                         <div class="flex justify-between items-start">
                             <div>
-                                <h3 class="text-2xl font-bold text-gray-900">{{ $hive->name }}</h3>
-                                <p class="text-gray-600">{{ $hive->type }}</p>
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-dark-text-dark">{{ $hive->name }}</h3>
+                                <p class="text-gray-600 dark:text-dark-text-light">{{ $hive->type }}</p>
                             </div>
                             <div class="flex flex-wrap gap-2">
                                 @forelse ($hive->states as $state)
@@ -49,27 +49,27 @@
                                 @endforelse
                             </div>
                         </div>
-                        <div class="mt-2 text-sm text-gray-500">
+                        <div class="mt-2 text-sm text-gray-500 dark:text-dark-text-light">
                             <p><strong>Apiario:</strong> {{ $hive->apiary->name }}</p>
                             <p><strong>Nacimiento:</strong> {{ $hive->birth_date ? $hive->birth_date->format('d/m/Y') : 'N/A' }}</p>
                         </div>
                         <div class="mt-4 flex items-center space-x-4">
                             <div class="flex items-center space-x-1">
                                 <svg class="h-6 w-6 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                                <span class="font-bold text-lg text-gray-800">{{ $hive->rating ?? 'N/A' }}</span>
-                                <span class="text-gray-600">/ 100</span>
+                                <span class="font-bold text-lg text-gray-800 dark:text-dark-text-dark">{{ $hive->rating ?? 'N/A' }}</span>
+                                <span class="text-gray-600 dark:text-dark-text-light">/ 100</span>
                             </div>
                             @if($hive->latestHarvest)
                                 <div class="flex items-center space-x-1">
                                     <svg class="h-6 w-6 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10s5 2 5 2l-2.646 2.646a.5.5 0 00.708.708L15 12.5V15a1 1 0 001 1h.5a1 1 0 001-1v-2.5l2.121-2.121a.5.5 0 00-.353-.854H18a1 1 0 00-1 1v1.5l-2.646 2.646a.5.5 0 00.708.708L17.5 15V12a1 1 0 00-1-1h-1.5a1 1 0 00-1 1v1.5l-2.646 2.646a.5.5 0 00.708.708L15 15.5V18a1 1 0 001 1h.5a1 1 0 001-1v-2.5l2.121-2.121a.5.5 0 00-.353-.854H18a1 1 0 00-1 1v1.5l-2.646 2.646a.5.5 0 00.708.708L17.5 18H19a1 1 0 001-1v-1.5l-2.121-2.121a.5.5 0 00-.854.353V15a1 1 0 001 1h.5a1 1 0 001-1v-1.5l-2.121-2.121a.5.5 0 00-.854.353V12a1 1 0 001 1h1.5a1 1 0 001-1V9.5a1 1 0 00-1-1h-1.5a1 1 0 00-1 1V12l-2.646 2.646a.5.5 0 00.708.708L12.5 12H15a1 1 0 001-1V9.5a1 1 0 00-1-1h-1.5a1 1 0 00-1 1V12l-2.646 2.646a.5.5 0 00.708.708L10 12h2.5a1 1 0 001-1V9.5a1 1 0 00-1-1H12a1 1 0 00-1 1v2.5L8.879 9.379a.5.5 0 00-.854.353V12a1 1 0 001 1h1.5a1 1 0 001-1V9.5a1 1 0 00-1-1H9a1 1 0 00-1 1v2.5L5.879 9.379a.5.5 0 00-.854.353V12a1 1 0 001 1h1.5a1 1 0 001-1V9.5a1 1 0 00-1-1H6a1 1 0 00-1 1v2.5L2.879 9.379a.5.5 0 00-.854.353V12a1 1 0 001 1h1.5a1 1 0 001-1V9.5a1 1 0 00-1-1H3a1 1 0 00-1 1v2.5a8 8 0 0115.657 5.157z"/>
                                     </svg>
-                                    <span class="font-bold text-lg text-gray-800">{{ $hive->latestHarvest->quantity_kg }} kg</span>
-                                    <span class="text-gray-600">({{ $hive->latestHarvest->harvest_date->format('d/m/Y') }})</span>
+                                    <span class="font-bold text-lg text-gray-800 dark:text-dark-text-dark">{{ $hive->latestHarvest->quantity_kg }} kg</span>
+                                    <span class="text-gray-600 dark:text-dark-text-light">({{ $hive->latestHarvest->harvest_date->format('d/m/Y') }})</span>
                                 </div>
                             @endif
                             @if($hive->location_gps)
-                                <a href="https://www.google.com/maps/search/?api=1&query={{ $hive->location_gps }}" target="_blank" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800">
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ $hive->location_gps }}" target="_blank" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                                     </svg>
@@ -82,7 +82,7 @@
             </div>
 
             <!-- Edit Form -->
-            <div id="edit-hive-form" class="hidden bg-white rounded-lg shadow-md overflow-hidden p-6 mb-8">
+            <div id="edit-hive-form" class="hidden bg-white rounded-lg shadow-md overflow-hidden p-6 mb-8 dark:bg-dark-surface">
                 <form method="POST" action="{{ route('hives.update', $hive) }}">
                     @csrf
                     @method('PATCH')
@@ -90,15 +90,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Name -->
                         <div>
-                            <x-input-label for="name" :value="__('Nombre de la Colmena')" />
-                            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name', $hive->name)" required autofocus />
+                            <x-input-label for="name" :value="__('Nombre de la Colmena')" class="dark:text-dark-text-light" />
+                            <x-text-input id="name" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="text" name="name" :value="old('name', $hive->name)" required autofocus />
                             <x-input-error :messages="$errors->get('name')" class="mt-2" />
                         </div>
 
                         <!-- Apiary -->
                         <div>
-                            <x-input-label for="apiary_id" :value="__('Apiario')" />
-                            <select id="apiary_id" name="apiary_id" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+                            <x-input-label for="apiary_id" :value="__('Apiario')" class="dark:text-dark-text-light" />
+                            <select id="apiary_id" name="apiary_id" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" required>
                                 @foreach ($apiaries as $apiary)
                                     <option value="{{ $apiary->id }}" @if (old('apiary_id', $hive->apiary_id) == $apiary->id) selected @endif>{{ $apiary->name }}</option>
                                 @endforeach
@@ -108,8 +108,8 @@
 
                         <!-- Type -->
                         <div>
-                            <x-input-label for="type" :value="__('Tipo')" />
-                            <select id="type" name="type" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+                            <x-input-label for="type" :value="__('Tipo')" class="dark:text-dark-text-light" />
+                            <select id="type" name="type" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" required>
                                 @foreach ($types as $type)
                                     <option value="{{ $type }}" @if (old('type', $hive->type) == $type) selected @endif>{{ $type }}</option>
                                 @endforeach
@@ -119,30 +119,30 @@
 
                         <!-- Birth Date -->
                         <div>
-                            <x-input-label for="birth_date" :value="__('Fecha de Nacimiento')" />
-                            <x-text-input id="birth_date" class="block mt-1 w-full" type="date" name="birth_date" :value="old('birth_date', $hive->birth_date ? $hive->birth_date->format('Y-m-d') : '')" />
+                            <x-input-label for="birth_date" :value="__('Fecha de Nacimiento')" class="dark:text-dark-text-light" />
+                            <x-text-input id="birth_date" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="date" name="birth_date" :value="old('birth_date', $hive->birth_date ? $hive->birth_date->format('Y-m-d') : '')" />
                             <x-input-error :messages="$errors->get('birth_date')" class="mt-2" />
                         </div>
 
                         <!-- QR Code -->
                         <div>
-                            <x-input-label for="qr_code" :value="__('QR Code')" />
-                            <x-text-input id="qr_code" class="block mt-1 w-full" type="text" name="qr_code" :value="old('qr_code', $hive->qr_code)" />
+                            <x-input-label for="qr_code" :value="__('QR Code')" class="dark:text-dark-text-light" />
+                            <x-text-input id="qr_code" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="text" name="qr_code" :value="old('qr_code', $hive->qr_code)" />
                             <x-input-error :messages="$errors->get('qr_code')" class="mt-2" />
                         </div>
 
                         <!-- Location -->
                         <div>
-                            <x-input-label for="location" :value="__('Ubicación Específica')" />
-                            <x-text-input id="location" class="block mt-1 w-full" type="text" name="location" :value="old('location', $hive->location)" />
+                            <x-input-label for="location" :value="__('Ubicación Específica')" class="dark:text-dark-text-light" />
+                            <x-text-input id="location" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="text" name="location" :value="old('location', $hive->location)" />
                             <x-input-error :messages="$errors->get('location')" class="mt-2" />
                         </div>
 
                         <!-- Location GPS -->
                         <div>
-                            <x-input-label for="location_gps" :value="__('Coordenadas GPS')" />
+                            <x-input-label for="location_gps" :value="__('Coordenadas GPS')" class="dark:text-dark-text-light" />
                             <div class="flex items-center gap-2">
-                                <x-text-input id="location_gps" class="block mt-1 w-full" type="text" name="location_gps" :value="old('location_gps', $hive->location_gps)" autocomplete="off" />
+                                <x-text-input id="location_gps" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="text" name="location_gps" :value="old('location_gps', $hive->location_gps)" autocomplete="off" />
                                 <button type="button" id="open-map-modal" class="whitespace-nowrap inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:mr-2" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
@@ -163,7 +163,7 @@
             </div>
 
             <!-- States Form -->
-            <div id="states-hive-form" class="hidden bg-white rounded-lg shadow-md overflow-hidden p-6 mb-8">
+            <div id="states-hive-form" class="hidden bg-white rounded-lg shadow-md overflow-hidden p-6 mb-8 dark:bg-dark-surface">
                 <form method="POST" action="{{ route('hives.states.update', $hive) }}">
                     @csrf
                     @method('PATCH')
@@ -171,13 +171,13 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         @foreach ($states as $category => $statesInCategory)
                             @if($category && !Str::contains($category, 'Inspección'))
-                            <div class="p-4 border rounded-lg">
-                                <h4 class="font-semibold text-lg mb-2">{{ $category }}</h4>
+                            <div class="p-4 border rounded-lg dark:border-gray-700">
+                                <h4 class="font-semibold text-lg mb-2 dark:text-dark-text-dark">{{ $category }}</h4>
                                 <div class="space-y-2">
                                     @foreach ($statesInCategory as $state)
                                         <label for="state-{{ $state->id }}" class="flex items-center">
-                                            <input type="checkbox" id="state-{{ $state->id }}" name="states[]" value="{{ $state->id }}" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" @if ($hive->states->where('pivot.cause', 'Manual')->contains($state->id)) checked @endif>
-                                            <span class="ml-2 text-sm text-gray-600">{{ $state->name }}</span>
+                                            <input type="checkbox" id="state-{{ $state->id }}" name="states[]" value="{{ $state->id }}" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-indigo-400" @if ($hive->states->where('pivot.cause', 'Manual')->contains($state->id)) checked @endif>
+                                            <span class="ml-2 text-sm text-gray-600 dark:text-dark-text-light">{{ $state->name }}</span>
                                         </label>
                                     @endforeach
                                 </div>
@@ -197,50 +197,50 @@
             </div>
 
             <!-- Tab Navigation -->
-            <div class="border-b border-gray-200">
+            <div class="border-b border-gray-200 dark:border-gray-700">
                 <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-primary text-primary" data-tab="inspections">
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-primary text-primary dark:border-dark-primary dark:text-dark-primary" data-tab="inspections">
                         {{ __('Inspecciones') }}
                     </button>
-                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="harvest">
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-500" data-tab="harvest">
                         {{ __('Cosecha') }}
                     </button>
-                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="supers">
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-500" data-tab="supers">
                         {{ __('Alzas') }}
                     </button>
-                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="queen">
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-500" data-tab="queen">
                         {{ __('Reina') }}
                     </button>
-                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="general">
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-500" data-tab="general">
                         {{ __('General') }}
                     </button>
-                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="notes">
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-500" data-tab="notes">
                         {{ __('Notas') }}
                     </button>
-                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="activity">
+                    <button class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-500" data-tab="activity">
                         {{ __('Actividad') }}
                     </button>
                 </nav>
             </div>
 
             <!-- Tab Content -->
-            <div class="bg-white rounded-b-lg shadow-md p-6">
+            <div class="bg-white rounded-b-lg shadow-md p-6 dark:bg-dark-surface">
                 <!-- Queen Tab -->
                 <div id="queen-content" class="tab-content hidden">
-                    <h4 class="text-xl font-semibold mb-4">Reina Actual e Historial</h4>
+                    <h4 class="text-xl font-semibold mb-4 dark:text-dark-text-dark">Reina Actual e Historial</h4>
                     <!-- Current Queen -->
                     <div class="mb-6">
-                        <div class="flex justify-between items-center border-b pb-2 mb-4">
-                            <h5 class="text-lg font-semibold text-gray-800">Reina Actual</h5>
+                        <div class="flex justify-between items-center border-b pb-2 mb-4 dark:border-gray-700">
+                            <h5 class="text-lg font-semibold text-gray-800 dark:text-dark-text-dark">Reina Actual</h5>
                             <div>
                                 @if ($hive->queen)
-                                    <button id="toggle-edit-queen-form" class="text-sm text-blue-600 hover:underline">Editar</button>
-                                    <button id="toggle-replace-queen-form" class="ml-4 text-sm text-green-600 hover:underline">Reemplazar</button>
+                                    <button id="toggle-edit-queen-form" class="text-sm text-blue-600 hover:underline dark:text-blue-400 dark:hover:text-blue-300">Editar</button>
+                                    <button id="toggle-replace-queen-form" class="ml-4 text-sm text-green-600 hover:underline dark:text-green-400 dark:hover:text-green-300">Reemplazar</button>
                                     <form action="{{ route('queen.destroy', $hive->queen) }}" method="POST" class="inline ml-4" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta reina? Esto la marcará como eliminada y creará un registro en el historial.');">
                                         @csrf
                                         @method('DELETE')
                                         <input type="hidden" name="reason" value="Eliminada">
-                                        <button type="submit" class="text-sm text-red-600 hover:underline">Marcar como Eliminada</button>
+                                        <button type="submit" class="text-sm text-red-600 hover:underline dark:text-red-400 dark:hover:text-red-300">Marcar como Eliminada</button>
                                     </form>
                                 @else
                                     <button id="toggle-add-queen-form" class="inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-600 active:bg-blue-700 focus:outline-none focus:border-blue-700 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">Añadir Reina</button>
@@ -249,7 +249,7 @@
                         </div>
 
                         @if ($hive->queen)
-                            <div id="queen-details">
+                            <div id="queen-details" class="dark:text-dark-text-light">
                                 <p><strong>Raza:</strong> {{ $hive->queen->breed ?? 'N/A' }}</p>
                                 <p><strong>Introducida:</strong> {{ $hive->queen->introduction_date ? $hive->queen->introduction_date->format('d/m/Y') : 'N/A' }}</p>
                                 <p><strong>Edad (meses):</strong> {{ $hive->queen->age ?? 'N/A' }}</p>
@@ -257,23 +257,23 @@
                             </div>
 
                             <!-- Edit Queen Form -->
-                            <div id="edit-queen-form" class="hidden mt-4 p-4 bg-gray-50 rounded-lg border">
-                                <h6 class="text-md font-semibold text-gray-700 mb-3">Editar Reina Actual</h6>
+                            <div id="edit-queen-form" class="hidden mt-4 p-4 bg-gray-50 rounded-lg border dark:bg-gray-700 dark:border-gray-600">
+                                <h6 class="text-md font-semibold text-gray-700 mb-3 dark:text-dark-text-dark">Editar Reina Actual</h6>
                                 <form action="{{ route('queen.update', $hive->queen) }}" method="POST">
                                     @csrf
                                     @method('PATCH')
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <x-input-label for="edit_breed" :value="__('Raza')" />
-                                            <x-text-input id="edit_breed" class="block mt-1 w-full" type="text" name="breed" :value="old('breed', $hive->queen->breed)" />
+                                            <x-input-label for="edit_breed" :value="__('Raza')" class="dark:text-dark-text-light" />
+                                            <x-text-input id="edit_breed" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="text" name="breed" :value="old('breed', $hive->queen->breed)" />
                                         </div>
                                         <div>
-                                            <x-input-label for="edit_introduction_date" :value="__('Fecha de Introducción')" />
-                                            <x-text-input id="edit_introduction_date" class="block mt-1 w-full" type="date" name="introduction_date" :value="old('introduction_date', $hive->queen->introduction_date ? $hive->queen->introduction_date->format('Y-m-d') : '')" />
+                                            <x-input-label for="edit_introduction_date" :value="__('Fecha de Introducción')" class="dark:text-dark-text-light" />
+                                            <x-text-input id="edit_introduction_date" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="date" name="introduction_date" :value="old('introduction_date', $hive->queen->introduction_date ? $hive->queen->introduction_date->format('Y-m-d') : '')" />
                                         </div>
                                         <div>
-                                            <x-input-label for="edit_age" :value="__('Edad (meses)')" />
-                                            <x-text-input id="edit_age" class="block mt-1 w-full" type="number" name="age" :value="old('age', $hive->queen->age)" />
+                                            <x-input-label for="edit_age" :value="__('Edad (meses)')" class="dark:text-dark-text-light" />
+                                            <x-text-input id="edit_age" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="number" name="age" :value="old('age', $hive->queen->age)" />
                                         </div>
                                     </div>
                                     <div class="flex items-center justify-end mt-4">
@@ -284,26 +284,26 @@
                             </div>
 
                             <!-- Replace Queen Form -->
-                            <div id="replace-queen-form" class="hidden mt-4 p-4 bg-gray-50 rounded-lg border">
-                                 <h6 class="text-md font-semibold text-gray-700 mb-3">Registrar Nueva Reina (Reemplazo)</h6>
+                            <div id="replace-queen-form" class="hidden mt-4 p-4 bg-gray-50 rounded-lg border dark:bg-gray-700 dark:border-gray-600">
+                                 <h6 class="text-md font-semibold text-gray-700 mb-3 dark:text-dark-text-dark">Registrar Nueva Reina (Reemplazo)</h6>
                                 <form action="{{ route('queen.replace', $hive->queen) }}" method="POST">
                                     @csrf
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <x-input-label for="replace_breed" :value="__('Raza de la Nueva Reina')" />
-                                            <x-text-input id="replace_breed" class="block mt-1 w-full" type="text" name="breed" required />
+                                            <x-input-label for="replace_breed" :value="__('Raza de la Nueva Reina')" class="dark:text-dark-text-light" />
+                                            <x-text-input id="replace_breed" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="text" name="breed" required />
                                         </div>
                                         <div>
-                                            <x-input-label for="replace_introduction_date" :value="__('Fecha de Introducción')" />
-                                            <x-text-input id="replace_introduction_date" class="block mt-1 w-full" type="date" name="introduction_date" required />
+                                            <x-input-label for="replace_introduction_date" :value="__('Fecha de Introducción')" class="dark:text-dark-text-light" />
+                                            <x-text-input id="replace_introduction_date" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="date" name="introduction_date" required />
                                         </div>
                                         <div>
-                                            <x-input-label for="replace_age" :value="__('Edad (meses)')" />
-                                            <x-text-input id="replace_age" class="block mt-1 w-full" type="number" name="age" />
+                                            <x-input-label for="replace_age" :value="__('Edad (meses)')" class="dark:text-dark-text-light" />
+                                            <x-text-input id="replace_age" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="number" name="age" />
                                         </div>
                                          <div class="md:col-span-2">
-                                            <x-input-label for="replace_notes" :value="__('Notas del Reemplazo')" />
-                                            <textarea id="replace_notes" name="notes" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary-light"></textarea>
+                                            <x-input-label for="replace_notes" :value="__('Notas del Reemplazo')" class="dark:text-dark-text-light" />
+                                            <textarea id="replace_notes" name="notes" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary-light dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark"></textarea>
                                         </div>
                                     </div>
                                     <div class="flex items-center justify-end mt-4">
@@ -314,26 +314,26 @@
                             </div>
 
                         @else
-                            <div class="text-center py-4">
+                            <div class="text-center py-4 dark:text-dark-text-light">
                                 <p>No hay información de la reina actual.</p>
                             </div>
                             <!-- Add Queen Form -->
-                            <div id="add-queen-form" class="hidden mt-4 p-4 bg-gray-50 rounded-lg border">
-                                <h6 class="text-md font-semibold text-gray-700 mb-3">Añadir Nueva Reina</h6>
+                            <div id="add-queen-form" class="hidden mt-4 p-4 bg-gray-50 rounded-lg border dark:bg-gray-700 dark:border-gray-600">
+                                <h6 class="text-md font-semibold text-gray-700 mb-3 dark:text-dark-text-dark">Añadir Nueva Reina</h6>
                                 <form action="{{ route('hives.queen.store', $hive) }}" method="POST">
                                     @csrf
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <x-input-label for="breed" :value="__('Raza')" />
-                                            <x-text-input id="breed" class="block mt-1 w-full" type="text" name="breed" :value="old('breed')" required />
+                                            <x-input-label for="breed" :value="__('Raza')" class="dark:text-dark-text-light" />
+                                            <x-text-input id="breed" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="text" name="breed" :value="old('breed')" required />
                                         </div>
                                         <div>
-                                            <x-input-label for="introduction_date" :value="__('Fecha de Introducción')" />
-                                            <x-text-input id="introduction_date" class="block mt-1 w-full" type="date" name="introduction_date" :value="old('introduction_date')" required />
+                                            <x-input-label for="introduction_date" :value="__('Fecha de Introducción')" class="dark:text-dark-text-light" />
+                                            <x-text-input id="introduction_date" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="date" name="introduction_date" :value="old('introduction_date')" required />
                                         </div>
                                         <div>
-                                            <x-input-label for="age" :value="__('Edad (meses)')" />
-                                            <x-text-input id="age" class="block mt-1 w-full" type="number" name="age" :value="old('age')" />
+                                            <x-input-label for="age" :value="__('Edad (meses)')" class="dark:text-dark-text-light" />
+                                            <x-text-input id="age" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="number" name="age" :value="old('age')" />
                                         </div>
                                     </div>
                                     <div class="flex items-center justify-end mt-4">
@@ -346,13 +346,13 @@
                     </div>
                     <!-- Queen History -->
                     <div>
-                        <h5 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-2">Historial de Reinas</h5>
+                        <h5 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-2 dark:text-dark-text-dark dark:border-gray-700">Historial de Reinas</h5>
                         @forelse ($hive->queenHistories->sortByDesc('change_date') as $history)
-                            <div class="border-l-4 border-yellow-400 pl-4 mb-4">
+                            <div class="border-l-4 border-yellow-400 pl-4 mb-4 dark:border-yellow-500 dark:text-dark-text-light">
                                 <p class="font-semibold">Fecha de cambio: {{ $history->change_date->format('d/m/Y') }}</p>
                                 <p><strong>Razón:</strong> {{ $history->reason }}</p>
                                 @if($history->queen_breed)
-                                    <div class="text-sm text-gray-600 mt-2">
+                                    <div class="text-sm text-gray-600 mt-2 dark:text-dark-text-light">
                                         <p class="font-medium">Detalles de la reina en ese momento:</p>
                                         <ul class="list-disc list-inside ml-4">
                                             <li>Raza: {{ $history->queen_breed }}</li>
@@ -364,7 +364,7 @@
                                 <p><strong>Notas:</strong> {{ $history->notes ?? 'Sin notas.' }}</p>
                             </div>
                         @empty
-                            <p>No hay historial de reinas.</p>
+                            <p class="dark:text-dark-text-light">No hay historial de reinas.</p>
                         @endforelse
                     </div>
                 </div>
@@ -380,37 +380,37 @@
 
                 <!-- Supers Tab -->
                 <div id="supers-content" class="tab-content hidden">
-                    <h4 class="text-xl font-semibold mb-4">Alzas Asignadas</h4>
+                    <h4 class="text-xl font-semibold mb-4 dark:text-dark-text-dark">Alzas Asignadas</h4>
                     <div class="mb-6">
                         @if ($hive->hiveSupers->count() > 0)
-                            <ul class="divide-y divide-gray-200">
+                            <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                                 @foreach ($hive->hiveSupers as $super)
-                                    <li class="py-2 flex items-center justify-between">
+                                    <li class="py-2 flex items-center justify-between dark:text-dark-text-light">
                                         <span>{{ $super->tracking_code }}</span>
                                         <form action="{{ route('hive_supers.unassign', $super) }}" method="POST">
                                             @csrf
                                             @method('PATCH')
-                                            <button type="submit" class="text-sm text-red-600 hover:underline">Desasignar</button>
+                                            <button type="submit" class="text-sm text-red-600 hover:underline dark:text-red-400 dark:hover:text-red-300">Desasignar</button>
                                         </form>
                                     </li>
                                 @endforeach
                             </ul>
                         @else
-                            <p>No hay alzas asignadas a esta colmena.</p>
+                            <p class="dark:text-dark-text-light">No hay alzas asignadas a esta colmena.</p>
                         @endif
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
-                            <h4 class="text-xl font-semibold mb-4">Asignar Alza Específica</h4>
+                            <h4 class="text-xl font-semibold mb-4 dark:text-dark-text-dark">Asignar Alza Específica</h4>
                             <div class="mb-4">
-                                <input type="text" id="super-search" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" placeholder="Buscar alza por código...">
+                                <input type="text" id="super-search" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50 dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark" placeholder="Buscar alza por código...">
                             </div>
                             <form action="{{ route('hive_supers.assign', $hive) }}" method="POST">
                                 @csrf
                                 @method('PATCH')
                                 <div class="flex items-center space-x-4">
-                                    <select name="hive_super_id" id="hive-super-select" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                    <select name="hive_super_id" id="hive-super-select" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
                                         <option value="">Selecciona un alza</option>
                                         @foreach ($unassignedSupers as $super)
                                             <option value="{{ $super->id }}">{{ $super->tracking_code }}</option>
@@ -423,11 +423,11 @@
                             </form>
                         </div>
                         <div>
-                            <h4 class="text-xl font-semibold mb-4">Asignar Alzas al Azar</h4>
+                            <h4 class="text-xl font-semibold mb-4 dark:text-dark-text-dark">Asignar Alzas al Azar</h4>
                             <form action="{{ route('hive_supers.assignRandom', $hive) }}" method="POST">
                                 @csrf
                                 <div class="flex items-center space-x-4">
-                                    <input type="number" name="number_to_assign" value="1" min="1" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                    <input type="number" name="number_to_assign" value="1" min="1" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
                                     <button type="submit" class="inline-flex items-center px-4 py-2 bg-secondary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-secondary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
                                         Asignar al Azar
                                     </button>
@@ -439,17 +439,17 @@
 
                 <!-- General Tab -->
                 <div id="general-content" class="tab-content hidden">
-                    <h4 class="text-xl font-semibold mb-4">Información General</h4>
-                    <p>Aquí se mostrará información general de la colmena.</p>
+                    <h4 class="text-xl font-semibold mb-4 dark:text-dark-text-dark">Información General</h4>
+                    <p class="dark:text-dark-text-light">Aquí se mostrará información general de la colmena.</p>
                 </div>
 
                 <!-- Notes Tab -->
                 <div id="notes-content" class="tab-content hidden py-6">
-                    <div class="bg-white rounded-lg shadow-md">
+                    <div class="bg-white rounded-lg shadow-md dark:bg-dark-surface">
                         <div class="p-6">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Añadir una Nota</h3>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4 dark:text-dark-text-dark">Añadir una Nota</h3>
                             <form id="add-note-form">
-                                <textarea id="note-content" name="content" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" placeholder="Escribe tu nota aquí..."></textarea>
+                                <textarea id="note-content" name="content" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50 dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark" placeholder="Escribe tu nota aquí..."></textarea>
                                 <div class="flex justify-end mt-4">
                                     <x-primary-button type="submit">
                                         {{ __('Guardar Nota') }}
@@ -460,13 +460,13 @@
                     </div>
 
                     <div class="mt-8">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Historial de Notas</h3>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4 dark:text-dark-text-dark">Historial de Notas</h3>
                         <div id="notes-list" class="space-y-6">
                             @forelse ($hive->notes as $note)
                                 @include('hives.partials.note', ['note' => $note])
                             @empty
                                 <div id="no-notes-message" class="text-center py-12">
-                                    <p class="text-gray-500 text-lg">{{ __('No hay notas para esta colmena.') }}</p>
+                                    <p class="text-gray-500 text-lg dark:text-dark-text-light">{{ __('No hay notas para esta colmena.') }}</p>
                                 </div>
                             @endforelse
                         </div>
@@ -475,22 +475,22 @@
 
                 <!-- Activity Tab -->
                 <div id="activity-content" class="tab-content hidden py-6">
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden dark:bg-dark-surface">
                         <div class="p-6">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Historial de Actividad</h3>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4 dark:text-dark-text-dark">Historial de Actividad</h3>
                         </div>
-                        <ul class="divide-y divide-gray-200">
+                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                             @forelse ($hive->activities as $activity)
                                 <li class="p-4 sm:p-6">
                                     <div class="flex items-center">
-                                        <div class="flex-shrink-0 bg-gray-200 rounded-full p-2">
-                                             <svg class="h-6 w-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                        <div class="flex-shrink-0 bg-gray-200 rounded-full p-2 dark:bg-gray-700">
+                                             <svg class="h-6 w-6 text-gray-600 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
                                         </div>
                                         <div class="ml-4 flex-grow">
-                                            <p class="text-sm text-gray-800">{{ $activity->description }}</p>
-                                            <p class="text-xs text-gray-500">
+                                            <p class="text-sm text-gray-800 dark:text-dark-text-dark">{{ $activity->description }}</p>
+                                            <p class="text-xs text-gray-500 dark:text-dark-text-light">
                                                 {{ $activity->created_at->diffForHumans() }}
                                                 @if ($activity->user)
                                                     por {{ $activity->user->name }}
@@ -501,7 +501,7 @@
                                 </li>
                             @empty
                                 <li class="p-6 text-center">
-                                    <p class="text-gray-500">{{ __('No hay actividad registrada para esta colmena.') }}</p>
+                                    <p class="text-gray-500 dark:text-dark-text-light">{{ __('No hay actividad registrada para esta colmena.') }}</p>
                                 </li>
                             @endforelse
                         </ul>
