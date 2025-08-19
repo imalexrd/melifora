@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+      x-data="themeSwitcher"
+      x-init="init()"
+      :class="{ 'dark': isDark }">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,13 +21,13 @@
         <!-- Google Maps -->
         <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&callback=initMap" async defer></script>
     </head>
- <body class="font-sans antialiased">
-        <div class="min-h-screen bg-background">
+ <body class="font-sans antialiased bg-background text-text-dark dark:bg-dark-background dark:text-dark-text-light">
+        <div class="min-h-screen">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-surface shadow">
+                <header class="bg-surface shadow dark:bg-dark-surface">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>

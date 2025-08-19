@@ -1,4 +1,4 @@
-<nav class="bg-surface border-b border-gray-100">
+<nav class="bg-surface border-b border-gray-100 dark:bg-dark-surface dark:border-gray-700">
     <!-- =================================================================== -->
     <!-- =================== MENÚ PARA ESCRITORIO (Desktop) ================= -->
     <!-- =================================================================== -->
@@ -50,9 +50,19 @@
 
             <!-- Derecha: Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <!-- Theme switcher -->
+                <button @click="toggle()" class="mr-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                    <svg x-show="!isDark" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-12.66l-.707.707M4.34 19.66l-.707.707M21 12h-1M4 12H3m16.66 8.66l-.707-.707M4.34 4.34l-.707-.707" />
+                    </svg>
+                    <svg x-show="isDark" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-text-light bg-surface hover:text-text-dark focus:outline-none transition ease-in-out duration-150">
+                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-text-light bg-surface hover:text-text-dark focus:outline-none transition ease-in-out duration-150 dark:text-dark-text-light dark:bg-dark-surface dark:hover:text-dark-text-dark">
                             @if (Auth::user()->avatar)
                                 <img src="{{ Auth::user()->avatar }}" alt="User Avatar" class="h-8 w-8 rounded-full object-cover mr-2">
                             @endif
@@ -94,6 +104,15 @@
     
     <!-- BARRA SUPERIOR MÓVIL (Solo se muestra en pantallas pequeñas) -->
     <div class="sm:hidden flex items-center justify-between h-16 px-4">
+        <!-- Theme switcher -->
+        <button @click="toggle()" class="mr-2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+            <svg x-show="!isDark" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-12.66l-.707.707M4.34 19.66l-.707.707M21 12h-1M4 12H3m16.66 8.66l-.707-.707M4.34 4.34l-.707-.707" />
+            </svg>
+            <svg x-show="isDark" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+        </button>
         <!-- Barra de Búsqueda -->
         <div class="flex-grow mx-2 relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -125,13 +144,13 @@
 </nav>
 
 <!-- BARRA DE NAVEGACIÓN INFERIOR (Solo se muestra en pantallas pequeñas) -->
-<div class="sm:hidden fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200">
+<div class="sm:hidden fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200 dark:bg-dark-surface dark:border-gray-700">
     <div class="grid h-full grid-cols-5 mx-auto">
         @php
             // Define los colores para los estados activo e inactivo. Puedes cambiarlos por los de tu tema.
             // Por ejemplo: 'text-primary' para el color activo.
-            $activeClasses = 'text-blue-600';
-            $inactiveClasses = 'text-gray-500 hover:bg-gray-50';
+            $activeClasses = 'text-blue-600 dark:text-dark-primary';
+            $inactiveClasses = 'text-gray-500 hover:bg-gray-50 dark:text-dark-text-light dark:hover:bg-gray-700';
         @endphp
 
         <!-- Dashboard -->
@@ -139,7 +158,7 @@
             <svg class="w-6 h-6 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12.75 9 9 9-9-9-9-9 9Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 21V3" /></svg>
             <span class="text-xs">Dashboard</span>
             @if(request()->routeIs('dashboard'))
-            <div class="absolute bottom-0 h-1 w-8 bg-blue-600 rounded-t-full"></div>
+            <div class="absolute bottom-0 h-1 w-8 bg-blue-600 rounded-t-full dark:bg-dark-primary"></div>
             @endif
         </a>
 
