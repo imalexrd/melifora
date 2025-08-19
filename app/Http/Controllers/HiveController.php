@@ -184,6 +184,10 @@ class HiveController extends Controller
             'pests_diseases' => 'required_if:action,inspect|string|in:' . implode(',', \App\Models\Inspection::getPestsAndDiseasesOptions()),
             'treatments' => 'required_if:action,inspect|string|in:' . implode(',', \App\Models\Inspection::getTreatmentsOptions()),
             'notes' => 'nullable|string',
+            'anomalies' => 'required_if:action,inspect|string|in:' . implode(',', \App\Models\Inspection::getAnomaliesOptions()),
+            'social_states' => 'required_if:action,inspect|string|in:' . implode(',', \App\Models\Inspection::getSocialStatesOptions()),
+            'season_states' => 'required_if:action,inspect|string|in:' . implode(',', \App\Models\Inspection::getSeasonStatesOptions()),
+            'admin_states' => 'required_if:action,inspect|string|in:' . implode(',', \App\Models\Inspection::getAdminStatesOptions()),
         ]);
 
         $hiveIds = $validatedData['hive_ids'];
@@ -234,7 +238,11 @@ class HiveController extends Controller
                     'behavior',
                     'pests_diseases',
                     'treatments',
-                    'notes'
+                    'notes',
+                    'anomalies',
+                    'social_states',
+                    'season_states',
+                    'admin_states'
                 ]);
 
                 foreach ($hives as $hive) {

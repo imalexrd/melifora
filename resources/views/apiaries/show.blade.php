@@ -433,32 +433,87 @@
 
                         <!-- Population -->
                         <div>
-                            <label for="bulk-population" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Población') }} (0-100)</label>
-                            <input id="bulk-population" type="range" min="0" max="100" value="50" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                            <label for="bulk-population" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Población') }}</label>
+                            <div class="flex items-center space-x-3 mt-1">
+                                <input id="bulk-population" type="range" min="0" max="100" value="50" class="slider-blue w-full">
+                                <span id="bulk-population_value" class="text-lg font-bold text-blue-600 w-12 text-center">50%</span>
+                            </div>
                         </div>
 
                         <!-- Honey Stores -->
                         <div>
-                            <label for="bulk-honey_stores" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Reservas de Miel') }} (0-100)</label>
-                            <input id="bulk-honey_stores" type="range" min="0" max="100" value="50" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                            <label for="bulk-honey_stores" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Reservas de Miel') }}</label>
+                            <div class="flex items-center space-x-3 mt-1">
+                                <input id="bulk-honey_stores" type="range" min="0" max="100" value="50" class="slider-yellow w-full">
+                                <span id="bulk-honey_stores_value" class="text-lg font-bold text-yellow-600 w-12 text-center">50%</span>
+                            </div>
                         </div>
 
                         <!-- Pollen Stores -->
                         <div>
-                            <label for="bulk-pollen_stores" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Reservas de Polen') }} (0-100)</label>
-                            <input id="bulk-pollen_stores" type="range" min="0" max="100" value="50" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                            <label for="bulk-pollen_stores" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Reservas de Polen') }}</label>
+                            <div class="flex items-center space-x-3 mt-1">
+                                <input id="bulk-pollen_stores" type="range" min="0" max="100" value="50" class="slider-purple w-full">
+                                <span id="bulk-pollen_stores_value" class="text-lg font-bold text-purple-600 w-12 text-center">50%</span>
+                            </div>
                         </div>
 
                         <!-- Brood Pattern -->
                         <div>
-                            <label for="bulk-brood_pattern" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Patrón de Cría') }} (0-100)</label>
-                            <input id="bulk-brood_pattern" type="range" min="0" max="100" value="50" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                            <label for="bulk-brood_pattern" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Patrón de Cría') }}</label>
+                            <div class="flex items-center space-x-3 mt-1">
+                                <input id="bulk-brood_pattern" type="range" min="0" max="100" value="50" class="slider-pink w-full">
+                                <span id="bulk-brood_pattern_value" class="text-lg font-bold text-pink-600 w-12 text-center">50%</span>
+                            </div>
                         </div>
 
                         <!-- Behavior -->
                         <div>
-                            <label for="bulk-behavior" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Comportamiento') }} (0-100)</label>
-                            <input id="bulk-behavior" type="range" min="0" max="100" value="50" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                            <label for="bulk-behavior" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Comportamiento') }}</label>
+                            <div class="flex items-center space-x-3 mt-1">
+                                <input id="bulk-behavior" type="range" min="0" max="100" value="50" class="slider-red w-full">
+                                <span id="bulk-behavior_value" class="text-lg font-bold text-red-600 w-12 text-center">50%</span>
+                            </div>
+                        </div>
+
+                        <!-- Anomalies -->
+                        <div>
+                            <label for="bulk-anomalies" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Anomalías') }}</label>
+                            <select id="bulk-anomalies" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
+                                @foreach (\App\Models\Inspection::getAnomaliesOptions() as $option)
+                                    <option value="{{ $option }}">{{ $option }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Social States -->
+                        <div>
+                            <label for="bulk-social_states" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Estados Sociales') }}</label>
+                            <select id="bulk-social_states" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
+                                @foreach (\App\Models\Inspection::getSocialStatesOptions() as $option)
+                                    <option value="{{ $option }}">{{ $option }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Season States -->
+                        <div>
+                            <label for="bulk-season_states" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Estados de Estación') }}</label>
+                            <select id="bulk-season_states" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
+                                @foreach (\App\Models\Inspection::getSeasonStatesOptions() as $option)
+                                    <option value="{{ $option }}">{{ $option }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Admin States -->
+                        <div>
+                            <label for="bulk-admin_states" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Estados de Administración') }}</label>
+                            <select id="bulk-admin_states" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
+                                @foreach (\App\Models\Inspection::getAdminStatesOptions() as $option)
+                                    <option value="{{ $option }}">{{ $option }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 
@@ -894,8 +949,31 @@ document.addEventListener('DOMContentLoaded', function () {
                     pests_diseases: document.getElementById('bulk-pests_diseases').value,
                     treatments: document.getElementById('bulk-treatments').value,
                     notes: document.getElementById('bulk-notes').value,
+                    anomalies: document.getElementById('bulk-anomalies').value,
+                    social_states: document.getElementById('bulk-social_states').value,
+                    season_states: document.getElementById('bulk-season_states').value,
+                    admin_states: document.getElementById('bulk-admin_states').value,
                 };
                 performBulkAction('inspect', hiveIds, data);
+            });
+
+            const bulkSliders = [
+                { id: 'bulk-population', valueId: 'bulk-population_value' },
+                { id: 'bulk-honey_stores', valueId: 'bulk-honey_stores_value' },
+                { id: 'bulk-pollen_stores', valueId: 'bulk-pollen_stores_value' },
+                { id: 'bulk-brood_pattern', valueId: 'bulk-brood_pattern_value' },
+                { id: 'bulk-behavior', valueId: 'bulk-behavior_value' },
+            ];
+
+            bulkSliders.forEach(slider => {
+                const sliderElement = document.getElementById(slider.id);
+                const valueElement = document.getElementById(slider.valueId);
+
+                if (sliderElement && valueElement) {
+                    sliderElement.addEventListener('input', function () {
+                        valueElement.textContent = this.value + '%';
+                    });
+                }
             });
 
         });
