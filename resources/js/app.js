@@ -2,12 +2,9 @@ import './bootstrap';
 
 import Alpine from 'alpinejs';
 
-window.Alpine = Alpine;
-
-Alpine.start();
-
 // Dark mode switcher
-const themeSwitcher = {
+Alpine.data('themeSwitcher', () => ({
+    isDark: false,
     init() {
         this.isDark = localStorage.getItem('darkMode') === 'true';
         this.applyTheme();
@@ -17,7 +14,6 @@ const themeSwitcher = {
             this.applyTheme();
         });
     },
-    isDark: false,
     applyTheme() {
         if (this.isDark) {
             document.documentElement.classList.add('dark');
@@ -31,9 +27,16 @@ const themeSwitcher = {
         this.applyTheme();
         window.dispatchEvent(new CustomEvent('dark-mode-toggled'));
     }
-};
+}));
 
-window.themeSwitcher = themeSwitcher;
+window.Alpine = Alpine;
+Alpine.start();
+
+function initMap() {
+    // Placeholder function to prevent Google Maps API error
+    console.log('Google Maps API loaded.');
+}
+window.initMap = initMap;
 
 import { Calendar } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
