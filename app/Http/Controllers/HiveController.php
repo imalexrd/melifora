@@ -164,13 +164,26 @@ class HiveController extends Controller
     public function bulkActions(Request $request)
     {
         $validatedData = $request->validate([
-            'action' => 'required|in:move,delete,edit',
+            'action' => 'required|in:move,delete,edit,inspect',
             'hive_ids' => 'required|array',
             'hive_ids.*' => 'exists:hives,id',
+            // Move action
             'apiary_id' => 'required_if:action,move|exists:apiaries,id',
+            // Edit action
             'type' => 'required_if:action,edit|in:' . implode(',', Hive::getTypeOptions()),
             'location' => 'nullable|string|max:255',
             'location_gps' => 'nullable|string|max:255',
+            // Inspect action
+            'inspection_date' => 'required_if:action,inspect|date',
+            'queen_status' => 'required_if:action,inspect|string|in:' . implode(',', \App\Models\Inspection::getQueenStatusOptions()),
+            'population' => 'required_if:action,inspect|integer|min:0|max:100',
+            'honey_stores' => 'required_if:action,inspect|integer|min:0|max:100',
+            'pollen_stores' => 'required_if:action,inspect|integer|min:0|max:100',
+            'brood_pattern' => 'required_if:action,inspect|integer|min:0|max:100',
+            'behavior' => 'required_if:action,inspect|integer|min:0|max:100',
+            'pests_diseases' => 'required_if:action,inspect|string|in:' . implode(',', \App\Models\Inspection::getPestsAndDiseasesOptions()),
+            'treatments' => 'required_if:action,inspect|string|in:' . implode(',', \App\Models\Inspection::getTreatmentsOptions()),
+            'notes' => 'nullable|string',
         ]);
 
         $hiveIds = $validatedData['hive_ids'];
@@ -210,6 +223,26 @@ class HiveController extends Controller
                 }
 
                 return response()->json(['success' => true, 'message' => 'Colmenas actualizadas exitosamente.']);
+            case 'inspect':
+                $inspectionData = $request->only([
+                    'inspection_date',
+                    'queen_status',
+                    'population',
+                    'honey_stores',
+                    'pollen_stores',
+                    'brood_pattern',
+                    'behavior',
+                    'pests_diseases',
+                    'treatments',
+                    'notes'
+                ]);
+
+                foreach ($hives as $hive) {
+                    $hive->inspections()->create($inspectionData);
+                    $this->logActivity($hive, 'Inspección en lote creada.');
+                }
+
+                return response()->json(['success' => true, 'message' => 'Inspección en lote creada exitosamente.']);
         }
 
         return response()->json(['success' => false, 'message' => 'Invalid action.'], 400);
