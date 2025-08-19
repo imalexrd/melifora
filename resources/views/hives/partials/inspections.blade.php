@@ -122,6 +122,58 @@
                     <x-input-error :messages="$errors->get('treatments')" class="mt-2" />
                 </div>
 
+                <!-- Anomalies -->
+                <div>
+                    <label for="anomalies" class="flex items-center text-sm font-medium text-gray-700">
+                        {{ __('Anomalías') }}
+                    </label>
+                    <select id="anomalies" name="anomalies" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                        @foreach (App\Models\Inspection::getAnomaliesOptions() as $option)
+                            <option value="{{ $option }}" @if (old('anomalies', $lastInspection->anomalies ?? '') == $option) selected @endif>{{ $option }}</option>
+                        @endforeach
+                    </select>
+                    <x-input-error :messages="$errors->get('anomalies')" class="mt-2" />
+                </div>
+
+                <!-- Social States -->
+                <div>
+                    <label for="social_states" class="flex items-center text-sm font-medium text-gray-700">
+                        {{ __('Estados Sociales') }}
+                    </label>
+                    <select id="social_states" name="social_states" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                        @foreach (App\Models\Inspection::getSocialStatesOptions() as $option)
+                            <option value="{{ $option }}" @if (old('social_states', $lastInspection->social_states ?? '') == $option) selected @endif>{{ $option }}</option>
+                        @endforeach
+                    </select>
+                    <x-input-error :messages="$errors->get('social_states')" class="mt-2" />
+                </div>
+
+                <!-- Season States -->
+                <div>
+                    <label for="season_states" class="flex items-center text-sm font-medium text-gray-700">
+                        {{ __('Estados de Estación') }}
+                    </label>
+                    <select id="season_states" name="season_states" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                        @foreach (App\Models\Inspection::getSeasonStatesOptions() as $option)
+                            <option value="{{ $option }}" @if (old('season_states', $lastInspection->season_states ?? '') == $option) selected @endif>{{ $option }}</option>
+                        @endforeach
+                    </select>
+                    <x-input-error :messages="$errors->get('season_states')" class="mt-2" />
+                </div>
+
+                <!-- Admin States -->
+                <div>
+                    <label for="admin_states" class="flex items-center text-sm font-medium text-gray-700">
+                        {{ __('Estados de Administración') }}
+                    </label>
+                    <select id="admin_states" name="admin_states" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                        @foreach (App\Models\Inspection::getAdminStatesOptions() as $option)
+                            <option value="{{ $option }}" @if (old('admin_states', $lastInspection->admin_states ?? '') == $option) selected @endif>{{ $option }}</option>
+                        @endforeach
+                    </select>
+                    <x-input-error :messages="$errors->get('admin_states')" class="mt-2" />
+                </div>
+
                 <!-- Notes -->
                 <div class="md:col-span-2 lg:col-span-3">
                     <label for="notes" class="flex items-center text-sm font-medium text-gray-700">
