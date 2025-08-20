@@ -198,6 +198,7 @@
                 <div id="bulk-actions" class="hidden mb-4 flex space-x-2">
                     <button id="edit-button" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">{{ __('Editar') }}</button>
                     <button id="move-button" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">{{ __('Mover') }}</button>
+                    <button id="inspect-button" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">{{ __('Inspeccionar') }}</button>
                     <button id="delete-button" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">{{ __('Borrar') }}</button>
                 </div>
 
@@ -382,6 +383,153 @@
                             @endforelse
                         </ul>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Inspect Modal -->
+    <div id="inspect-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-10 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white dark:bg-dark-surface dark:border-gray-700">
+            <div class="mt-3">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 text-center dark:text-dark-text-dark">{{ __('Inspeccionar Colmenas en Lote') }}</h3>
+                <div class="mt-4 px-7 py-3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Inspection Date -->
+                        <div>
+                            <label for="bulk-inspection_date" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Fecha de Inspección') }}</label>
+                            <input id="bulk-inspection_date" type="date" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark" value="{{ date('Y-m-d') }}" required>
+                        </div>
+
+                        <!-- Queen Status -->
+                        <div>
+                            <label for="bulk-queen_status" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Estado de la Reina') }}</label>
+                            <select id="bulk-queen_status" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
+                                @foreach (\App\Models\Inspection::getQueenStatusOptions() as $option)
+                                    <option value="{{ $option }}">{{ $option }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Pests and Diseases -->
+                        <div>
+                            <label for="bulk-pests_diseases" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Plagas y Enfermedades') }}</label>
+                            <select id="bulk-pests_diseases" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
+                                @foreach (\App\Models\Inspection::getPestsAndDiseasesOptions() as $option)
+                                    <option value="{{ $option }}">{{ $option }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Treatments -->
+                        <div>
+                            <label for="bulk-treatments" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Tratamientos') }}</label>
+                            <select id="bulk-treatments" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
+                                @foreach (\App\Models\Inspection::getTreatmentsOptions() as $option)
+                                    <option value="{{ $option }}">{{ $option }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Population -->
+                        <div>
+                            <label for="bulk-population" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Población') }}</label>
+                            <div class="flex items-center space-x-3 mt-1">
+                                <input id="bulk-population" type="range" min="0" max="100" value="50" class="slider-blue w-full">
+                                <span id="bulk-population_value" class="text-lg font-bold text-blue-600 w-12 text-center">50%</span>
+                            </div>
+                        </div>
+
+                        <!-- Honey Stores -->
+                        <div>
+                            <label for="bulk-honey_stores" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Reservas de Miel') }}</label>
+                            <div class="flex items-center space-x-3 mt-1">
+                                <input id="bulk-honey_stores" type="range" min="0" max="100" value="50" class="slider-yellow w-full">
+                                <span id="bulk-honey_stores_value" class="text-lg font-bold text-yellow-600 w-12 text-center">50%</span>
+                            </div>
+                        </div>
+
+                        <!-- Pollen Stores -->
+                        <div>
+                            <label for="bulk-pollen_stores" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Reservas de Polen') }}</label>
+                            <div class="flex items-center space-x-3 mt-1">
+                                <input id="bulk-pollen_stores" type="range" min="0" max="100" value="50" class="slider-purple w-full">
+                                <span id="bulk-pollen_stores_value" class="text-lg font-bold text-purple-600 w-12 text-center">50%</span>
+                            </div>
+                        </div>
+
+                        <!-- Brood Pattern -->
+                        <div>
+                            <label for="bulk-brood_pattern" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Patrón de Cría') }}</label>
+                            <div class="flex items-center space-x-3 mt-1">
+                                <input id="bulk-brood_pattern" type="range" min="0" max="100" value="50" class="slider-pink w-full">
+                                <span id="bulk-brood_pattern_value" class="text-lg font-bold text-pink-600 w-12 text-center">50%</span>
+                            </div>
+                        </div>
+
+                        <!-- Behavior -->
+                        <div>
+                            <label for="bulk-behavior" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Comportamiento') }}</label>
+                            <div class="flex items-center space-x-3 mt-1">
+                                <input id="bulk-behavior" type="range" min="0" max="100" value="50" class="slider-red w-full">
+                                <span id="bulk-behavior_value" class="text-lg font-bold text-red-600 w-12 text-center">50%</span>
+                            </div>
+                        </div>
+
+                        <!-- Anomalies -->
+                        <div>
+                            <label for="bulk-anomalies" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Anomalías') }}</label>
+                            <select id="bulk-anomalies" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
+                                @foreach (\App\Models\Inspection::getAnomaliesOptions() as $option)
+                                    <option value="{{ $option }}">{{ $option }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Social States -->
+                        <div>
+                            <label for="bulk-social_states" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Estados Sociales') }}</label>
+                            <select id="bulk-social_states" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
+                                @foreach (\App\Models\Inspection::getSocialStatesOptions() as $option)
+                                    <option value="{{ $option }}">{{ $option }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Season States -->
+                        <div>
+                            <label for="bulk-season_states" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Estados de Estación') }}</label>
+                            <select id="bulk-season_states" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
+                                @foreach (\App\Models\Inspection::getSeasonStatesOptions() as $option)
+                                    <option value="{{ $option }}">{{ $option }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Admin States -->
+                        <div>
+                            <label for="bulk-admin_states" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Estados de Administración') }}</label>
+                            <select id="bulk-admin_states" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
+                                @foreach (\App\Models\Inspection::getAdminStatesOptions() as $option)
+                                    <option value="{{ $option }}">{{ $option }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="mt-6">
+                        <label for="bulk-notes" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Notas Adicionales') }}</label>
+                        <textarea id="bulk-notes" rows="3" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark"></textarea>
+                    </div>
+                </div>
+                <div class="items-center px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button id="confirm-inspect-button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        {{ __('Confirmar Inspección') }}
+                    </button>
+                    <button id="cancel-inspect-button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500 dark:border-gray-700">
+                        {{ __('Cancelar') }}
+                    </button>
                 </div>
             </div>
         </div>
@@ -777,6 +925,55 @@ document.addEventListener('DOMContentLoaded', function () {
                 };
 
                 performBulkAction('edit', hiveIds, data);
+            });
+
+            // Bulk Inspect Modal Logic
+            const inspectButton = document.getElementById('inspect-button');
+            const inspectModal = document.getElementById('inspect-modal');
+            const cancelInspectButton = document.getElementById('cancel-inspect-button');
+            const confirmInspectButton = document.getElementById('confirm-inspect-button');
+
+            inspectButton.addEventListener('click', () => inspectModal.classList.remove('hidden'));
+            cancelInspectButton.addEventListener('click', () => inspectModal.classList.add('hidden'));
+
+            confirmInspectButton.addEventListener('click', () => {
+                const hiveIds = getSelectedHiveIds();
+                const data = {
+                    inspection_date: document.getElementById('bulk-inspection_date').value,
+                    queen_status: document.getElementById('bulk-queen_status').value,
+                    population: document.getElementById('bulk-population').value,
+                    honey_stores: document.getElementById('bulk-honey_stores').value,
+                    pollen_stores: document.getElementById('bulk-pollen_stores').value,
+                    brood_pattern: document.getElementById('bulk-brood_pattern').value,
+                    behavior: document.getElementById('bulk-behavior').value,
+                    pests_diseases: document.getElementById('bulk-pests_diseases').value,
+                    treatments: document.getElementById('bulk-treatments').value,
+                    notes: document.getElementById('bulk-notes').value,
+                    anomalies: document.getElementById('bulk-anomalies').value,
+                    social_states: document.getElementById('bulk-social_states').value,
+                    season_states: document.getElementById('bulk-season_states').value,
+                    admin_states: document.getElementById('bulk-admin_states').value,
+                };
+                performBulkAction('inspect', hiveIds, data);
+            });
+
+            const bulkSliders = [
+                { id: 'bulk-population', valueId: 'bulk-population_value' },
+                { id: 'bulk-honey_stores', valueId: 'bulk-honey_stores_value' },
+                { id: 'bulk-pollen_stores', valueId: 'bulk-pollen_stores_value' },
+                { id: 'bulk-brood_pattern', valueId: 'bulk-brood_pattern_value' },
+                { id: 'bulk-behavior', valueId: 'bulk-behavior_value' },
+            ];
+
+            bulkSliders.forEach(slider => {
+                const sliderElement = document.getElementById(slider.id);
+                const valueElement = document.getElementById(slider.valueId);
+
+                if (sliderElement && valueElement) {
+                    sliderElement.addEventListener('input', function () {
+                        valueElement.textContent = this.value + '%';
+                    });
+                }
             });
 
         });
