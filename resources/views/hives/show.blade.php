@@ -14,6 +14,9 @@
                 <button id="toggle-states-form" class="inline-flex items-center px-4 py-2 bg-info border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-info focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
                     {{ __('Gestionar Estados') }}
                 </button>
+                <a href="{{ route('hives.qr', $hive) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                    {{ __('Ver QR') }}
+                </a>
             </div>
         </div>
     </x-slot>

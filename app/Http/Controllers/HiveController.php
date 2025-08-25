@@ -7,6 +7,7 @@ use App\Models\Hive;
 use App\Models\HiveSuper;
 use App\Traits\LogsHiveActivity;
 use Illuminate\Http\Request;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class HiveController extends Controller
 {
@@ -283,5 +284,20 @@ class HiveController extends Controller
         $hive->states()->sync($statesToSync);
 
         return redirect()->route('hives.show', $hive)->with('success', 'Estados de la colmena actualizados.');
+    }
+
+    public function generateQrCode(Hive $hive)
+    {
+        $url = route('hives.show', $hive);
+        $qrCode = QrCode::size(200)->generate($url);
+
+        return response($qrCode)->header('Content-Type', 'image/svg+xml');
+    }
+
+    public function printQrs(Request $request)
+    {
+        $hiveIds = explode(',', $request->query('hive_ids'));
+        $hives = Hive::whereIn('id', $hiveIds)->get();
+        return view('hives.print-qrs', compact('hives'));
     }
 }

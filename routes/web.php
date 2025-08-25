@@ -55,6 +55,10 @@ Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
     Route::patch('/hives/{hive}/supers/assign', [HiveSuperController::class, 'assign'])->name('hive_supers.assign');
     Route::post('/hives/{hive}/supers/assign-random', [HiveSuperController::class, 'assignRandom'])->name('hive_supers.assignRandom');
     Route::patch('/hive_supers/{hive_super}/unassign', [HiveSuperController::class, 'unassign'])->name('hive_supers.unassign');
+
+    // QR Code routes
+    Route::get('/hives/{hive}/qr', [HiveController::class, 'generateQrCode'])->name('hives.qr');
+    Route::get('/hives/print-qrs', [HiveController::class, 'printQrs'])->name('hives.printQrs');
 });
 
 Route::middleware('auth')->group(function () {
