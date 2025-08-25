@@ -200,6 +200,7 @@
                     <button id="move-button" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">{{ __('Mover') }}</button>
                     <button id="inspect-button" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">{{ __('Inspeccionar') }}</button>
                     <button id="delete-button" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">{{ __('Borrar') }}</button>
+                    <button id="print-qr-button" class="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-800">{{ __('Imprimir QR') }}</button>
                 </div>
 
                 <div class="bg-white rounded-lg shadow-md overflow-hidden dark:bg-dark-surface">
@@ -793,6 +794,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const bulkActionsDiv = document.getElementById('bulk-actions');
             const moveButton = document.getElementById('move-button');
             const deleteButton = document.getElementById('delete-button');
+            const printQrButton = document.getElementById('print-qr-button');
             const moveModal = document.getElementById('move-modal');
             const deleteModal = document.getElementById('delete-modal');
             const confirmMoveButton = document.getElementById('confirm-move-button');
@@ -837,6 +839,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
             deleteButton.addEventListener('click', function () {
                 deleteModal.classList.remove('hidden');
+            });
+
+            printQrButton.addEventListener('click', () => {
+                const hiveIds = getSelectedHiveIds();
+                if (hiveIds.length > 0) {
+                    const url = new URL('{{ route("hives.printQrs") }}');
+                    url.searchParams.set('hive_ids', hiveIds.join(','));
+                    window.open(url, '_blank');
+                } else {
+                    alert('Por favor, selecciona al menos una colmena.');
+                }
             });
 
             cancelMoveButton.addEventListener('click', function () {

@@ -21,6 +21,10 @@ Route::get('/dashboard', function () {
 
 use App\Http\Controllers\HiveSuperController;
 
+Route::get('/hives/print-qrs', [HiveController::class, 'printQrs'])->name('hives.printQrs')->middleware(['auth', 'role:admin,superadmin']);
+Route::get('/hives/download-pdf', [HiveController::class, 'downloadPdf'])->name('hives.downloadPdf')->middleware(['auth', 'role:admin,superadmin']);
+Route::get('/hives/download-svgs', [HiveController::class, 'downloadSvgs'])->name('hives.downloadSvgs')->middleware(['auth', 'role:admin,superadmin']);
+Route::get('/hives/{hive}/qr', [HiveController::class, 'generateQrCode'])->name('hives.qr')->middleware(['auth', 'role:admin,superadmin']);
 Route::resource('hives', HiveController::class)->middleware(['auth', 'role:admin,superadmin']);
 Route::post('/hives/bulk-actions', [HiveController::class, 'bulkActions'])->name('hives.bulkActions')->middleware(['auth', 'role:admin,superadmin']);
 Route::resource('apiaries', ApiaryController::class)->middleware(['auth', 'role:admin,superadmin']);
@@ -55,6 +59,7 @@ Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
     Route::patch('/hives/{hive}/supers/assign', [HiveSuperController::class, 'assign'])->name('hive_supers.assign');
     Route::post('/hives/{hive}/supers/assign-random', [HiveSuperController::class, 'assignRandom'])->name('hive_supers.assignRandom');
     Route::patch('/hive_supers/{hive_super}/unassign', [HiveSuperController::class, 'unassign'])->name('hive_supers.unassign');
+
 });
 
 Route::middleware('auth')->group(function () {

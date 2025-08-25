@@ -37,6 +37,7 @@
                 <button id="edit-button" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">{{ __('Editar') }}</button>
                 <button id="move-button" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">{{ __('Mover') }}</button>
                 <button id="delete-button" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">{{ __('Borrar') }}</button>
+                <button id="print-qr-button" class="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-800">{{ __('Imprimir QR') }}</button>
             </div>
 
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
@@ -284,6 +285,7 @@
             const editButton = document.getElementById('edit-button');
             const moveButton = document.getElementById('move-button');
             const deleteButton = document.getElementById('delete-button');
+            const printQrButton = document.getElementById('print-qr-button');
 
             const editModal = document.getElementById('edit-modal');
             const moveModal = document.getElementById('move-modal');
@@ -324,6 +326,16 @@
             editButton.addEventListener('click', () => editModal.classList.remove('hidden'));
             moveButton.addEventListener('click', () => moveModal.classList.remove('hidden'));
             deleteButton.addEventListener('click', () => deleteModal.classList.remove('hidden'));
+            printQrButton.addEventListener('click', () => {
+                const hiveIds = getSelectedHiveIds();
+                if (hiveIds.length > 0) {
+                    const url = new URL('{{ route("hives.printQrs") }}');
+                    url.searchParams.set('hive_ids', hiveIds.join(','));
+                    window.open(url, '_blank');
+                } else {
+                    alert('Por favor, selecciona al menos una colmena.');
+                }
+            });
 
             cancelEditButton.addEventListener('click', () => editModal.classList.add('hidden'));
             cancelMoveButton.addEventListener('click', () => moveModal.classList.add('hidden'));
