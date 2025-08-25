@@ -32,10 +32,10 @@
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             @foreach ($hives as $hive)
                 <div class="qr-container bg-white p-4 rounded-lg shadow-md text-center">
-                    <div class="mb-4">
+                    <div class="mb-4 flex justify-center">
                         {!! QrCode::size(150)->generate(route('hives.show', $hive)) !!}
                     </div>
-                    <p class="font-semibold">{{ $hive->name }}</p>
+                    <p class="font-semibold text-sm text-center">{{ $hive->name }}</p>
                 </div>
             @endforeach
         </div>
