@@ -8,6 +8,9 @@ use App\Models\HiveSuper;
 use App\Traits\LogsHiveActivity;
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\File;
+use ZipArchive;
 
 class HiveController extends Controller
 {
@@ -299,5 +302,46 @@ class HiveController extends Controller
         $hiveIds = explode(',', $request->query('hive_ids'));
         $hives = Hive::whereIn('id', $hiveIds)->get();
         return view('hives.print-qrs', compact('hives'));
+    }
+
+    public function downloadPdf(Request $request)
+    {
+        $hiveIds = explode(',', $request->query('hive_ids'));
+        $hives = Hive::whereIn('id', $hiveIds)->get();
+        $pdf = Pdf::loadView('hives.print-qrs', compact('hives'));
+        return $pdf->download('qrcodes.pdf');
+    }
+
+    public function downloadSvgs(Request $request)
+    {
+        $hiveIds = explode(',', $request->query('hive_ids'));
+        $hives = Hive::whereIn('id', $hiveIds)->get();
+
+        $folderName = now()->format('Y-m-d');
+        $zipFileName = $folderName . '.zip';
+        $zipPath = storage_path('app/' . $zipFileName);
+        $tempFolderPath = storage_path('app/temp/' . $folderName);
+
+        if (!File::isDirectory($tempFolderPath)) {
+            File::makeDirectory($tempFolderPath, 0755, true, true);
+        }
+
+        foreach ($hives as $hive) {
+            $svgContent = QrCode::format('svg')->size(200)->generate(route('hives.show', $hive));
+            File::put($tempFolderPath . '/' . $hive->id . '.svg', $svgContent);
+        }
+
+        $zip = new ZipArchive;
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+            $files = File::files($tempFolderPath);
+            foreach ($files as $file) {
+                $zip->addFile($file->getRealPath(), $file->getFilename());
+            }
+            $zip->close();
+        }
+
+        File::deleteDirectory($tempFolderPath);
+
+        return response()->download($zipPath)->deleteFileAfterSend(true);
     }
 }

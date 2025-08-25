@@ -24,9 +24,17 @@
     <div class="max-w-4xl mx-auto p-8">
         <div class="flex justify-between items-center mb-8 no-print">
             <h1 class="text-3xl font-bold">Códigos QR de Colmenas</h1>
-            <button onclick="window.print()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Imprimir
-            </button>
+            <div class="flex space-x-2">
+                <button onclick="window.print()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Imprimir
+                </button>
+                <a href="{{ route('hives.downloadPdf', ['hive_ids' => request('hive_ids')]) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Descargar PDF
+                </a>
+                <a href="{{ route('hives.downloadSvgs', ['hive_ids' => request('hive_ids')]) }}" class="bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded">
+                    Descargar SVGs (.zip)
+                </a>
+            </div>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
