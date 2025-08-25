@@ -329,7 +329,8 @@
             printQrButton.addEventListener('click', () => {
                 const hiveIds = getSelectedHiveIds();
                 if (hiveIds.length > 0) {
-                    const url = '{{ route("hives.index") }}/print-qrs?hive_ids=' + hiveIds.join(',');
+                    const url = new URL('{{ route("hives.printQrs") }}');
+                    url.searchParams.set('hive_ids', hiveIds.join(','));
                     window.open(url, '_blank');
                 } else {
                     alert('Por favor, selecciona al menos una colmena.');

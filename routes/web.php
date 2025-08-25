@@ -21,6 +21,8 @@ Route::get('/dashboard', function () {
 
 use App\Http\Controllers\HiveSuperController;
 
+Route::get('/hives/print-qrs', [HiveController::class, 'printQrs'])->name('hives.printQrs')->middleware(['auth', 'role:admin,superadmin']);
+Route::get('/hives/{hive}/qr', [HiveController::class, 'generateQrCode'])->name('hives.qr')->middleware(['auth', 'role:admin,superadmin']);
 Route::resource('hives', HiveController::class)->middleware(['auth', 'role:admin,superadmin']);
 Route::post('/hives/bulk-actions', [HiveController::class, 'bulkActions'])->name('hives.bulkActions')->middleware(['auth', 'role:admin,superadmin']);
 Route::resource('apiaries', ApiaryController::class)->middleware(['auth', 'role:admin,superadmin']);
@@ -56,9 +58,6 @@ Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
     Route::post('/hives/{hive}/supers/assign-random', [HiveSuperController::class, 'assignRandom'])->name('hive_supers.assignRandom');
     Route::patch('/hive_supers/{hive_super}/unassign', [HiveSuperController::class, 'unassign'])->name('hive_supers.unassign');
 
-    // QR Code routes
-    Route::get('/hives/{hive}/qr', [HiveController::class, 'generateQrCode'])->name('hives.qr');
-    Route::get('/hives/print-qrs', [HiveController::class, 'printQrs'])->name('hives.printQrs');
 });
 
 Route::middleware('auth')->group(function () {
