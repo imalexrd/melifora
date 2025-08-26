@@ -31,7 +31,7 @@
                             {!! QrCode::size(90)->generate(route('hives.show', $hive)) !!}
                         </div>
                         <div class="flex items-center justify-center mt-2">
-                            <p class="text-sm font-bold dark:text-dark-text-light">ID: {{ $hive->id }}</p>
+                            <p class="text-sm font-bold dark:text-dark-text-light">{{ $hive->slug }}</p>
                             <a href="#" id="download-qr" class="ml-2 text-primary hover:text-primary-dark" title="Descargar SVG">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -545,7 +545,7 @@
                         const url = URL.createObjectURL(blob);
                         const link = document.createElement('a');
                         link.href = url;
-                        link.download = 'qr-hive-{{ $hive->id }}.svg';
+                        link.download = 'qr-hive-{{ $hive->slug }}.svg';
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
