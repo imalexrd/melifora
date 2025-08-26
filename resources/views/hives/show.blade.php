@@ -26,7 +26,19 @@
             <!-- Hive Header Card -->
             <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6 dark:bg-dark-surface">
                 <div class="p-6 flex items-center">
-                    <img src="https://placehold.co/100x100/FBBF24/333333?text=Colmena" alt="Hive Image" class="w-24 h-24 rounded-lg mr-6">
+                    <div class="w-28 text-center mr-6 flex-shrink-0">
+                        <div id="qr-code-container" class="relative inline-block bg-white p-2 rounded-lg">
+                            {!! QrCode::size(90)->generate(route('hives.show', $hive)) !!}
+                        </div>
+                        <div class="flex items-center justify-center mt-2">
+                            <p class="text-sm font-bold dark:text-dark-text-light">ID: {{ $hive->id }}</p>
+                            <a href="#" id="download-qr" class="ml-2 text-primary hover:text-primary-dark" title="Descargar SVG">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
                     <div class="flex-grow">
                         <div class="flex justify-between items-start">
                             <div>
@@ -521,6 +533,27 @@
         window.initMap = function() {};
 
         document.addEventListener('DOMContentLoaded', function () {
+            // QR Code Download
+            const downloadQrButton = document.getElementById('download-qr');
+            if(downloadQrButton) {
+                downloadQrButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const svgElement = document.querySelector('#qr-code-container svg');
+                    if (svgElement) {
+                        const svgData = new XMLSerializer().serializeToString(svgElement);
+                        const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = 'qr-hive-{{ $hive->id }}.svg';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+                    }
+                });
+            }
+
             // Super search filter
             const superSearchInput = document.getElementById('super-search');
             const superSelect = document.getElementById('hive-super-select');
