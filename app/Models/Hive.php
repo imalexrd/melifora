@@ -16,7 +16,7 @@ class Hive extends Model
         static::creating(function ($hive) {
             if (empty($hive->slug)) {
                 $uuid = (string) Str::uuid();
-                $hive->slug = $uuid;
+                $hive->slug = 'hive_' . $uuid;
                 if (empty($hive->name)) {
                     $hive->name = $uuid;
                 }

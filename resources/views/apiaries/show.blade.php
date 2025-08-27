@@ -38,10 +38,17 @@
                     <div class="flex flex-col md:flex-row md:justify-between">
                         <!-- Left Side: Image, Name, Location -->
                         <div class="flex items-center mb-4 md:mb-0">
-                            <div class="mr-6 flex-shrink-0">
-                                <svg class="h-24 w-24 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                </svg>
+                            <div class="mr-6 flex-shrink-0 text-center">
+                                <div class="p-4 bg-white rounded-lg shadow-md inline-block">
+                                    {!! QrCode::size(150)->generate(route('apiaries.show', $apiary)) !!}
+                                </div>
+                                <div>
+                                    <a href="{{ route('apiaries.downloadQr', $apiary) }}" class="mt-2 inline-block">
+                                        <svg class="h-8 w-8 text-gray-600 hover:text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                    </a>
+                                </div>
                             </div>
                             <div class="flex-grow">
                                 <div class="flex items-center gap-4">
@@ -1128,23 +1135,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 try {
                     const url = new URL(decodedText);
                     const pathSegments = url.pathname.split('/');
-                    const hiveId = pathSegments.pop() || pathSegments.pop();
+                    const slug = pathSegments.pop() || pathSegments.pop();
 
-                    if (hiveId && !isNaN(hiveId)) {
-                        const checkbox = document.querySelector(`.hive-checkbox[value="${hiveId}"]`);
+                    if (slug.startsWith('hive_')) {
+                        const checkbox = document.querySelector(`.hive-checkbox[data-slug="${slug}"]`);
                         if (checkbox) {
                             if (!checkbox.checked) {
                                 checkbox.checked = true;
                                 updateBulkActionsVisibility();
-                                qrScanResult.textContent = `Colmena #${hiveId} seleccionada. ¡Listo para el siguiente!`;
+                                qrScanResult.textContent = `Colmena con slug ${slug} seleccionada. ¡Listo para el siguiente!`;
                             } else {
-                                qrScanResult.textContent = `Colmena #${hiveId} ya estaba seleccionada.`;
+                                qrScanResult.textContent = `Colmena con slug ${slug} ya estaba seleccionada.`;
                             }
                         } else {
-                            qrScanResult.textContent = `Colmena #${hiveId} no encontrada en esta página.`;
+                            qrScanResult.textContent = `Colmena con slug ${slug} no encontrada en esta página.`;
                         }
+                    } else if (slug.startsWith('apiary_')) {
+                        // Handle apiary scan. For now, we can just show a message.
+                        qrScanResult.textContent = `Apiario con slug ${slug} escaneado.`;
                     } else {
-                        qrScanResult.textContent = `Código QR no contiene un ID de colmena válido.`;
+                        qrScanResult.textContent = `Código QR no contiene un slug de colmena o apiario válido.`;
                     }
                 } catch (e) {
                     console.error("Error al procesar el código QR:", e);

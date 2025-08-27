@@ -162,4 +162,16 @@ class ApiaryController extends Controller
         return redirect()->route('apiaries.index')->with('success', "Apiario '{$apiaryName}' eliminado con éxito.");
     }
 
+    public function generateQrCode(Apiary $apiary)
+    {
+        return view('apiaries.qr', compact('apiary'));
+    }
+
+    public function downloadQr(Apiary $apiary)
+    {
+        $svg = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(300)->generate(route('apiaries.show', $apiary));
+        return response($svg)
+            ->header('Content-Type', 'image/svg+xml')
+            ->header('Content-Disposition', 'attachment; filename="qr-code-apiary-' . $apiary->slug . '.svg"');
+    }
 }

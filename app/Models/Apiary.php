@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Apiary extends Model
 {
@@ -12,10 +13,26 @@ class Apiary extends Model
     protected $fillable = [
         'user_id',
         'name',
+        'slug',
         'location',
         'location_gps',
         'status',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function ($apiary) {
+            if (empty($apiary->slug)) {
+                $uuid = (string) Str::uuid();
+                $apiary->slug = 'apiary_' . $uuid;
+            }
+        });
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     public static function getStatusOptions()
     {
