@@ -146,9 +146,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     confirmInspectBtn.addEventListener('click', () => {
+        const inspectionDate = document.getElementById('inspection_date').value;
+        if (!inspectionDate) {
+            alert('Por favor, seleccione una fecha de inspección.');
+            return;
+        }
+
         const hiveIds = Array.from(scannedHiveIds);
         const inspectionData = {
-            inspection_date: document.getElementById('inspection_date').value,
+            inspection_date: inspectionDate,
             queen_status: document.getElementById('queen_status').value,
             population: document.getElementById('population').value,
             honey_stores: document.getElementById('honey_stores').value,
@@ -169,9 +175,8 @@ document.addEventListener('DOMContentLoaded', function () {
     printQrBtn.addEventListener('click', () => {
         const hiveIds = Array.from(scannedHiveIds);
         if (hiveIds.length > 0) {
-            // We need slugs for printing, not IDs. We'll need to fetch them or store them.
+            // We need to get slugs for printing, not IDs. We'll need to fetch them or store them.
             // For now, let's assume we need to implement a way to get slugs.
-            // This part will be left for a future iteration if slugs are not available.
             // A simple way is to store the slug along with the ID when scanning.
             alert('La impresión de QR desde esta página aún no está implementada.');
         } else {
