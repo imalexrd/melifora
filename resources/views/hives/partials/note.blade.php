@@ -14,7 +14,7 @@
     }
 @endphp
 
-<div class="flex items-start space-x-4" id="note-{{ $note->id }}">
+<div class="flex items-start space-x-4" id="note-{{ $note->id }}" data-due-date="{{ $isTask && $note->due_date ? $note->due_date->format('Y-m-d\TH:i') : '' }}">
     <img class="w-10 h-10 rounded-full" src="{{ $note->user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($note->user->name) . '&color=7F9CF5&background=EBF4FF' }}" alt="{{ $note->user->name }}">
     <div class="flex-1">
         <div class="bg-gray-100 rounded-lg p-4 dark:bg-gray-700 border-l-4 {{ $statusClass }}">

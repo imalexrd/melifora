@@ -870,13 +870,14 @@
                     }
 
                     const url = '{{ route("hives.notes.update", ["hive" => $hive, "note" => ":noteId"]) }}'.replace(':noteId', noteId);
+                    const dueDate = noteElement.dataset.dueDate;
                     fetch(url, {
                         method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
-                        body: JSON.stringify({ completed: isChecked, content: noteElement.querySelector('.note-content').textContent, type: 'task' })
+                        body: JSON.stringify({ completed: isChecked, content: noteElement.querySelector('.note-content').textContent, type: 'task', due_date: dueDate })
                     })
                     .then(response => response.json())
                     .then(data => {
