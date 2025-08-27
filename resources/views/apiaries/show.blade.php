@@ -190,6 +190,12 @@
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-700 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-600 active:bg-gray-800 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
                                 Buscar
                             </button>
+                             <button type="button" id="scan-qr-button" class="inline-flex items-center px-4 py-2 bg-teal-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-teal-600 active:bg-teal-700 focus:outline-none focus:border-teal-700 focus:ring ring-teal-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v4m0 0h-4m4 0l-5-5" />
+                                </svg>
+                                Escanear
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -530,6 +536,24 @@
                     </button>
                     <button id="cancel-inspect-button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500 dark:border-gray-700">
                         {{ __('Cancelar') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Scanner Modal -->
+    <div id="qr-scanner-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-10 mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white dark:bg-dark-surface">
+            <div class="mt-3 text-center">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-dark-text-dark">Escanear Código QR</h3>
+                <div class="mt-4 px-7 py-3">
+                    <div id="qr-reader" style="width: 100%;"></div>
+                    <p id="qr-scan-result" class="mt-4 text-sm text-gray-500 dark:text-dark-text-light">Apunte la cámara al código QR...</p>
+                </div>
+                <div class="items-center px-4 py-3">
+                    <button id="close-qr-scanner-modal" class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500">
+                        Cerrar
                     </button>
                 </div>
             </div>
@@ -1078,6 +1102,80 @@ document.addEventListener('DOMContentLoaded', function () {
 
     @push('scripts')
     <script>
+        function initializeQrScanner() {
+            const qrScannerModal = document.getElementById('qr-scanner-modal');
+            const openQrScannerButton = document.getElementById('scan-qr-button');
+            const closeQrScannerButton = document.getElementById('close-qr-scanner-modal');
+            const qrScanResult = document.getElementById('qr-scan-result');
+
+            let html5QrCode;
+
+            function onScanSuccess(decodedText, decodedResult) {
+                try {
+                    const url = new URL(decodedText);
+                    const pathSegments = url.pathname.split('/');
+                    const hiveId = pathSegments.pop() || pathSegments.pop();
+
+                    if (hiveId && !isNaN(hiveId)) {
+                        const checkbox = document.querySelector(`.hive-checkbox[value="${hiveId}"]`);
+                        if (checkbox) {
+                            if (!checkbox.checked) {
+                                checkbox.checked = true;
+                                updateBulkActionsVisibility();
+                                qrScanResult.textContent = `Colmena #${hiveId} seleccionada. ¡Listo para el siguiente!`;
+                            } else {
+                                qrScanResult.textContent = `Colmena #${hiveId} ya estaba seleccionada.`;
+                            }
+                        } else {
+                            qrScanResult.textContent = `Colmena #${hiveId} no encontrada en esta página.`;
+                        }
+                    } else {
+                        qrScanResult.textContent = `Código QR no contiene un ID de colmena válido.`;
+                    }
+                } catch (e) {
+                    console.error("Error al procesar el código QR:", e);
+                    qrScanResult.textContent = 'Error al procesar el código QR. Intente de nuevo.';
+                }
+            }
+
+            function onScanFailure(error) {
+                // console.warn(`Code scan error = ${error}`);
+            }
+
+            const startScanner = () => {
+                html5QrCode = new Html5Qrcode("qr-reader");
+                const config = {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 },
+                    rememberLastUsedCamera: true
+                };
+                html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
+                    .catch(err => {
+                        console.error("Unable to start scanning.", err);
+                        qrScanResult.textContent = "No se pudo iniciar el escáner. Verifique los permisos de la cámara.";
+                    });
+            };
+
+            const stopScanner = () => {
+                if (html5QrCode && html5QrCode.isScanning) {
+                    html5QrCode.stop()
+                        .then(() => console.log("QR Code scanning stopped."))
+                        .catch(err => console.warn("Error stopping the scanner.", err));
+                }
+            };
+
+            openQrScannerButton.addEventListener('click', () => {
+                qrScannerModal.classList.remove('hidden');
+                qrScanResult.textContent = "Apunte la cámara al código QR...";
+                setTimeout(startScanner, 100);
+            });
+
+            closeQrScannerButton.addEventListener('click', () => {
+                stopScanner();
+                qrScannerModal.classList.add('hidden');
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             // Delete Apiary Modal Logic
             const openDeleteModalButton = document.getElementById('open-delete-apiary-modal-button');
@@ -1258,5 +1356,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     </script>
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js" onload="initializeQrScanner()"></script>
     @endpush
 </x-app-layout>

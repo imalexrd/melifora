@@ -358,4 +358,23 @@ class HiveController extends Controller
             return response()->json(['error' => 'Ocurrió un error inesperado al generar los archivos.', 'message' => $e->getMessage()], 500);
         }
     }
+
+    /**
+     * Find a hive by its slug and return it as JSON.
+     */
+    public function findBySlug(string $slug)
+    {
+        $hive = Hive::where('slug', $slug)
+                    ->whereHas('apiary', function ($query) {
+                        $query->where('user_id', auth()->id());
+                    })
+                    ->with('apiary:id,name') // Eager load apiary with only id and name
+                    ->first();
+
+        if (!$hive) {
+            return response()->json(['error' => 'Colmena no encontrada o no autorizada.'], 404);
+        }
+
+        return response()->json($hive);
+    }
 }

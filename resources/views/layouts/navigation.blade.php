@@ -24,6 +24,9 @@
                     <x-nav-link :href="route('hives.index')" :active="request()->routeIs('hives.index')">
                         {{ __('Colmenas') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('scan.index')" :active="request()->routeIs('scan.index')">
+                        {{ __('Escanear') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('calendar.index')" :active="request()->routeIs('calendar.index')">
                         {{ __('Calendario') }}
                     </x-nav-link>
@@ -145,7 +148,7 @@
 
 <!-- BARRA DE NAVEGACIÓN INFERIOR (Solo se muestra en pantallas pequeñas) -->
 <div class="sm:hidden fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200 dark:bg-dark-surface dark:border-gray-700">
-    <div class="grid h-full grid-cols-5 mx-auto">
+    <div class="grid h-full grid-cols-6 mx-auto">
         @php
             // Define los colores para los estados activo e inactivo. Puedes cambiarlos por los de tu tema.
             // Por ejemplo: 'text-primary' para el color activo.
@@ -173,9 +176,20 @@
         
         <!-- Colmenas (usando icono de "chat") -->
         <a href="{{ route('hives.index') }}" class="relative inline-flex flex-col items-center justify-center font-medium {{ request()->routeIs('hives.*') ? $activeClasses : $inactiveClasses }}">
-            <svg class="w-6 h-6 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193l-3.72.35c-.343.032-.69.048-1.042.048h-1.042a2.121 2.121 0 0 1-2.121-2.121v-4.286c0-1.136.847-2.1 1.98-2.193l3.72-.35c.343-.032.69-.048 1.042-.048a2.121 2.121 0 0 1 2.121 2.121ZM6.308 15.932a2.121 2.121 0 0 1-2.121-2.121V9.526c0-1.136.847-2.1 1.98-2.193l3.72-.35c.343-.032.69-.048 1.042-.048h1.042a2.121 2.121 0 0 1 2.121 2.121v4.286c0 1.136-.847-2.1-1.98-2.193l-3.72.35c-.343.032-.69.048-1.042.048H8.428a2.121 2.121 0 0 1-2.121-2.12Z" /></svg>
+            <svg class="w-6 h-6 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193l-3.72.35c-.343.032-.69.048-1.042.048h-1.042a2.121 2.121 0 0 1-2.121-2.121v-4.286c0-1.136.847-2.1 1.98-2.193l3.72-.35c.343-.032.69-.048 1.042-.048a2.121 2.121 0 0 1 2.121 2.121ZM6.308 15.932a2.121 2.121 0 0 1-2.121-2.121V9.526c0-1.136.847-2.1 1.98-2.193l3.72-.35c.343-.032.69-.048 1.042-.048h1.042a2.121 2.121 0 0 1 2.121 2.121v4.286c0 1.136-.847-2.1-1.98-2.193l-3.72.35c-.343-.032-.69-.048-1.042.048H8.428a2.121 2.121 0 0 1-2.121-2.12Z" /></svg>
             <span class="text-xs">Colmenas</span>
             @if(request()->routeIs('hives.*'))
+            <div class="absolute bottom-0 h-1 w-8 bg-blue-600 rounded-t-full"></div>
+            @endif
+        </a>
+
+        <!-- Escanear -->
+        <a href="{{ route('scan.index') }}" class="relative inline-flex flex-col items-center justify-center font-medium {{ request()->routeIs('scan.index') ? $activeClasses : $inactiveClasses }}">
+            <svg class="w-6 h-6 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v4m0 0h-4m4 0l-5-5" />
+            </svg>
+            <span class="text-xs">Escanear</span>
+            @if(request()->routeIs('scan.index'))
             <div class="absolute bottom-0 h-1 w-8 bg-blue-600 rounded-t-full"></div>
             @endif
         </a>

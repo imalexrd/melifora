@@ -51,3 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
         calendar.render();
     }
 });
+
+import './qr-scanner';
+import './scan-page';
