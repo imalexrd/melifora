@@ -42,11 +42,13 @@
                                 <div class="p-4 bg-white rounded-lg shadow-md inline-block">
                                     {!! QrCode::size(150)->generate(route('apiaries.show', $apiary)) !!}
                                 </div>
-                                <a href="{{ route('apiaries.downloadQr', $apiary) }}" class="mt-2 inline-block">
-                                    <svg class="h-8 w-8 text-gray-600 hover:text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg>
-                                </a>
+                                <div>
+                                    <a href="{{ route('apiaries.downloadQr', $apiary) }}" class="mt-2 inline-block">
+                                        <svg class="h-8 w-8 text-gray-600 hover:text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                    </a>
+                                </div>
                             </div>
                             <div class="flex-grow">
                                 <div class="flex items-center gap-4">
