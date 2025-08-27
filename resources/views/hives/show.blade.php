@@ -1,11 +1,6 @@
 <x-app-layout>
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="flex justify-end items-center space-x-2 mb-4">
-                <button id="toggle-states-form" class="inline-flex items-center px-4 py-2 bg-info border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-info focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
-                    {{ __('Gestionar Estados') }}
-                </button>
-            </div>
             <!-- Hive Header Card -->
             <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-6 dark:bg-dark-surface">
                 <div class="p-6 flex items-center">
@@ -34,6 +29,12 @@
                                     <button id="toggle-edit-form" class="text-secondary hover:text-secondary-dark" title="Editar Colmena">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </button>
+                                    <button id="toggle-states-form" class="text-info hover:text-info-dark" title="Gestionar Estados">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                         </svg>
                                     </button>
                                 </div>
@@ -582,7 +583,6 @@
             toggleStatesButton.addEventListener('click', function () {
                 const isHidden = statesForm.classList.contains('hidden');
                 statesForm.classList.toggle('hidden');
-                toggleStatesButton.textContent = isHidden ? '{{ __('Ocultar') }}' : '{{ __('Gestionar Estados') }}';
             });
 
             // Auto-open form if there are validation errors
