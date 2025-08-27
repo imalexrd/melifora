@@ -1,26 +1,4 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-dark-text-dark">
-                {{ __('Detalles de la Colmena') }}: {{ $hive->name }}
-            </h2>
-            <div class="flex items-center space-x-2">
-                <a href="{{ route('hives.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
-                    {{ __('Volver a Colmenas') }}
-                </a>
-                <button id="toggle-edit-form" class="inline-flex items-center px-4 py-2 bg-secondary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-secondary focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
-                    {{ __('Editar') }}
-                </button>
-                <button id="toggle-states-form" class="inline-flex items-center px-4 py-2 bg-info border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 active:bg-opacity-95 focus:outline-none focus:border-info focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
-                    {{ __('Gestionar Estados') }}
-                </button>
-                <a href="{{ route('hives.qr', $hive) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
-                    {{ __('Ver QR') }}
-                </a>
-            </div>
-        </div>
-    </x-slot>
-
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Hive Header Card -->
@@ -30,10 +8,14 @@
                         <div id="qr-code-container" class="relative inline-block bg-white p-2 rounded-lg">
                             {!! QrCode::size(90)->generate(route('hives.show', $hive)) !!}
                         </div>
-                        <div class="flex items-center justify-center mt-2">
-                            <p class="text-sm font-bold dark:text-dark-text-light">{{ $hive->slug }}</p>
-                            <a href="#" id="download-qr" class="ml-2 text-primary hover:text-primary-dark" title="Descargar SVG">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="flex items-center justify-center mt-2 space-x-2">
+                            <a href="{{ route('hives.qr', $hive) }}" target="_blank" class="text-primary hover:text-primary-dark" title="Ver QR">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v4m0 0h-4m4 0l-5-5" />
+                                </svg>
+                            </a>
+                            <a href="#" id="download-qr" class="text-primary hover:text-primary-dark" title="Descargar SVG">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                 </svg>
                             </a>
@@ -42,7 +24,21 @@
                     <div class="flex-grow">
                         <div class="flex justify-between items-start">
                             <div>
-                                <h3 class="text-2xl font-bold text-gray-900 dark:text-dark-text-dark">{{ $hive->name }}</h3>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="text-2xl font-bold text-gray-900 dark:text-dark-text-dark">{{ $hive->name }}</h3>
+                                    <button id="toggle-edit-form" class="text-secondary hover:text-secondary-dark" title="Editar Colmena">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </button>
+                                    <button id="toggle-states-form" class="text-info hover:text-info-dark" title="Gestionar Estados">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <p class="text-xs text-gray-500 dark:text-dark-text-light mt-1">{{ $hive->slug }}</p>
                                 <p class="text-gray-600 dark:text-dark-text-light">{{ $hive->type }}</p>
                             </div>
                             <div class="flex flex-wrap gap-2">
@@ -582,13 +578,11 @@
             toggleButton.addEventListener('click', function () {
                 const isHidden = editForm.classList.contains('hidden');
                 editForm.classList.toggle('hidden');
-                toggleButton.textContent = isHidden ? '{{ __('Ocultar') }}' : '{{ __('Editar') }}';
             });
 
             toggleStatesButton.addEventListener('click', function () {
                 const isHidden = statesForm.classList.contains('hidden');
                 statesForm.classList.toggle('hidden');
-                toggleStatesButton.textContent = isHidden ? '{{ __('Ocultar') }}' : '{{ __('Gestionar Estados') }}';
             });
 
             // Auto-open form if there are validation errors

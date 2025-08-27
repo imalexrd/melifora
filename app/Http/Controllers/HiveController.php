@@ -291,10 +291,7 @@ class HiveController extends Controller
 
     public function generateQrCode(Hive $hive)
     {
-        $url = route('hives.show', $hive);
-        $qrCode = QrCode::size(200)->generate($url);
-
-        return response($qrCode)->header('Content-Type', 'image/svg+xml');
+        return view('hives.qr', compact('hive'));
     }
 
     public function printQrs(Request $request)
