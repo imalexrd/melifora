@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imprimir Códigos QR de Colmenas</title>
+    <title>Reporte de Códigos QR de Colmenas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
@@ -21,20 +21,27 @@
     </style>
 </head>
 <body class="bg-gray-100">
-    <div class="max-w-4xl mx-auto p-8">
-        <div class="flex justify-between items-center mb-8 no-print">
-            <h1 class="text-3xl font-bold">Códigos QR de Colmenas</h1>
+    <header class="bg-white shadow-md no-print">
+        <div class="max-w-4xl mx-auto p-4 flex justify-end items-center">
             <div class="flex space-x-2">
                 <button onclick="window.print()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Imprimir
                 </button>
-                <a href="{{ route('hives.downloadPdf', ['hive_ids' => request('hive_ids')]) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    Descargar PDF
-                </a>
-                <a href="{{ route('hives.downloadSvgs', ['hive_ids' => request('hive_ids')]) }}" class="bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded">
-                    Descargar SVGs (.zip)
-                </a>
+                <form action="{{ route('hives.downloadSvgs') }}" method="POST" class="inline">
+                    @csrf
+                    <input type="hidden" name="hive_slugs" value="{{ $hives->pluck('slug')->implode(',') }}">
+                    <button type="submit" class="bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded">
+                        Descargar SVGs (.zip)
+                    </button>
+                </form>
             </div>
+        </div>
+    </header>
+
+    <div class="max-w-4xl mx-auto p-8">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold">Reporte de Códigos QR</h1>
+            <p class="text-gray-600">Generado el: {{ now()->format('d/m/Y H:i') }}</p>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">

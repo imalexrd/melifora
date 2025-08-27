@@ -296,30 +296,28 @@ class HiveController extends Controller
 
     public function printQrs(Request $request)
     {
-        $hiveIds = explode(',', $request->query('hive_ids'));
-        $hives = Hive::whereIn('id', $hiveIds)->get();
+        $hiveSlugs = $request->input('hive_slugs', []);
+        if (is_string($hiveSlugs)) {
+            $hiveSlugs = explode(',', $hiveSlugs);
+        }
+        $hives = Hive::whereIn('slug', $hiveSlugs)->get();
         return view('hives.print-qrs', compact('hives'));
-    }
-
-    public function downloadPdf(Request $request)
-    {
-        $hiveIds = explode(',', $request->query('hive_ids'));
-        $hives = Hive::whereIn('id', $hiveIds)->get();
-        $pdf = Pdf::loadView('hives.print-qrs', compact('hives'));
-        return $pdf->download('qrcodes.pdf');
     }
 
     public function downloadSvgs(Request $request)
     {
         $tempFolderPath = null;
         try {
-            $hiveIdsString = $request->query('hive_ids');
-            if (empty($hiveIdsString)) {
+            $hiveSlugs = $request->input('hive_slugs', []);
+            if (is_string($hiveSlugs)) {
+                $hiveSlugs = explode(',', $hiveSlugs);
+            }
+
+            if (empty($hiveSlugs)) {
                 return response()->json(['error' => 'No se proporcionaron identificadores de colmena.'], 400);
             }
 
-            $hiveIds = explode(',', $hiveIdsString);
-            $hives = Hive::whereIn('id', $hiveIds)->get();
+            $hives = Hive::whereIn('slug', $hiveSlugs)->get();
 
             if ($hives->isEmpty()) {
                 return response()->json(['error' => 'No se encontraron colmenas válidas para los identificadores proporcionados.'], 404);
@@ -334,7 +332,7 @@ class HiveController extends Controller
 
             foreach ($hives as $hive) {
                 $svgContent = QrCode::format('svg')->size(200)->generate(route('hives.show', $hive));
-                File::put($tempFolderPath . '/' . $hive->id . '.svg', $svgContent);
+                File::put($tempFolderPath . '/' . $hive->slug . '.svg', $svgContent);
             }
 
             $zip = new ZipArchive;

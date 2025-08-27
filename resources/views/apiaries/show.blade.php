@@ -268,7 +268,7 @@
                                 @forelse ($hives as $hive)
                                     <tr class="border-b hover:bg-yellow-50 dark:border-gray-700 dark:hover:bg-gray-700">
                                         <td class="py-3 px-4">
-                                            <input type="checkbox" class="hive-checkbox rounded border-gray-300 text-yellow-600 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-yellow-400" value="{{ $hive->id }}">
+                                            <input type="checkbox" class="hive-checkbox rounded border-gray-300 text-yellow-600 shadow-sm focus:border-yellow-300 focus:ring focus:ring-yellow-200 focus:ring-opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-yellow-400" value="{{ $hive->id }}" data-slug="{{ $hive->slug }}">
                                         </td>
                                         <td class="py-3 px-4">
                                             <div class="flex flex-wrap gap-1">
@@ -804,13 +804,15 @@ document.addEventListener('DOMContentLoaded', function () {
             const moveApiarySelect = document.getElementById('move-apiary-select');
 
             function getSelectedHiveIds() {
-                const selectedIds = [];
-                hiveCheckboxes.forEach(checkbox => {
-                    if (checkbox.checked) {
-                        selectedIds.push(checkbox.value);
-                    }
-                });
-                return selectedIds;
+                return Array.from(hiveCheckboxes)
+                           .filter(checkbox => checkbox.checked)
+                           .map(checkbox => checkbox.value);
+            }
+
+            function getSelectedHiveSlugs() {
+                return Array.from(hiveCheckboxes)
+                           .filter(checkbox => checkbox.checked)
+                           .map(checkbox => checkbox.dataset.slug);
             }
 
             function updateBulkActionsVisibility() {
@@ -842,11 +844,28 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             printQrButton.addEventListener('click', () => {
-                const hiveIds = getSelectedHiveIds();
-                if (hiveIds.length > 0) {
-                    const url = new URL('{{ route("hives.printQrs") }}');
-                    url.searchParams.set('hive_ids', hiveIds.join(','));
-                    window.open(url, '_blank');
+                const hiveSlugs = getSelectedHiveSlugs();
+                if (hiveSlugs.length > 0) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{{ route("hives.printQrs") }}';
+                    form.target = '_blank'; // Open in a new tab
+
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_token';
+                    csrfInput.value = '{{ csrf_token() }}';
+                    form.appendChild(csrfInput);
+
+                    const slugsInput = document.createElement('input');
+                    slugsInput.type = 'hidden';
+                    slugsInput.name = 'hive_slugs';
+                    slugsInput.value = hiveSlugs.join(',');
+                    form.appendChild(slugsInput);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                    document.body.removeChild(form);
                 } else {
                     alert('Por favor, selecciona al menos una colmena.');
                 }
