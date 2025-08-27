@@ -1128,23 +1128,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 try {
                     const url = new URL(decodedText);
                     const pathSegments = url.pathname.split('/');
-                    const hiveId = pathSegments.pop() || pathSegments.pop();
+                    const slug = pathSegments.pop() || pathSegments.pop();
 
-                    if (hiveId && !isNaN(hiveId)) {
-                        const checkbox = document.querySelector(`.hive-checkbox[value="${hiveId}"]`);
+                    if (slug.startsWith('hive_')) {
+                        const checkbox = document.querySelector(`.hive-checkbox[data-slug="${slug}"]`);
                         if (checkbox) {
                             if (!checkbox.checked) {
                                 checkbox.checked = true;
                                 updateBulkActionsVisibility();
-                                qrScanResult.textContent = `Colmena #${hiveId} seleccionada. ¡Listo para el siguiente!`;
+                                qrScanResult.textContent = `Colmena con slug ${slug} seleccionada. ¡Listo para el siguiente!`;
                             } else {
-                                qrScanResult.textContent = `Colmena #${hiveId} ya estaba seleccionada.`;
+                                qrScanResult.textContent = `Colmena con slug ${slug} ya estaba seleccionada.`;
                             }
                         } else {
-                            qrScanResult.textContent = `Colmena #${hiveId} no encontrada en esta página.`;
+                            qrScanResult.textContent = `Colmena con slug ${slug} no encontrada en esta página.`;
                         }
+                    } else if (slug.startsWith('apiary_')) {
+                        // Handle apiary scan. For now, we can just show a message.
+                        qrScanResult.textContent = `Apiario con slug ${slug} escaneado.`;
                     } else {
-                        qrScanResult.textContent = `Código QR no contiene un ID de colmena válido.`;
+                        qrScanResult.textContent = `Código QR no contiene un slug de colmena o apiario válido.`;
                     }
                 } catch (e) {
                     console.error("Error al procesar el código QR:", e);
