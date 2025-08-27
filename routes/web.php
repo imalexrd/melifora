@@ -10,6 +10,7 @@ use App\Http\Controllers\ApiaryController;
 use App\Http\Controllers\HiveNoteController;
 use App\Http\Controllers\QueenController;
 use App\Http\Controllers\HarvestController;
+use App\Http\Controllers\ScanController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -67,6 +68,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
     Route::get('/knowledge', [KnowledgeController::class, 'index'])->name('knowledge.index');
+    Route::get('/scan', [ScanController::class, 'index'])->name('scan.index');
+    Route::get('/hives/find-by-slug/{slug}', [HiveController::class, 'findBySlug'])->name('hives.findBySlug');
 });
 
 Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('google.redirect');

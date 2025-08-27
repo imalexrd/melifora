@@ -53,3 +53,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 import './qr-scanner';
+import './scan-page';
