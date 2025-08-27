@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Apiary;
+use App\Models\Inspection;
 use Illuminate\Http\Request;
 
 class ScanController extends Controller
@@ -13,7 +15,25 @@ class ScanController extends Controller
      */
     public function index()
     {
-        $apiaries = \App\Models\Apiary::where('user_id', auth()->id())->get();
-        return view('scan.index', compact('apiaries'));
+        $apiaries = Apiary::where('user_id', auth()->id())->get();
+
+        $queenStatusOptions = Inspection::getQueenStatusOptions();
+        $pestsAndDiseasesOptions = Inspection::getPestsAndDiseasesOptions();
+        $treatmentsOptions = Inspection::getTreatmentsOptions();
+        $anomaliesOptions = Inspection::getAnomaliesOptions();
+        $socialStatesOptions = Inspection::getSocialStatesOptions();
+        $seasonStatesOptions = Inspection::getSeasonStatesOptions();
+        $adminStatesOptions = Inspection::getAdminStatesOptions();
+
+        return view('scan.index', compact(
+            'apiaries',
+            'queenStatusOptions',
+            'pestsAndDiseasesOptions',
+            'treatmentsOptions',
+            'anomaliesOptions',
+            'socialStatesOptions',
+            'seasonStatesOptions',
+            'adminStatesOptions'
+        ));
     }
 }

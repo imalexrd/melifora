@@ -116,17 +116,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const moveModal = document.getElementById('move-modal');
     const deleteModal = document.getElementById('delete-modal');
+    const inspectModal = document.getElementById('inspect-modal');
 
     const confirmMoveBtn = document.getElementById('confirm-move-button');
     const cancelMoveBtn = document.getElementById('cancel-move-button');
     const confirmDeleteBtn = document.getElementById('confirm-delete-button');
     const cancelDeleteBtn = document.getElementById('cancel-delete-button');
     const moveApiarySelect = document.getElementById('move-apiary-select');
+    const inspectBtn = document.getElementById('bulk-inspect-btn');
+    const cancelInspectBtn = document.getElementById('cancel-inspect-button');
+    const confirmInspectBtn = document.getElementById('confirm-inspect-button');
 
     moveBtn.addEventListener('click', () => moveModal.classList.remove('hidden'));
     deleteBtn.addEventListener('click', () => deleteModal.classList.remove('hidden'));
+    inspectBtn.addEventListener('click', () => inspectModal.classList.remove('hidden'));
     cancelMoveBtn.addEventListener('click', () => moveModal.classList.add('hidden'));
     cancelDeleteBtn.addEventListener('click', () => deleteModal.classList.add('hidden'));
+    cancelInspectBtn.addEventListener('click', () => inspectModal.classList.add('hidden'));
 
     confirmMoveBtn.addEventListener('click', () => {
         const hiveIds = Array.from(scannedHiveIds);
@@ -137,6 +143,27 @@ document.addEventListener('DOMContentLoaded', function () {
     confirmDeleteBtn.addEventListener('click', () => {
         const hiveIds = Array.from(scannedHiveIds);
         performBulkAction('delete', hiveIds);
+    });
+
+    confirmInspectBtn.addEventListener('click', () => {
+        const hiveIds = Array.from(scannedHiveIds);
+        const inspectionData = {
+            inspection_date: document.getElementById('inspection_date').value,
+            queen_status: document.getElementById('queen_status').value,
+            population: document.getElementById('population').value,
+            honey_stores: document.getElementById('honey_stores').value,
+            pollen_stores: document.getElementById('pollen_stores').value,
+            brood_pattern: document.getElementById('brood_pattern').value,
+            behavior: document.getElementById('behavior').value,
+            pests_diseases: document.getElementById('pests_diseases').value,
+            treatments: document.getElementById('treatments').value,
+            notes: document.getElementById('notes').value,
+            anomalies: document.getElementById('anomalies').value,
+            social_states: document.getElementById('social_states').value,
+            season_states: document.getElementById('season_states').value,
+            admin_states: document.getElementById('admin_states').value,
+        };
+        performBulkAction('inspect', hiveIds, inspectionData);
     });
 
     printQrBtn.addEventListener('click', () => {
