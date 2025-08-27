@@ -11,8 +11,8 @@
             font-family: 'Share Tech Mono', monospace;
         }
         .passport {
-            background-color: #f7f5e6;
-            border: 2px solid #d4cba7;
+            background-color: #FFFBEB; /* Light creamy yellow, like fresh beeswax */
+            border: 2px solid #FBBF24; /* Amber-500 */
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             position: relative;
@@ -27,24 +27,23 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: url('https://www.transparenttextures.com/patterns/old-paper.png');
-            opacity: 0.3;
+            background-image: url('https://www.transparenttextures.com/patterns/honeycomb-dark.png');
+            opacity: 0.05;
             pointer-events: none;
         }
         .passport-header {
-            background-color: #4a5568; /* A darker, more official color */
-            color: #f7f5e6;
-            padding: 10px;
+            background-color: #D97706; /* Amber-600 */
+            color: #FFFBEB;
+            padding: 12px;
             text-align: center;
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border-bottom: 2px solid #d4cba7;
+            border-bottom: 2px solid #FBBF24;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
         .passport-body {
             padding: 20px;
-            color: #333;
+            color: #92400E; /* Amber-800 */
         }
         .passport-footer {
             position: absolute;
@@ -52,10 +51,11 @@
             left: 0;
             right: 0;
             padding: 10px;
-            background-color: #e2e8f0;
+            background-color: #FEF3C7; /* Amber-100 */
             font-size: 0.7rem;
             text-align: center;
-            color: #4a5568;
+            color: #92400E; /* Amber-800 */
+            border-top: 1px solid #FBBF24;
         }
         .qr-container {
             display: flex;
@@ -65,28 +65,29 @@
             margin-bottom: 20px;
             padding: 15px;
             background: white;
-            border: 1px dashed #4a5568;
+            border: 2px dashed #D97706; /* Amber-600 */
+            border-radius: 8px;
         }
         .info-field {
             margin-bottom: 12px;
         }
         .info-label {
             font-weight: bold;
-            color: #4a5568;
+            color: #B45309; /* Amber-700 */
             display: block;
             font-size: 0.8rem;
             text-transform: uppercase;
         }
         .info-value {
-            font-size: 1rem;
-            color: #1a202c;
+            font-size: 1.1rem; /* Slightly larger for better readability */
+            color: #92400E; /* Amber-800 */
         }
     </style>
 </head>
 <body class="bg-gray-200 dark:bg-gray-900 flex items-center justify-center min-h-screen">
     <div class="passport">
         <div class="passport-header">
-            Pase de Colmena
+            {{ $hive->name }}
         </div>
         <div class="passport-body">
             <div class="info-field">
