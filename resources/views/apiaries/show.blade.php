@@ -1361,7 +1361,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then(response => response.json())
                     .then(data => {
                         if (data.id) {
-                            location.reload();
+                            const noteContent = noteElement.querySelector('.note-content');
+                            const statusContainer = noteElement.querySelector('.task-status');
+                            const noteContainer = noteElement.querySelector('.border-l-4');
+
+                            noteContent.classList.toggle('line-through', isChecked);
+
+                            if (isChecked) {
+                                statusContainer.innerHTML = '<strong>Estado:</strong> <span class="font-semibold text-green-600">Completada</span>';
+                                noteContainer.classList.remove('border-red-500', 'border-blue-500');
+                                noteContainer.classList.add('border-green-500');
+                            } else {
+                                statusContainer.innerHTML = '<strong>Estado:</strong> <span class="font-semibold text-red-600">Pendiente</span>';
+                                noteContainer.classList.remove('border-green-500');
+                                noteContainer.classList.add('border-blue-500');
+                            }
                         }
                     });
                 }

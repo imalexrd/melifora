@@ -36,7 +36,7 @@ class CalendarController extends Controller
             $events[] = [
                 'title' => $task->content,
                 'start' => $task->due_date->format('Y-m-d H:i:s'),
-                'url' => route('hives.show', $task->hive_id),
+                'url' => route('hives.show', $task->hive),
                 'color' => $this->getTaskColor($task),
                 'description' => 'Tarea en colmena: ' . $task->hive->name . ' (Apiario: ' . $task->hive->apiary->name . ')',
             ];
