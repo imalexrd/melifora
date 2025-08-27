@@ -301,9 +301,92 @@
 
     <x-google-maps-modal />
 
-    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
     <script>
         window.initMap = function () {};
+
+        function initializeQrScanner() {
+            const qrScannerModal = document.getElementById('qr-scanner-modal');
+            const openQrScannerButton = document.getElementById('scan-qr-button');
+            const closeQrScannerButton = document.getElementById('close-qr-scanner-modal');
+            const qrScanResult = document.getElementById('qr-scan-result');
+            const hiveCheckboxes = document.querySelectorAll('.hive-checkbox');
+            const bulkActionsDiv = document.getElementById('bulk-actions');
+
+            let html5QrCode;
+
+            function updateBulkActionsVisibility() {
+                const selectedIds = Array.from(hiveCheckboxes)
+                                       .filter(checkbox => checkbox.checked)
+                                       .map(checkbox => checkbox.value);
+                bulkActionsDiv.classList.toggle('hidden', selectedIds.length === 0);
+            }
+
+            function onScanSuccess(decodedText, decodedResult) {
+                try {
+                    const url = new URL(decodedText);
+                    const pathSegments = url.pathname.split('/');
+                    const hiveId = pathSegments.pop() || pathSegments.pop();
+
+                    if (hiveId && !isNaN(hiveId)) {
+                        const checkbox = document.querySelector(`.hive-checkbox[value="${hiveId}"]`);
+                        if (checkbox) {
+                            if (!checkbox.checked) {
+                                checkbox.checked = true;
+                                updateBulkActionsVisibility();
+                                qrScanResult.textContent = `Colmena #${hiveId} seleccionada. ¡Listo para el siguiente!`;
+                            } else {
+                                qrScanResult.textContent = `Colmena #${hiveId} ya estaba seleccionada.`;
+                            }
+                        } else {
+                            qrScanResult.textContent = `Colmena #${hiveId} no encontrada en esta página.`;
+                        }
+                    } else {
+                        qrScanResult.textContent = `Código QR no contiene un ID de colmena válido.`;
+                    }
+                } catch (e) {
+                    console.error("Error al procesar el código QR:", e);
+                    qrScanResult.textContent = 'Error al procesar el código QR. Intente de nuevo.';
+                }
+            }
+
+            function onScanFailure(error) {
+                // console.warn(`Code scan error = ${error}`);
+            }
+
+            const startScanner = () => {
+                html5QrCode = new Html5Qrcode("qr-reader");
+                const config = {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 },
+                    rememberLastUsedCamera: true
+                };
+                html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
+                    .catch(err => {
+                        console.error("Unable to start scanning.", err);
+                        qrScanResult.textContent = "No se pudo iniciar el escáner. Verifique los permisos de la cámara.";
+                    });
+            };
+
+            const stopScanner = () => {
+                if (html5QrCode && html5QrCode.isScanning) {
+                    html5QrCode.stop()
+                        .then(() => console.log("QR Code scanning stopped."))
+                        .catch(err => console.warn("Error stopping the scanner.", err));
+                }
+            };
+
+            openQrScannerButton.addEventListener('click', () => {
+                qrScannerModal.classList.remove('hidden');
+                qrScanResult.textContent = "Apunte la cámara al código QR...";
+                setTimeout(startScanner, 100);
+            });
+
+            closeQrScannerButton.addEventListener('click', () => {
+                stopScanner();
+                qrScannerModal.classList.add('hidden');
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             const selectAllCheckbox = document.getElementById('select-all');
             const hiveCheckboxes = document.querySelectorAll('.hive-checkbox');
@@ -448,83 +531,6 @@
                 });
             }
         });
-
-        // QR Scanner Logic
-        const qrScannerModal = document.getElementById('qr-scanner-modal');
-        const openQrScannerButton = document.getElementById('scan-qr-button');
-        const closeQrScannerButton = document.getElementById('close-qr-scanner-modal');
-        const qrScanResult = document.getElementById('qr-scan-result');
-
-        let html5QrCode;
-
-        function onScanSuccess(decodedText, decodedResult) {
-            try {
-                const url = new URL(decodedText);
-                const pathSegments = url.pathname.split('/');
-                const hiveId = pathSegments.pop() || pathSegments.pop();
-
-                if (hiveId && !isNaN(hiveId)) {
-                    const checkbox = document.querySelector(`.hive-checkbox[value="${hiveId}"]`);
-                    if (checkbox) {
-                        if (!checkbox.checked) {
-                            checkbox.checked = true;
-                            updateBulkActionsVisibility();
-                            qrScanResult.textContent = `Colmena #${hiveId} seleccionada. ¡Listo para el siguiente!`;
-                        } else {
-                            qrScanResult.textContent = `Colmena #${hiveId} ya estaba seleccionada.`;
-                        }
-                    } else {
-                        qrScanResult.textContent = `Colmena #${hiveId} no encontrada en esta página.`;
-                    }
-                } else {
-                    qrScanResult.textContent = `Código QR no contiene un ID de colmena válido.`;
-                }
-            } catch (e) {
-                console.error("Error al procesar el código QR:", e);
-                qrScanResult.textContent = 'Error al procesar el código QR. Intente de nuevo.';
-            }
-        }
-
-        function onScanFailure(error) {
-            // console.warn(`Code scan error = ${error}`);
-        }
-
-        const startScanner = () => {
-            if (typeof Html5Qrcode !== 'undefined') {
-                html5QrCode = new Html5Qrcode("qr-reader");
-                const config = {
-                    fps: 10,
-                    qrbox: { width: 250, height: 250 },
-                    rememberLastUsedCamera: true
-                };
-                html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
-                    .catch(err => {
-                        console.error("Unable to start scanning.", err);
-                        qrScanResult.textContent = "No se pudo iniciar el escáner. Verifique los permisos de la cámara.";
-                    });
-            } else {
-                console.error("Html5Qrcode library not loaded.");
-                qrScanResult.textContent = "La librería de escaneo no se cargó correctamente.";
-            }
-        };
-
-        const stopScanner = () => {
-            if (html5QrCode && html5QrCode.isScanning) {
-                html5QrCode.stop()
-                    .then(() => console.log("QR Code scanning stopped."))
-                    .catch(err => console.warn("Error stopping the scanner.", err));
-            }
-        };
-
-        openQrScannerButton.addEventListener('click', () => {
-            qrScannerModal.classList.remove('hidden');
-            qrScanResult.textContent = "Apunte la cámara al código QR...";
-            setTimeout(startScanner, 100);
-        });
-
-        closeQrScannerButton.addEventListener('click', () => {
-            stopScanner();
-            qrScannerModal.classList.add('hidden');
-        });
     </script>
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js" onload="initializeQrScanner()"></script>
 </x-app-layout>
