@@ -38,10 +38,13 @@
                     <div class="flex flex-col md:flex-row md:justify-between">
                         <!-- Left Side: Image, Name, Location -->
                         <div class="flex items-center mb-4 md:mb-0">
-                            <div class="mr-6 flex-shrink-0">
-                                <svg class="h-24 w-24 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                </svg>
+                            <div class="mr-6 flex-shrink-0 text-center">
+                                <div class="p-4 bg-white rounded-lg shadow-md inline-block">
+                                    {!! QrCode::size(150)->generate(route('apiaries.show', $apiary)) !!}
+                                </div>
+                                <a href="{{ route('apiaries.qr', $apiary) }}" class="mt-2 inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                    {{ __('Descargar QR') }}
+                                </a>
                             </div>
                             <div class="flex-grow">
                                 <div class="flex items-center gap-4">
