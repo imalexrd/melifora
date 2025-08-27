@@ -13,6 +13,14 @@ class ApiaryNote extends Model
         'user_id',
         'apiary_id',
         'content',
+        'type',
+        'due_date',
+        'completed_at',
+    ];
+
+    protected $casts = [
+        'due_date' => 'datetime',
+        'completed_at' => 'datetime',
     ];
 
     public function apiary()

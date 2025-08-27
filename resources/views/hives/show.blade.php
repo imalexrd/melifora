@@ -458,12 +458,26 @@
                 <div id="notes-content" class="tab-content hidden py-6">
                     <div class="bg-white rounded-lg shadow-md dark:bg-dark-surface">
                         <div class="p-6">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-4 dark:text-dark-text-dark">Añadir una Nota</h3>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4 dark:text-dark-text-dark">Añadir Nota o Tarea</h3>
                             <form id="add-note-form">
-                                <textarea id="note-content" name="content" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50 dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark" placeholder="Escribe tu nota aquí..."></textarea>
+                                <div class="flex items-center space-x-4 mb-4">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="type" value="note" class="text-primary focus:ring-primary-light" checked>
+                                        <span class="ml-2 text-gray-700 dark:text-dark-text-light">Nota</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="type" value="task" class="text-primary focus:ring-primary-light">
+                                        <span class="ml-2 text-gray-700 dark:text-dark-text-light">Tarea</span>
+                                    </label>
+                                </div>
+                                <textarea id="note-content" name="content" rows="3" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50 dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark" placeholder="Escribe tu nota o la descripción de la tarea aquí..."></textarea>
+                                <div id="due-date-container" class="hidden mt-4">
+                                    <label for="due-date" class="block text-sm font-medium text-gray-700 dark:text-dark-text-light">Fecha de Vencimiento</label>
+                                    <input type="datetime-local" id="due-date" name="due_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50 dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
+                                </div>
                                 <div class="flex justify-end mt-4">
-                                    <x-primary-button type="submit">
-                                        {{ __('Guardar Nota') }}
+                                    <x-primary-button type="submit" id="save-note-button">
+                                        {{ __('Guardar') }}
                                     </x-primary-button>
                                 </div>
                             </form>
@@ -758,54 +772,58 @@
                 });
             }
 
-            if(document.getElementById('add-note-form')) {
-                document.getElementById('add-note-form').addEventListener('submit', function (e) {
-                e.preventDefault();
-                const content = document.getElementById('note-content').value;
+            const addNoteForm = document.getElementById('add-note-form');
+            if (addNoteForm) {
+                const dueDateContainer = document.getElementById('due-date-container');
+                const noteTypeRadios = addNoteForm.querySelectorAll('input[name="type"]');
+                const saveNoteButton = document.getElementById('save-note-button');
 
-                fetch('{{ route('hives.notes.store', $hive) }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ content: content })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.id) {
-                        const newNoteHtml = `
-                            <div class="flex items-start space-x-4" id="note-${data.id}">
-                                <img class="w-10 h-10 rounded-full" src="${data.user.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.user.name) + '&color=7F9CF5&background=EBF4FF'}" alt="${data.user.name}">
-                                <div class="flex-1">
-                                    <div class="bg-gray-100 rounded-lg p-4">
-                                        <div class="flex items-center justify-between">
-                                            <p class="font-semibold text-gray-900">${data.user.name}</p>
-                                            <div class="text-xs text-gray-500">just now</div>
-                                        </div>
-                                        <p class="text-gray-700 mt-2 note-content">${data.content}</p>
-                                    </div>
-                                    <div class="flex items-center space-x-4 mt-1 text-xs">
-                                        <button class="font-medium text-blue-600 hover:text-blue-800 edit-note-button" data-note-id="${data.id}">Editar</button>
-                                        <button class="font-medium text-red-600 hover:text-red-800 delete-note-button" data-note-id="${data.id}">Eliminar</button>
-                                    </div>
-                                    <div id="edit-note-form-${data.id}" class="hidden mt-2">
-                                        <textarea class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary-light focus:ring-opacity-50" rows="3">${data.content}</textarea>
-                                        <div class="flex justify-end space-x-2 mt-2">
-                                            <button class="px-3 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 cancel-edit-button" data-note-id="${data.id}">Cancelar</button>
-                                            <button class="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 confirm-edit-button" data-note-id="${data.id}">Guardar</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>`;
-                        notesList.insertAdjacentHTML('afterbegin', newNoteHtml);
-                        document.getElementById('note-content').value = '';
-                        if(noNotesMessage) noNotesMessage.classList.add('hidden');
+                noteTypeRadios.forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        if (this.value === 'task') {
+                            dueDateContainer.classList.remove('hidden');
+                            saveNoteButton.textContent = 'Guardar Tarea';
+                        } else {
+                            dueDateContainer.classList.add('hidden');
+                            saveNoteButton.textContent = 'Guardar Nota';
+                        }
+                    });
+                });
+
+                addNoteForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const content = document.getElementById('note-content').value;
+                    const type = addNoteForm.querySelector('input[name="type"]:checked').value;
+                    const dueDate = document.getElementById('due-date').value;
+
+                    const payload = {
+                        content: content,
+                        type: type,
+                    };
+
+                    if (type === 'task') {
+                        payload.due_date = dueDate;
                     }
-                })
-                .catch(error => console.error('Error:', error));
-            });
-        }
+
+                    fetch('{{ route('hives.notes.store', $hive) }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify(payload)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.id) {
+                            // This part will be updated to use the new partial
+                            // For now, let's just reload the page to see the changes
+                            location.reload();
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            }
 
             if (notesList) {
                 notesList.addEventListener('click', function(e) {
@@ -841,22 +859,74 @@
                     }
                 }
 
-                if (e.target.classList.contains('confirm-edit-button')) {
-                    const newContent = document.querySelector(`#edit-note-form-${noteId} textarea`).value;
+                if (e.target.classList.contains('task-checkbox')) {
+                    const isChecked = e.target.checked;
+
+                    if (isChecked) {
+                        if (!confirm('¿Deseas completar esta tarea?')) {
+                            e.target.checked = false;
+                            return;
+                        }
+                    }
+
                     const url = '{{ route("hives.notes.update", ["hive" => $hive, "note" => ":noteId"]) }}'.replace(':noteId', noteId);
+                    const dueDate = noteElement.dataset.dueDate;
                     fetch(url, {
                         method: 'PATCH',
                         headers: {
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
-                        body: JSON.stringify({ content: newContent })
+                        body: JSON.stringify({ completed: isChecked, content: noteElement.querySelector('.note-content').textContent, type: 'task', due_date: dueDate })
                     })
                     .then(response => response.json())
                     .then(data => {
                         if (data.id) {
-                            noteElement.querySelector('.note-content').textContent = data.content;
-                            document.getElementById(`edit-note-form-${noteId}`).classList.add('hidden');
+                            const noteContent = noteElement.querySelector('.note-content');
+                            const statusContainer = noteElement.querySelector('.task-status');
+                            const noteContainer = noteElement.querySelector('.border-l-4');
+
+                            noteContent.classList.toggle('line-through', isChecked);
+
+                            if (isChecked) {
+                                statusContainer.innerHTML = '<strong>Estado:</strong> <span class="font-semibold text-green-600">Completada</span>';
+                                noteContainer.classList.remove('border-red-500', 'border-blue-500');
+                                noteContainer.classList.add('border-green-500');
+                            } else {
+                                statusContainer.innerHTML = '<strong>Estado:</strong> <span class="font-semibold text-red-600">Pendiente</span>';
+                                noteContainer.classList.remove('border-green-500');
+                                noteContainer.classList.add('border-blue-500');
+                            }
+                        }
+                    });
+                }
+
+                if (e.target.classList.contains('confirm-edit-button')) {
+                    const newContent = document.querySelector(`#edit-note-form-${noteId} textarea`).value;
+                    const url = '{{ route("hives.notes.update", ["hive" => $hive, "note" => ":noteId"]) }}'.replace(':noteId', noteId);
+
+                    const payload = {
+                        content: newContent,
+                        type: noteElement.querySelector('.task-checkbox') ? 'task' : 'note',
+                    };
+
+                    if (payload.type === 'task') {
+                        payload.due_date = document.getElementById(`edit-due-date-${noteId}`).value;
+                    }
+
+                    fetch(url, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify(payload)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.id) {
+                            // Just reload for now
+                            location.reload();
                         }
                     });
                 }

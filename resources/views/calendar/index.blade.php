@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-dark-text-dark">
             {{ __('Calendario') }}
         </h2>
     </x-slot>
@@ -10,8 +10,8 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Calendar Section -->
                 <div class="md:col-span-2">
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div class="p-6 text-gray-900" id='calendar'>
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg dark:bg-dark-surface">
+                        <div class="p-6 text-gray-900 dark:text-dark-text-light" id='calendar'>
                             <!-- Calendar will be rendered here -->
                         </div>
                     </div>
@@ -19,25 +19,21 @@
 
                 <!-- Tasks and Events Panel -->
                 <div class="md:col-span-1">
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg dark:bg-dark-surface">
                         <div class="p-6">
-                            <h3 class="text-lg font-semibold mb-4">Tareas y Eventos</h3>
+                            <h3 class="text-lg font-semibold mb-4 dark:text-dark-text-dark">Próximas Tareas y Eventos</h3>
                             <ul class="space-y-4">
-                                <!-- Placeholder Item 1 -->
-                                <li class="border-l-4 border-blue-500 pl-4">
-                                    <p class="font-semibold">Revisar Colmena #3</p>
-                                    <p class="text-sm text-gray-500">15 de Agosto, 2025</p>
-                                </li>
-                                <!-- Placeholder Item 2 -->
-                                <li class="border-l-4 border-green-500 pl-4">
-                                    <p class="font-semibold">Cosecha de Miel</p>
-                                    <p class="text-sm text-gray-500">20 de Agosto, 2025</p>
-                                </li>
-                                <!-- Placeholder Item 3 -->
-                                <li class="border-l-4 border-yellow-500 pl-4">
-                                    <p class="font-semibold">Tratamiento de Varroa</p>
-                                    <p class="text-sm text-gray-500">1 de Septiembre, 2025</p>
-                                </li>
+                                @forelse ($events as $event)
+                                    <li class="border-l-4 pl-4" style="border-color: {{ $event['color'] }};">
+                                        <a href="{{ $event['url'] }}" class="font-semibold text-primary hover:underline">{{ $event['title'] }}</a>
+                                        <p class="text-sm text-gray-500 dark:text-dark-text-light">{{ \Carbon\Carbon::parse($event['start'])->format('d/m/Y H:i') }}</p>
+                                        <p class="text-sm text-gray-600 dark:text-dark-text-light">{{ $event['description'] }}</p>
+                                    </li>
+                                @empty
+                                    <li>
+                                        <p class="text-gray-500 dark:text-dark-text-light">No hay tareas o eventos próximos.</p>
+                                    </li>
+                                @endforelse
                             </ul>
                         </div>
                     </div>
@@ -45,4 +41,29 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          },
+          events: @json($events),
+          eventClick: function(info) {
+            info.jsEvent.preventDefault(); // don't let the browser navigate
+            if (info.event.url) {
+              window.open(info.event.url, "_blank");
+            }
+          }
+        });
+        calendar.render();
+      });
+    </script>
+    @endpush
 </x-app-layout>

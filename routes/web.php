@@ -7,6 +7,7 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\KnowledgeController;
 use App\Http\Controllers\HiveController;
 use App\Http\Controllers\ApiaryController;
+use App\Http\Controllers\NoteController;
 use App\Http\Controllers\HiveNoteController;
 use App\Http\Controllers\QueenController;
 use App\Http\Controllers\HarvestController;
@@ -32,13 +33,15 @@ Route::resource('hive_supers', HiveSuperController::class)->middleware(['auth', 
 Route::post('/hive_supers/bulk-actions', [HiveSuperController::class, 'bulkActions'])->name('hive_supers.bulkActions')->middleware(['auth', 'role:admin,superadmin']);
 
 Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
-    Route::post('/apiaries/{apiary}/notes', [ApiaryController::class, 'storeNote'])->name('apiaries.notes.store');
-    Route::patch('/apiaries/{apiary}/notes/{note}', [ApiaryController::class, 'updateNote'])->name('apiaries.notes.update');
-    Route::delete('/apiaries/{apiary}/notes/{note}', [ApiaryController::class, 'destroyNote'])->name('apiaries.notes.destroy');
+    // Apiary Notes
+    Route::post('/apiaries/{apiary}/notes', [NoteController::class, 'storeApiaryNote'])->name('apiaries.notes.store');
+    Route::patch('/apiaries/{apiary}/notes/{note}', [NoteController::class, 'updateApiaryNote'])->name('apiaries.notes.update');
+    Route::delete('/apiaries/{apiary}/notes/{note}', [NoteController::class, 'destroyApiaryNote'])->name('apiaries.notes.destroy');
 
-    Route::post('/hives/{hive}/notes', [HiveNoteController::class, 'store'])->name('hives.notes.store');
-    Route::patch('/hives/{hive}/notes/{note}', [HiveNoteController::class, 'update'])->name('hives.notes.update');
-    Route::delete('/hives/{hive}/notes/{note}', [HiveNoteController::class, 'destroy'])->name('hives.notes.destroy');
+    // Hive Notes
+    Route::post('/hives/{hive}/notes', [NoteController::class, 'storeHiveNote'])->name('hives.notes.store');
+    Route::patch('/hives/{hive}/notes/{note}', [NoteController::class, 'updateHiveNote'])->name('hives.notes.update');
+    Route::delete('/hives/{hive}/notes/{note}', [NoteController::class, 'destroyHiveNote'])->name('hives.notes.destroy');
 
     // Queen routes
     Route::post('/hives/{hive}/queen', [QueenController::class, 'store'])->name('hives.queen.store');
