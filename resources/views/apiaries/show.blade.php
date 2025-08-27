@@ -1101,6 +1101,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </div>
 
     @push('scripts')
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Delete Apiary Modal Logic
@@ -1371,6 +1372,5 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     </script>
-    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
     @endpush
 </x-app-layout>

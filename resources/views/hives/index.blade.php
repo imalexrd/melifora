@@ -301,7 +301,9 @@
 
     <x-google-maps-modal />
 
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
     <script>
+        window.initMap = function () {};
         document.addEventListener('DOMContentLoaded', function () {
             const selectAllCheckbox = document.getElementById('select-all');
             const hiveCheckboxes = document.querySelectorAll('.hive-checkbox');
@@ -525,5 +527,4 @@
             qrScannerModal.classList.add('hidden');
         });
     </script>
-    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
 </x-app-layout>
