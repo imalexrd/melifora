@@ -861,6 +861,14 @@
 
                 if (e.target.classList.contains('task-checkbox')) {
                     const isChecked = e.target.checked;
+
+                    if (isChecked) {
+                        if (!confirm('¿Deseas completar esta tarea?')) {
+                            e.target.checked = false;
+                            return;
+                        }
+                    }
+
                     const url = '{{ route("hives.notes.update", ["hive" => $hive, "note" => ":noteId"]) }}'.replace(':noteId', noteId);
                     fetch(url, {
                         method: 'PATCH',
@@ -886,8 +894,6 @@
                             } else {
                                 statusContainer.innerHTML = '<strong>Estado:</strong> <span class="font-semibold text-red-600">Pendiente</span>';
                                 noteContainer.classList.remove('border-green-500');
-                                // We need to know if it's overdue or upcoming. We'll assume upcoming for now.
-                                // A full implementation would require passing the due date from the view.
                                 noteContainer.classList.add('border-blue-500');
                             }
                         }

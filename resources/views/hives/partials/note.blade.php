@@ -35,7 +35,7 @@
 
             @if ($isTask)
                 <div class="flex items-center space-x-2 mt-2">
-                    <input type="checkbox" class="task-checkbox rounded border-gray-300 text-primary shadow-sm focus:border-primary-light focus:ring focus:ring-primary-light focus:ring-opacity-50" data-note-id="{{ $note->id }}" {{ $note->completed_at ? 'checked' : '' }}>
+                    <input type="checkbox" class="task-checkbox rounded border-gray-300 text-primary shadow-sm focus:border-primary-light focus:ring focus:ring-primary-light focus:ring-opacity-50" data-note-id="{{ $note->id }}" {{ $note->completed_at ? 'checked' : '' }} {{ auth()->id() != $note->user_id ? 'disabled' : '' }}>
                     <p class="text-gray-700 note-content dark:text-dark-text-light {{ $note->completed_at ? 'line-through' : '' }}">{{ $note->content }}</p>
                 </div>
                 <div class="flex items-center space-x-4 text-xs text-gray-500 mt-1 dark:text-dark-text-light">

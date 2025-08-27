@@ -1349,6 +1349,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (e.target.classList.contains('task-checkbox')) {
                     const isChecked = e.target.checked;
+
+                    if (isChecked) {
+                        if (!confirm('¿Deseas completar esta tarea?')) {
+                            e.target.checked = false;
+                            return;
+                        }
+                    }
+
                     const url = '{{ route("apiaries.notes.update", ["apiary" => $apiary, "note" => ":noteId"]) }}'.replace(':noteId', noteId);
                     fetch(url, {
                         method: 'PATCH',
