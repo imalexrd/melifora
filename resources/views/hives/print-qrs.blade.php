@@ -21,14 +21,8 @@
     </style>
 </head>
 <body class="bg-gray-100">
-    <div class="max-w-4xl mx-auto p-8">
-        <div class="no-print mb-8">
-            <h1 class="text-3xl font-bold">Reporte de Códigos QR</h1>
-            <p class="text-gray-600">Generado el: {{ now()->format('d/m/Y H:i') }}</p>
-        </div>
-
-        <div class="flex justify-between items-center mb-8 no-print">
-            <div></div>
+    <header class="bg-white shadow-md no-print">
+        <div class="max-w-4xl mx-auto p-4 flex justify-end items-center">
             <div class="flex space-x-2">
                 <button onclick="window.print()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Imprimir
@@ -41,6 +35,13 @@
                     </button>
                 </form>
             </div>
+        </div>
+    </header>
+
+    <div class="max-w-4xl mx-auto p-8">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold">Reporte de Códigos QR</h1>
+            <p class="text-gray-600">Generado el: {{ now()->format('d/m/Y H:i') }}</p>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
