@@ -162,43 +162,4 @@ class ApiaryController extends Controller
         return redirect()->route('apiaries.index')->with('success', "Apiario '{$apiaryName}' eliminado con éxito.");
     }
 
-    public function storeNote(Request $request, Apiary $apiary)
-    {
-        $request->validate(['content' => 'required|string']);
-
-        $note = $apiary->notes()->create([
-            'user_id' => auth()->id(),
-            'content' => $request->content,
-        ]);
-
-        $note->load('user');
-
-        return response()->json($note);
-    }
-
-    public function updateNote(Request $request, Apiary $apiary, ApiaryNote $note)
-    {
-        if ($note->user_id !== auth()->id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $request->validate(['content' => 'required|string']);
-
-        $note->update(['content' => $request->content]);
-
-        $note->load('user');
-
-        return response()->json($note);
-    }
-
-    public function destroyNote(Apiary $apiary, ApiaryNote $note)
-    {
-        if ($note->user_id !== auth()->id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $note->delete();
-
-        return response()->json(['success' => true]);
-    }
 }
