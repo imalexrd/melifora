@@ -637,19 +637,16 @@
     </div>
 
     <script>
-window.initMap = function() {};
-
 document.addEventListener('DOMContentLoaded', function () {
-    const locationGpsInput = document.getElementById('location_gps');
-    const openMapModalButton = document.getElementById('open-map-modal');
     const mapModal = document.getElementById('google-maps-modal');
     const closeMapModalButton = document.getElementById('close-map-modal');
     const confirmLocationButton = document.getElementById('confirm-location-button');
     const pacInput = document.getElementById('pac-input');
     const mapElement = document.getElementById('map');
+    let map, marker, searchBox, selectedPosition, activeLocationInput;
 
-    let map, marker, searchBox;
-    let selectedPosition = null;
+    // Use a global context to know if we are editing the main apiary or a bulk field
+    window.mapModalContext = null;
 
     function parseLatLng(str) {
         if (!str) return null;
@@ -657,125 +654,96 @@ document.addEventListener('DOMContentLoaded', function () {
         if (parts.length !== 2) return null;
         const lat = parseFloat(parts[0].trim());
         const lng = parseFloat(parts[1].trim());
-        if (isNaN(lat) || isNaN(lng)) return null;
-        return { lat, lng };
+        return isNaN(lat) || isNaN(lng) ? null : { lat, lng };
     }
 
-    function openModal() {
-        mapModal.classList.remove('hidden');
-        const initialPos = parseLatLng(locationGpsInput.value) || { lat: 19.4326, lng: -99.1332 }; // Default to Mexico City
-        selectedPosition = initialPos;
-
-        map = new google.maps.Map(mapElement, {
-            center: initialPos,
-            zoom: locationGpsInput.value ? 15 : 8,
-        });
-
-        marker = new google.maps.Marker({
-            position: initialPos,
-            map: map,
-            draggable: true,
-        });
-
-        searchBox = new google.maps.places.SearchBox(pacInput);
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(pacInput);
-
-        map.addListener('bounds_changed', () => {
-            searchBox.setBounds(map.getBounds());
-        });
-
-        searchBox.addListener('places_changed', () => {
-            const places = searchBox.getPlaces();
-
-            if (places.length == 0) {
-                return;
-            }
-
-            const place = places[0];
-            if (!place.geometry || !place.geometry.location) {
-                return;
-            }
-
-            map.setCenter(place.geometry.location);
-            map.setZoom(15);
-            marker.setPosition(place.geometry.location);
-            selectedPosition = place.geometry.location.toJSON();
-        });
-
-        map.addListener('click', (e) => {
-            marker.setPosition(e.latLng);
-            selectedPosition = e.latLng.toJSON();
-        });
-
-        marker.addListener('dragend', (e) => {
-            selectedPosition = e.latLng.toJSON();
-        });
-    }
-
-    function closeModal() {
-        mapModal.classList.add('hidden');
-    }
-
-    let activeLocationInput = null;
-
-    function openMapForInput(inputElement) {
-        activeLocationInput = inputElement;
-        mapModal.classList.remove('hidden');
-        const initialPos = parseLatLng(inputElement.value) || { lat: 19.4326, lng: -99.1332 }; // Default to Mexico City
-        selectedPosition = initialPos;
-
+    function initMapInstance(initialPos) {
         if (!map) {
-            map = new google.maps.Map(mapElement, {
-                center: initialPos,
-                zoom: inputElement.value ? 15 : 8,
-            });
-
-            marker = new google.maps.Marker({
-                position: initialPos,
-                map: map,
-                draggable: true,
-            });
-
+            map = new google.maps.Map(mapElement, { center: initialPos, zoom: 8 });
+            marker = new google.maps.Marker({ position: initialPos, map: map, draggable: true });
             searchBox = new google.maps.places.SearchBox(pacInput);
             map.controls[google.maps.ControlPosition.TOP_LEFT].push(pacInput);
 
             map.addListener('bounds_changed', () => searchBox.setBounds(map.getBounds()));
-
             searchBox.addListener('places_changed', () => {
-                const places = searchBox.getPlaces();
-                if (places.length > 0 && places[0].geometry) {
-                    const place = places[0];
+                const place = searchBox.getPlaces()[0];
+                if (place && place.geometry) {
                     map.setCenter(place.geometry.location);
                     map.setZoom(15);
                     marker.setPosition(place.geometry.location);
                     selectedPosition = place.geometry.location.toJSON();
+                    pacInput.value = place.formatted_address;
                 }
             });
-
+            marker.addListener('dragend', (e) => {
+                selectedPosition = e.latLng.toJSON();
+            });
             map.addListener('click', (e) => {
                 marker.setPosition(e.latLng);
                 selectedPosition = e.latLng.toJSON();
             });
-
-            marker.addListener('dragend', (e) => {
-                selectedPosition = e.latLng.toJSON();
-            });
-        } else {
-            map.setCenter(initialPos);
-            marker.setPosition(initialPos);
-            map.setZoom(inputElement.value ? 15 : 8);
         }
+        map.setCenter(initialPos);
+        marker.setPosition(initialPos);
+        map.setZoom(initialPos.value ? 15 : 8);
     }
 
-    openMapModalButton.addEventListener('click', () => openMapForInput(locationGpsInput));
-    closeMapModalButton.addEventListener('click', closeModal);
+    function closeModal() {
+        if(mapModal) mapModal.classList.add('hidden');
+    }
 
-    confirmLocationButton.addEventListener('click', () => {
-        if (selectedPosition && activeLocationInput) {
-            activeLocationInput.value = `${selectedPosition.lat}, ${selectedPosition.lng}`;
-        }
-        closeModal();
-    });
+    // Generic function for form inputs (used by bulk edit)
+    window.openMapForInput = function(inputElement) {
+        window.mapModalContext = 'bulkEdit';
+        activeLocationInput = inputElement;
+        const initialPos = parseLatLng(inputElement.value) || { lat: 19.4326, lng: -99.1332 };
+        selectedPosition = initialPos;
+        initMapInstance(initialPos);
+        if(mapModal) mapModal.classList.remove('hidden');
+    }
+
+    // Specific listener for the main Apiary location button
+    const mainOpenMapBtn = document.getElementById('open-map-modal');
+    if (mainOpenMapBtn) {
+        mainOpenMapBtn.addEventListener('click', () => {
+            window.mapModalContext = 'mainApiary';
+            const initialPos = parseLatLng('{{ $apiary->location_gps }}') || { lat: 19.4326, lng: -99.1332 };
+            selectedPosition = initialPos;
+            pacInput.value = '{{ addslashes($apiary->location) }}';
+            initMapInstance(initialPos);
+            if(mapModal) mapModal.classList.remove('hidden');
+        });
+    }
+
+    if (closeMapModalButton) {
+        closeMapModalButton.addEventListener('click', closeModal);
+    }
+
+    if (confirmLocationButton) {
+        confirmLocationButton.addEventListener('click', () => {
+            if (window.mapModalContext === 'mainApiary') {
+                const locationName = pacInput.value;
+                const gpsCoords = selectedPosition ? `${selectedPosition.lat.toFixed(6)}, ${selectedPosition.lng.toFixed(6)}` : '{{ $apiary->location_gps }}';
+
+                const editor = apiaryEditor();
+                // Use Promise.all to wait for both updates before reloading
+                Promise.all([
+                    editor.updateApiary('location', locationName),
+                    editor.updateApiary('location_gps', gpsCoords)
+                ]).then(() => {
+                    window.location.reload();
+                }).catch(err => {
+                    console.error("Failed to update location:", err);
+                });
+
+            } else if (window.mapModalContext === 'bulkEdit' && activeLocationInput) {
+                if (selectedPosition) {
+                    activeLocationInput.value = `${selectedPosition.lat.toFixed(6)}, ${selectedPosition.lng.toFixed(6)}`;
+                }
+            }
+            closeModal();
+        });
+    }
 
             const selectAllCheckbox = document.getElementById('select-all');
             const hiveCheckboxes = document.querySelectorAll('.hive-checkbox');
@@ -1075,35 +1043,37 @@ document.addEventListener('DOMContentLoaded', function () {
                     this.updateApiary('status', newStatus);
                 },
                 updateApiary(field, value) {
-                    const payload = {
-                        [field]: value,
-                        _token: '{{ csrf_token() }}',
-                        _method: 'PATCH'
-                    };
+                    return new Promise((resolve, reject) => {
+                        const payload = {
+                            [field]: value,
+                            _token: '{{ csrf_token() }}',
+                            _method: 'PATCH'
+                        };
 
-                    fetch('{{ route('apiaries.update', $apiary) }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(err => { throw err; });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        // Maybe show a success toast in the future
-                        console.log('Success:', data);
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        // Maybe show an error toast
-                        alert('Error al actualizar el apiario.');
+                        fetch('{{ route('apiaries.update', $apiary) }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(payload)
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(err => reject(err));
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Success:', data);
+                            resolve(data);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error al actualizar el apiario: ' + error.message);
+                            reject(error);
+                        });
                     });
                 }
             }
