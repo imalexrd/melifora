@@ -27,13 +27,6 @@
                             <div class="p-2 bg-white rounded-lg shadow-md inline-block">
                                 {!! QrCode::size(100)->generate(route('apiaries.show', $apiary)) !!}
                             </div>
-                            <div>
-                                <a href="{{ route('apiaries.downloadQr', $apiary) }}" class="mt-1 inline-block" title="Descargar QR">
-                                    <svg class="h-6 w-6 text-gray-500 hover:text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg>
-                                </a>
-                            </div>
                         </div>
                         <!-- Right Side: Info -->
                         <div class="flex-grow">
@@ -100,9 +93,9 @@
                                 </div>
                                 <!-- Column 2: Stats, Dates -->
                                 <div class="flex-shrink-0 mt-4 md:mt-0 md:pl-4 md:border-l md:border-gray-200 dark:md:border-gray-700">
-                                    <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                                    <div class="flex flex-col space-y-2 text-sm">
                                         <div class="flex items-center space-x-2">
-                                            <p class="font-semibold text-gray-500 dark:text-gray-400">{{ __('Rating:') }}</p>
+                                            <p class="font-semibold text-gray-500 dark:text-gray-400 w-20">{{ __('Rating:') }}</p>
                                             @if($averageRating !== null)
                                                 @php
                                                     $ratingColorClass = '';
@@ -124,15 +117,15 @@
                                             @endif
                                         </div>
                                         <div class="flex items-center space-x-2">
-                                            <p class="font-semibold text-gray-500 dark:text-gray-400">{{ __('Colmenas:') }}</p>
+                                            <p class="font-semibold text-gray-500 dark:text-gray-400 w-20">{{ __('Colmenas:') }}</p>
                                             <p class="font-bold text-gray-900 dark:text-gray-100">{{ $hives->total() }}</p>
                                         </div>
                                         <div class="flex items-center space-x-2 text-xs">
-                                            <p class="font-semibold text-gray-500 dark:text-gray-400">{{ __('Creado:') }}</p>
+                                            <p class="font-semibold text-gray-500 dark:text-gray-400 w-20">{{ __('Creado:') }}</p>
                                             <p class="text-gray-600 dark:text-gray-300">{{ $apiary->created_at->diffForHumans() }}</p>
                                         </div>
                                         <div class="flex items-center space-x-2 text-xs">
-                                            <p class="font-semibold text-gray-500 dark:text-gray-400">{{ __('Actualizado:') }}</p>
+                                            <p class="font-semibold text-gray-500 dark:text-gray-400 w-20">{{ __('Actualizado:') }}</p>
                                             <p class="text-gray-600 dark:text-gray-300">{{ $apiary->updated_at->diffForHumans() }}</p>
                                         </div>
                                     </div>
