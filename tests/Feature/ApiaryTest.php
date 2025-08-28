@@ -83,4 +83,52 @@ class ApiaryTest extends TestCase
             $this->assertDatabaseHas('hives', ['id' => $hive->id, 'apiary_id' => $apiary2->id]);
         }
     }
+
+    public function test_user_can_update_apiary_name_via_ajax()
+    {
+        $user = User::factory()->create();
+        $apiary = Apiary::factory()->create(['user_id' => $user->id, 'name' => 'Old Name']);
+
+        $this->actingAs($user);
+
+        $response = $this->patchJson(route('apiaries.update', $apiary), [
+            'name' => 'New Name',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment(['success' => true]);
+        $this->assertDatabaseHas('apiaries', ['id' => $apiary->id, 'name' => 'New Name']);
+    }
+
+    public function test_user_can_update_apiary_status_via_ajax()
+    {
+        $user = User::factory()->create();
+        $apiary = Apiary::factory()->create(['user_id' => $user->id, 'status' => 'Activo']);
+        $newStatus = 'Inactivo';
+
+        $this->actingAs($user);
+
+        $response = $this->patchJson(route('apiaries.update', $apiary), [
+            'status' => $newStatus,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment(['success' => true]);
+        $this->assertDatabaseHas('apiaries', ['id' => $apiary->id, 'status' => $newStatus]);
+    }
+
+    public function test_user_cannot_update_apiary_with_invalid_status_via_ajax()
+    {
+        $user = User::factory()->create();
+        $apiary = Apiary::factory()->create(['user_id' => $user->id]);
+
+        $this->actingAs($user);
+
+        $response = $this->patchJson(route('apiaries.update', $apiary), [
+            'status' => 'Invalid Status',
+        ]);
+
+        $response->assertStatus(422); // Unprocessable Entity
+        $response->assertJsonValidationErrors('status');
+    }
 }
