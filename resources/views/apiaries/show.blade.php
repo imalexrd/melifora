@@ -20,14 +20,27 @@
                         Apiario
                     </div>
 
-                    <!-- Top Stats Header -->
-                    <div class="flex flex-col sm:flex-row justify-around items-stretch mb-4 pb-4 border-b dark:border-gray-700 -mx-4 px-2 space-y-2 sm:space-y-0">
-                        <!-- Status -->
-                        <div class="flex-1 p-2 bg-gray-50 rounded-lg text-center shadow dark:bg-gray-700 mx-2 flex flex-col justify-center">
-                            <p class="text-xs font-bold text-gray-800 dark:text-gray-300 mb-1">{{ __('Estado') }}</p>
-                            <div x-data="{ editingStatus: false }" class="relative">
-                                <!-- Badge Display -->
-                                <div x-show="!editingStatus" @click="editingStatus = true; $nextTick(() => $refs.statusSelect.focus())" class="flex items-center justify-center cursor-pointer group">
+                    <!-- Main Content -->
+                    <div class="flex flex-col md:flex-row md:justify-center items-center mt-4">
+                        <!-- Left Side: Image -->
+                        <div class="mr-4 flex-shrink-0 text-center">
+                            <div class="p-2 bg-white rounded-lg shadow-md inline-block">
+                                {!! QrCode::size(100)->generate(route('apiaries.show', $apiary)) !!}
+                            </div>
+                            <div>
+                                <a href="{{ route('apiaries.downloadQr', $apiary) }}" class="mt-1 inline-block" title="Descargar QR">
+                                    <svg class="h-6 w-6 text-gray-500 hover:text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Right Side: Info -->
+                        <div class="flex-grow">
+                            <!-- Name and Status Section -->
+                            <div x-data="{ isEditingName: false, editingStatus: false, name: '{{ addslashes($apiary->name) }}' }">
+                                <div class="flex items-center gap-3" x-show="!isEditingName && !editingStatus">
+                                    <h2 class="text-2xl font-bold text-gray-900 dark:text-dark-text-dark" x-text="name"></h2>
                                     @php
                                         $statusBadgeClass = match($apiary->status ?? 'Default') {
                                             'Active' => 'bg-green-500 border-green-600',
@@ -36,12 +49,24 @@
                                             default => 'bg-gray-500 border-gray-600',
                                         };
                                     @endphp
-                                    <span class="px-3 py-1 text-xs font-semibold text-white rounded-full border-b-2 {{ $statusBadgeClass }}">
+                                    <span @click="editingStatus = true; $nextTick(() => $refs.statusSelect.focus())" class="px-2 py-0.5 text-xs font-semibold text-white rounded-full border-b-2 {{ $statusBadgeClass }} cursor-pointer" title="Cambiar estado">
                                         {{ $apiary->status }}
                                     </span>
-                                    <svg class="w-4 h-4 ml-1 text-gray-400 group-hover:text-gray-600" fill="currentColor" viewBox="0 0 20 20"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
+                                    <button @click="isEditingName = true; $nextTick(() => $refs.nameInput.focus())" class="text-gray-400 hover:text-gray-600" title="Editar nombre">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
+                                    </button>
                                 </div>
-                                <!-- Select Input for Editing -->
+                                <!-- Name Editor -->
+                                <div x-show="isEditingName" x-cloak class="flex items-center gap-2">
+                                    <input type="text" x-ref="nameInput" x-model="name" @keydown.enter="updateName(name); isEditingName = false" @keydown.escape="isEditingName = false" class="border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm text-xl">
+                                    <button @click="updateName(name); isEditingName = false" class="p-1 text-green-600 hover:text-green-800">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    </button>
+                                    <button @click="isEditingName = false" class="p-1 text-red-600 hover:text-red-800">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </button>
+                                </div>
+                                 <!-- Status Editor -->
                                 <div x-show="editingStatus" x-cloak>
                                     <select id="status-dropdown" name="status" x-ref="statusSelect" @change="updateStatus($event.target.value); editingStatus = false" @click.away="editingStatus = false" class="block w-full text-sm border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md dark:bg-gray-600 dark:border-gray-500 dark:text-white">
                                         @foreach ($apiaryStatuses as $status)
@@ -50,115 +75,68 @@
                                     </select>
                                 </div>
                             </div>
-                        </div>
-                        <!-- Hives -->
-                        <div class="flex-1 p-2 bg-gray-50 rounded-lg text-center shadow dark:bg-gray-700 mx-2 flex flex-col justify-center">
-                            <p class="text-xs font-bold text-gray-800 dark:text-gray-300">{{ __('Colmenas') }}</p>
-                            <p class="text-2xl font-extrabold text-gray-900 dark:text-gray-100">{{ $hives->total() }}</p>
-                        </div>
-                        <!-- Rating -->
-                        <div class="flex-1 p-2 bg-gray-50 rounded-lg text-center shadow dark:bg-gray-700 mx-2 flex flex-col justify-center">
-                            <p class="text-xs font-bold text-gray-800 dark:text-gray-300">{{ __('Rating') }}</p>
-                            @if($averageRating !== null)
-                                @php
-                                    $ratingColorClass = '';
-                                    if ($averageRating <= 10) $ratingColorClass = 'text-black dark:text-gray-300';
-                                    else if ($averageRating <= 20) $ratingColorClass = 'text-red-900 dark:text-red-500';
-                                    else if ($averageRating <= 30) $ratingColorClass = 'text-red-600 dark:text-red-400';
-                                    else if ($averageRating <= 45) $ratingColorClass = 'text-orange-500 dark:text-orange-400';
-                                    else if ($averageRating <= 55) $ratingColorClass = 'text-yellow-600 dark:text-yellow-500'; // Mustard
-                                    else if ($averageRating <= 70) $ratingColorClass = 'text-yellow-500 dark:text-yellow-400'; // Bright Yellow
-                                    else if ($averageRating <= 80) $ratingColorClass = 'text-green-500 dark:text-green-400'; // Light Green
-                                    else if ($averageRating <= 90) $ratingColorClass = 'text-green-600 dark:text-green-300'; // Bright Green
-                                    else $ratingColorClass = 'gold-animated-text';
-                                @endphp
-                                <p class="text-2xl font-extrabold flex items-center justify-center {{ $ratingColorClass }}">
-                                    {{ number_format($averageRating, 0) }}%
-                                    @if ($ratingColorClass !== 'gold-animated-text')
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            <p class="text-xs text-gray-500 mt-1">Slug: {{ $apiary->slug }}</p>
+                            <!-- Location Section -->
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-600 flex items-center dark:text-dark-text-light">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                                     </svg>
-                                    @endif
+                                    <span class="mr-2">{{ $apiary->location ?: 'Ubicación no definida' }}</span>
+                                    <button id="open-map-modal" class="text-blue-500 hover:text-blue-700 text-xs">
+                                        ({{ $apiary->location ? 'Editar' : 'Añadir' }})
+                                    </button>
                                 </p>
-                            @else
-                                <p class="text-xl font-bold text-gray-500 dark:text-gray-400">N/A</p>
-                            @endif
-                        </div>
-                    </div>
-
-                    <!-- Main Content -->
-                    <div class="flex flex-col md:flex-row md:justify-center items-center">
-                        <!-- Left Side: Image, Name, Location -->
-                        <div class="flex items-center mb-4 md:mb-0">
-                            <div class="mr-4 flex-shrink-0 text-center">
-                                <div class="p-2 bg-white rounded-lg shadow-md inline-block">
-                                    {!! QrCode::size(100)->generate(route('apiaries.show', $apiary)) !!}
-                                </div>
-                                <div>
-                                    <a href="{{ route('apiaries.downloadQr', $apiary) }}" class="mt-1 inline-block" title="Descargar QR">
-                                        <svg class="h-6 w-6 text-gray-500 hover:text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                        </svg>
+                                @if($apiary->location_gps)
+                                    <a href="https://www.google.com/maps/search/?api=1&query={{ $apiary->location_gps }}" target="_blank" class="inline-flex items-center text-xs font-medium text-blue-600 hover:text-blue-800 mt-1 ml-4">
+                                        {{ $apiary->location_gps }}
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 ml-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                                     </a>
-                                </div>
+                                @endif
                             </div>
-                            <div class="flex-grow">
-                                <!-- Name and Status Section -->
-                                <div x-data="{ isEditingName: false, name: '{{ addslashes($apiary->name) }}' }">
-                                    <div class="flex items-center gap-2" x-show="!isEditingName">
-                                        <h2 class="text-2xl font-bold text-gray-900 dark:text-dark-text-dark" x-text="name"></h2>
-                                        <button @click="isEditingName = true; $nextTick(() => $refs.nameInput.focus())" class="text-gray-500 hover:text-gray-700">
-                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
-                                        </button>
-                                    </div>
-                                    <div x-show="isEditingName" x-cloak class="flex items-center gap-2">
-                                        <input type="text" x-ref="nameInput" x-model="name" @keydown.enter="updateName(name); isEditingName = false" @keydown.escape="isEditingName = false" class="border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm text-xl">
-                                        <button @click="updateName(name); isEditingName = false" class="p-1 text-green-600 hover:text-green-800">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        </button>
-                                        <button @click="isEditingName = false" class="p-1 text-red-600 hover:text-red-800">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                        </button>
-                                    </div>
-                                </div>
-                                <p class="text-xs text-gray-500 mt-1">Slug: {{ $apiary->slug }}</p>
 
-                                <!-- Location Section -->
-                                <div class="mt-2">
-                                    <p class="text-sm text-gray-600 flex items-center dark:text-dark-text-light">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                                        </svg>
-                                        <span class="mr-2">{{ $apiary->location ?: 'Ubicación no definida' }}</span>
-                                        <button id="open-map-modal" class="text-blue-500 hover:text-blue-700 text-xs">
-                                            ({{ $apiary->location ? 'Editar' : 'Añadir' }})
-                                        </button>
-                                    </p>
-                                    @if($apiary->location_gps)
-                                        <a href="https://www.google.com/maps/search/?api=1&query={{ $apiary->location_gps }}" target="_blank" class="inline-flex items-center text-xs font-medium text-blue-600 hover:text-blue-800 mt-1 ml-4">
-                                            {{ $apiary->location_gps }}
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 ml-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                                        </a>
+                            <!-- Integrated Stats and Dates -->
+                            <div class="mt-3 pt-3 border-t dark:border-gray-700 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                                <div class="flex items-center space-x-2">
+                                    <p class="font-semibold text-gray-500 dark:text-gray-400">{{ __('Rating:') }}</p>
+                                    @if($averageRating !== null)
+                                        @php
+                                            $ratingColorClass = '';
+                                            if ($averageRating <= 10) $ratingColorClass = 'text-black dark:text-gray-300';
+                                            else if ($averageRating <= 20) $ratingColorClass = 'text-red-900 dark:text-red-500';
+                                            else if ($averageRating <= 30) $ratingColorClass = 'text-red-600 dark:text-red-400';
+                                            else if ($averageRating <= 45) $ratingColorClass = 'text-orange-500 dark:text-orange-400';
+                                            else if ($averageRating <= 55) $ratingColorClass = 'text-yellow-600 dark:text-yellow-500';
+                                            else if ($averageRating <= 70) $ratingColorClass = 'text-yellow-500 dark:text-yellow-400';
+                                            else if ($averageRating <= 80) $ratingColorClass = 'text-green-500 dark:text-green-400';
+                                            else if ($averageRating <= 90) $ratingColorClass = 'text-green-600 dark:text-green-300';
+                                            else $ratingColorClass = 'gold-animated-text';
+                                        @endphp
+                                        <p class="font-bold flex items-center {{ $ratingColorClass }}">
+                                            {{ number_format($averageRating, 0) }}%
+                                        </p>
+                                    @else
+                                        <p class="font-bold text-gray-500 dark:text-gray-400">N/A</p>
                                     @endif
                                 </div>
+                                <div class="flex items-center space-x-2">
+                                    <p class="font-semibold text-gray-500 dark:text-gray-400">{{ __('Colmenas:') }}</p>
+                                    <p class="font-bold text-gray-900 dark:text-gray-100">{{ $hives->total() }}</p>
+                                </div>
+                                <div class="flex items-center space-x-2 text-xs">
+                                    <p class="font-semibold text-gray-500 dark:text-gray-400">{{ __('Creado:') }}</p>
+                                    <p class="text-gray-600 dark:text-gray-300">{{ $apiary->created_at->diffForHumans() }}</p>
+                                </div>
+                                <div class="flex items-center space-x-2 text-xs">
+                                    <p class="font-semibold text-gray-500 dark:text-gray-400">{{ __('Actualizado:') }}</p>
+                                    <p class="text-gray-600 dark:text-gray-300">{{ $apiary->updated_at->diffForHumans() }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-gray-600 mt-4 border-t pt-4 dark:border-gray-700 dark:text-dark-text-light">
-                        <div>
-                            <p class="text-gray-500 font-semibold dark:text-gray-400">{{ __('Creado el') }}</p>
-                            <p class="font-medium">{{ $apiary->created_at->format('d/m/Y H:i') }}</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-500 font-semibold dark:text-gray-400">{{ __('Actualizado el') }}</p>
-                            <p class="font-medium">{{ $apiary->updated_at->format('d/m/Y H:i') }}</p>
-                        </div>
-                    </div>
-
 
                     <!-- Bottom Action Buttons -->
-                    <div class="mt-6 pt-6 border-t dark:border-gray-700 flex justify-end items-center space-x-2">
+                    <div class="mt-4 pt-4 border-t dark:border-gray-700 flex justify-end items-center space-x-2">
                         <button type="button" class="open-create-hive-modal-button inline-flex items-center px-4 py-2 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-400 active:bg-yellow-600 focus:outline-none focus:border-yellow-700 focus:ring ring-yellow-300 disabled:opacity-25 transition ease-in-out duration-150">
                             {{ __('Añadir Colmena') }}
                         </button>
