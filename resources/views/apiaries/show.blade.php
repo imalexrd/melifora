@@ -1,41 +1,21 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <nav class="flex" aria-label="Breadcrumb">
-                <ol class="inline-flex items-center space-x-1 md:space-x-3">
-                    <li class="inline-flex items-center">
-                        <a href="{{ route('apiaries.index') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-dark-text-light dark:hover:text-white">
-                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
-                            Apiarios
-                        </a>
-                    </li>
-                    <li aria-current="page">
-                        <div class="flex items-center">
-                            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                            <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2 dark:text-gray-400">{{ $apiary->name }}</span>
-                        </div>
-                    </li>
-                </ol>
-            </nav>
-            <div class="flex items-center space-x-2">
-                 <button type="button" class="open-create-hive-modal-button inline-flex items-center px-4 py-2 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-400 active:bg-yellow-600 focus:outline-none focus:border-yellow-700 focus:ring ring-yellow-300 disabled:opacity-25 transition ease-in-out duration-150">
-                    {{ __('Añadir Colmena') }}
-                </button>
-                <button id="toggle-edit-form" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
-                    {{ __('Editar') }}
-                </button>
-                <button id="open-delete-apiary-modal-button" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:border-red-700 focus:ring ring-red-300 disabled:opacity-25 transition ease-in-out duration-150">
-                    {{ __('Borrar') }}
-                </button>
-            </div>
-        </div>
-    </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white rounded-lg shadow-lg overflow-hidden dark:bg-dark-surface">
-                <div class="p-6 bg-white border-b border-gray-200 dark:bg-dark-surface dark:border-gray-700">
-                    <div class="flex flex-col md:flex-row md:justify-between">
+                <div class="p-6 bg-white border-b border-gray-200 dark:bg-dark-surface dark:border-gray-700 relative">
+                    <div class="absolute top-0 left-0 bg-orange-500 text-white font-bold px-3 py-1 rounded-br-lg rounded-tl-lg">
+                        Apiario
+                    </div>
+                    <div class="flex justify-end items-center mb-4 space-x-2">
+                        <button type="button" class="open-create-hive-modal-button inline-flex items-center px-4 py-2 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-400 active:bg-yellow-600 focus:outline-none focus:border-yellow-700 focus:ring ring-yellow-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            {{ __('Añadir Colmena') }}
+                        </button>
+                        <button id="open-delete-apiary-modal-button" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:border-red-700 focus:ring ring-red-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            {{ __('Borrar') }}
+                        </button>
+                    </div>
+                    <div class="flex flex-col md:flex-row md:justify-between" x-data="apiaryEditor()">
                         <!-- Left Side: Image, Name, Location -->
                         <div class="flex items-center mb-4 md:mb-0">
                             <div class="mr-6 flex-shrink-0 text-center">
@@ -51,45 +31,77 @@
                                 </div>
                             </div>
                             <div class="flex-grow">
-                                <div class="flex items-center gap-4">
-                                    <h2 class="text-3xl font-bold text-gray-900 dark:text-dark-text-dark">{{ $apiary->name }}</h2>
-                                    <span class="px-3 py-1 text-sm font-semibold text-white rounded-full {{ $apiaryStatusColors[$apiary->status] ?? 'bg-gray-400' }}">
-                                        {{ $apiary->status }}
-                                    </span>
+                                <!-- Name and Status Section -->
+                                <div x-data="{ isEditingName: false, name: '{{ addslashes($apiary->name) }}' }">
+                                    <div class="flex items-center gap-4" x-show="!isEditingName">
+                                        <h2 class="text-3xl font-bold text-gray-900 dark:text-dark-text-dark" x-text="name"></h2>
+                                        <button @click="isEditingName = true; $nextTick(() => $refs.nameInput.focus())" class="text-gray-500 hover:text-gray-700">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
+                                        </button>
+                                    </div>
+                                    <div x-show="isEditingName" x-cloak class="flex items-center gap-2">
+                                        <input type="text" x-ref="nameInput" x-model="name" @keydown.enter="updateName(name); isEditingName = false" @keydown.escape="isEditingName = false" class="border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm text-2xl">
+                                        <button @click="updateName(name); isEditingName = false" class="p-1 text-green-600 hover:text-green-800">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        </button>
+                                        <button @click="isEditingName = false" class="p-1 text-red-600 hover:text-red-800">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
+                                    </div>
                                 </div>
-                                <p class="text-gray-600 flex items-center mt-2 dark:text-dark-text-light">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                                    </svg>
-                                    {{ $apiary->location }}
-                                </p>
-                                @if($apiary->location_gps)
-                                    <a href="https://www.google.com/maps/search/?api=1&query={{ $apiary->location_gps }}" target="_blank" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 mt-1">
-                                        {{ $apiary->location_gps }}
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor">
-                                          <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                <p class="text-sm text-gray-500 mt-1">Slug: {{ $apiary->slug }}</p>
+
+                                <!-- Location Section -->
+                                <div class="mt-4">
+                                    <p class="text-gray-600 flex items-center dark:text-dark-text-light">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                                         </svg>
-                                    </a>
-                                @endif
+                                        <span class="mr-2">{{ $apiary->location ?: 'Ubicación no definida' }}</span>
+                                        <button id="open-map-modal" class="text-blue-500 hover:text-blue-700 text-sm">
+                                            ({{ $apiary->location ? 'Editar' : 'Añadir' }})
+                                        </button>
+                                    </p>
+                                    @if($apiary->location_gps)
+                                        <a href="https://www.google.com/maps/search/?api=1&query={{ $apiary->location_gps }}" target="_blank" class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 mt-1 ml-7">
+                                            {{ $apiary->location_gps }}
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                         <!-- Right Side: Stats -->
                         <div class="flex items-center space-x-4">
-                            <div class="p-4 bg-yellow-50 rounded-lg text-center shadow dark:bg-gray-700">
-                                <p class="text-sm font-bold text-yellow-800 dark:text-yellow-300">{{ __('Colmenas') }}</p>
-                                <p class="text-3xl font-extrabold text-yellow-900 dark:text-yellow-100">{{ $hives->total() }}</p>
+                            <div class="p-4 bg-gray-50 rounded-lg text-center shadow dark:bg-gray-700">
+                                <p class="text-sm font-bold text-gray-800 dark:text-gray-300">{{ __('Estado') }}</p>
+                                <select id="status-dropdown" name="status" class="mt-2 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                                    @foreach ($apiaryStatuses as $status)
+                                        <option value="{{ $status }}" @if($apiary->status == $status) selected @endif>{{ $status }}</option>
+                                    @endforeach
+                                </select>
                             </div>
-                            <div class="p-4 bg-green-50 rounded-lg text-center shadow dark:bg-gray-700">
-                                <p class="text-sm font-bold text-green-800 dark:text-green-300">{{ __('Rating Promedio') }}</p>
+                             <div class="p-4 bg-gray-50 rounded-lg text-center shadow dark:bg-gray-700">
+                                <p class="text-sm font-bold text-gray-800 dark:text-gray-300">{{ __('Colmenas') }}</p>
+                                <p class="text-3xl font-extrabold text-gray-900 dark:text-gray-100">{{ $hives->total() }}</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-lg text-center shadow dark:bg-gray-700">
+                                <p class="text-sm font-bold text-gray-800 dark:text-gray-300">{{ __('Rating Promedio') }}</p>
                                 @if($averageRating)
-                                    <p class="text-3xl font-extrabold text-green-900 flex items-center justify-center dark:text-green-100">
+                                    @php
+                                        $ratingColorClass = 'text-gray-500'; // Default
+                                        if ($averageRating >= 4) $ratingColorClass = 'text-green-500';
+                                        else if ($averageRating >= 2.5) $ratingColorClass = 'text-yellow-500';
+                                        else $ratingColorClass = 'text-red-500';
+                                    @endphp
+                                    <p class="text-3xl font-extrabold flex items-center justify-center {{ $ratingColorClass }}">
                                         {{ number_format($averageRating, 1) }}
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-1 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-1" viewBox="0 0 20 20" fill="currentColor">
                                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                         </svg>
                                     </p>
                                 @else
-                                    <p class="text-2xl font-bold text-green-800 dark:text-green-300">N/A</p>
+                                    <p class="text-2xl font-bold text-gray-500 dark:text-gray-400">N/A</p>
                                 @endif
                             </div>
                         </div>
@@ -108,60 +120,6 @@
             </div>
 
             <div class="mt-8">
-                <div id="edit-apiary-form" class="hidden bg-white rounded-lg shadow-md overflow-hidden p-6 mb-8 dark:bg-dark-surface">
-                    <form method="POST" action="{{ route('apiaries.update', $apiary) }}">
-                        @csrf
-                        @method('PATCH')
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Name -->
-                            <div>
-                                <x-input-label for="name" :value="__('Nombre del Apiario')" class="dark:text-dark-text-light" />
-                                <x-text-input id="name" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="text" name="name" :value="old('name', $apiary->name)" required autofocus autocomplete="name" />
-                                <x-input-error :messages="$errors->get('name')" class="mt-2" />
-                            </div>
-
-                            <!-- Status -->
-                            <div>
-                                <x-input-label for="status" :value="__('Estado')" class="dark:text-dark-text-light" />
-                                <select name="status" id="status" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-yellow-500 focus:ring focus:ring-yellow-200 focus:ring-opacity-50 dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600">
-                                    @foreach ($apiaryStatuses as $status)
-                                        <option value="{{ $status }}" @if(old('status', $apiary->status) == $status) selected @endif>{{ $status }}</option>
-                                    @endforeach
-                                </select>
-                                <x-input-error :messages="$errors->get('status')" class="mt-2" />
-                            </div>
-
-                            <!-- Location -->
-                            <div>
-                                <x-input-label for="location" :value="__('Ubicación')" class="dark:text-dark-text-light" />
-                                <x-text-input id="location" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="text" name="location" :value="old('location', $apiary->location)" required autocomplete="location" />
-                                <x-input-error :messages="$errors->get('location')" class="mt-2" />
-                            </div>
-
-                            <!-- Location GPS -->
-                            <div>
-                                <x-input-label for="location_gps" :value="__('Coordenadas GPS')" class="dark:text-dark-text-light" />
-                                <div class="flex items-center gap-2">
-                                    <x-text-input id="location_gps" class="block mt-1 w-full dark:bg-dark-surface dark:text-dark-text-dark dark:border-gray-600" type="text" name="location_gps" :value="old('location_gps', $apiary->location_gps)" autocomplete="off" />
-                                    <button type="button" id="open-map-modal" class="whitespace-nowrap inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                                        </svg>
-                                        <span class="hidden md:inline">{{ $apiary->location_gps ? __('Ver/Editar') : __('Seleccionar') }}</span>
-                                    </button>
-                                </div>
-                                <x-input-error :messages="$errors->get('location_gps')" class="mt-2" />
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-end mt-6">
-                            <x-primary-button>
-                                {{ __('Actualizar Apiario') }}
-                            </x-primary-button>
-                        </div>
-                    </form>
-                </div>
 
                 <!-- Tab Navigation -->
                 <div class="border-b border-gray-200 dark:border-gray-700">
@@ -679,19 +637,16 @@
     </div>
 
     <script>
-window.initMap = function() {};
-
 document.addEventListener('DOMContentLoaded', function () {
-    const locationGpsInput = document.getElementById('location_gps');
-    const openMapModalButton = document.getElementById('open-map-modal');
     const mapModal = document.getElementById('google-maps-modal');
     const closeMapModalButton = document.getElementById('close-map-modal');
     const confirmLocationButton = document.getElementById('confirm-location-button');
     const pacInput = document.getElementById('pac-input');
     const mapElement = document.getElementById('map');
+    let map, marker, searchBox, selectedPosition, activeLocationInput;
 
-    let map, marker, searchBox;
-    let selectedPosition = null;
+    // Use a global context to know if we are editing the main apiary or a bulk field
+    window.mapModalContext = null;
 
     function parseLatLng(str) {
         if (!str) return null;
@@ -699,140 +654,96 @@ document.addEventListener('DOMContentLoaded', function () {
         if (parts.length !== 2) return null;
         const lat = parseFloat(parts[0].trim());
         const lng = parseFloat(parts[1].trim());
-        if (isNaN(lat) || isNaN(lng)) return null;
-        return { lat, lng };
+        return isNaN(lat) || isNaN(lng) ? null : { lat, lng };
     }
 
-    function openModal() {
-        mapModal.classList.remove('hidden');
-        const initialPos = parseLatLng(locationGpsInput.value) || { lat: 19.4326, lng: -99.1332 }; // Default to Mexico City
-        selectedPosition = initialPos;
-
-        map = new google.maps.Map(mapElement, {
-            center: initialPos,
-            zoom: locationGpsInput.value ? 15 : 8,
-        });
-
-        marker = new google.maps.Marker({
-            position: initialPos,
-            map: map,
-            draggable: true,
-        });
-
-        searchBox = new google.maps.places.SearchBox(pacInput);
-        map.controls[google.maps.ControlPosition.TOP_LEFT].push(pacInput);
-
-        map.addListener('bounds_changed', () => {
-            searchBox.setBounds(map.getBounds());
-        });
-
-        searchBox.addListener('places_changed', () => {
-            const places = searchBox.getPlaces();
-
-            if (places.length == 0) {
-                return;
-            }
-
-            const place = places[0];
-            if (!place.geometry || !place.geometry.location) {
-                return;
-            }
-
-            map.setCenter(place.geometry.location);
-            map.setZoom(15);
-            marker.setPosition(place.geometry.location);
-            selectedPosition = place.geometry.location.toJSON();
-        });
-
-        map.addListener('click', (e) => {
-            marker.setPosition(e.latLng);
-            selectedPosition = e.latLng.toJSON();
-        });
-
-        marker.addListener('dragend', (e) => {
-            selectedPosition = e.latLng.toJSON();
-        });
-    }
-
-    function closeModal() {
-        mapModal.classList.add('hidden');
-    }
-
-    let activeLocationInput = null;
-
-    function openMapForInput(inputElement) {
-        activeLocationInput = inputElement;
-        mapModal.classList.remove('hidden');
-        const initialPos = parseLatLng(inputElement.value) || { lat: 19.4326, lng: -99.1332 }; // Default to Mexico City
-        selectedPosition = initialPos;
-
+    function initMapInstance(initialPos) {
         if (!map) {
-            map = new google.maps.Map(mapElement, {
-                center: initialPos,
-                zoom: inputElement.value ? 15 : 8,
-            });
-
-            marker = new google.maps.Marker({
-                position: initialPos,
-                map: map,
-                draggable: true,
-            });
-
+            map = new google.maps.Map(mapElement, { center: initialPos, zoom: 8 });
+            marker = new google.maps.Marker({ position: initialPos, map: map, draggable: true });
             searchBox = new google.maps.places.SearchBox(pacInput);
             map.controls[google.maps.ControlPosition.TOP_LEFT].push(pacInput);
 
             map.addListener('bounds_changed', () => searchBox.setBounds(map.getBounds()));
-
             searchBox.addListener('places_changed', () => {
-                const places = searchBox.getPlaces();
-                if (places.length > 0 && places[0].geometry) {
-                    const place = places[0];
+                const place = searchBox.getPlaces()[0];
+                if (place && place.geometry) {
                     map.setCenter(place.geometry.location);
                     map.setZoom(15);
                     marker.setPosition(place.geometry.location);
                     selectedPosition = place.geometry.location.toJSON();
+                    pacInput.value = place.formatted_address;
                 }
             });
-
+            marker.addListener('dragend', (e) => {
+                selectedPosition = e.latLng.toJSON();
+            });
             map.addListener('click', (e) => {
                 marker.setPosition(e.latLng);
                 selectedPosition = e.latLng.toJSON();
             });
-
-            marker.addListener('dragend', (e) => {
-                selectedPosition = e.latLng.toJSON();
-            });
-        } else {
-            map.setCenter(initialPos);
-            marker.setPosition(initialPos);
-            map.setZoom(inputElement.value ? 15 : 8);
         }
+        map.setCenter(initialPos);
+        marker.setPosition(initialPos);
+        map.setZoom(initialPos.value ? 15 : 8);
     }
 
-    openMapModalButton.addEventListener('click', () => openMapForInput(locationGpsInput));
-    closeMapModalButton.addEventListener('click', closeModal);
+    function closeModal() {
+        if(mapModal) mapModal.classList.add('hidden');
+    }
 
-    confirmLocationButton.addEventListener('click', () => {
-        if (selectedPosition && activeLocationInput) {
-            activeLocationInput.value = `${selectedPosition.lat}, ${selectedPosition.lng}`;
-        }
-        closeModal();
-    });
+    // Generic function for form inputs (used by bulk edit)
+    window.openMapForInput = function(inputElement) {
+        window.mapModalContext = 'bulkEdit';
+        activeLocationInput = inputElement;
+        const initialPos = parseLatLng(inputElement.value) || { lat: 19.4326, lng: -99.1332 };
+        selectedPosition = initialPos;
+        initMapInstance(initialPos);
+        if(mapModal) mapModal.classList.remove('hidden');
+    }
 
-    const toggleButton = document.getElementById('toggle-edit-form');
-            const editForm = document.getElementById('edit-apiary-form');
+    // Specific listener for the main Apiary location button
+    const mainOpenMapBtn = document.getElementById('open-map-modal');
+    if (mainOpenMapBtn) {
+        mainOpenMapBtn.addEventListener('click', () => {
+            window.mapModalContext = 'mainApiary';
+            const initialPos = parseLatLng('{{ $apiary->location_gps }}') || { lat: 19.4326, lng: -99.1332 };
+            selectedPosition = initialPos;
+            pacInput.value = '{{ addslashes($apiary->location) }}';
+            initMapInstance(initialPos);
+            if(mapModal) mapModal.classList.remove('hidden');
+        });
+    }
 
-            toggleButton.addEventListener('click', function () {
-                const isHidden = editForm.classList.contains('hidden');
-                editForm.classList.toggle('hidden');
-                toggleButton.textContent = isHidden ? '{{ __('Ocultar') }}' : '{{ __('Editar') }}';
-            });
+    if (closeMapModalButton) {
+        closeMapModalButton.addEventListener('click', closeModal);
+    }
 
-            // Auto-open form if there are validation errors
-            @if ($errors->any())
-                editForm.classList.remove('hidden');
-                toggleButton.textContent = '{{ __('Ocultar Formulario') }}';
-            @endif
+    if (confirmLocationButton) {
+        confirmLocationButton.addEventListener('click', () => {
+            if (window.mapModalContext === 'mainApiary') {
+                const locationName = pacInput.value;
+                const gpsCoords = selectedPosition ? `${selectedPosition.lat.toFixed(6)}, ${selectedPosition.lng.toFixed(6)}` : '{{ $apiary->location_gps }}';
+
+                const editor = apiaryEditor();
+                // Use Promise.all to wait for both updates before reloading
+                Promise.all([
+                    editor.updateApiary('location', locationName),
+                    editor.updateApiary('location_gps', gpsCoords)
+                ]).then(() => {
+                    window.location.reload();
+                }).catch(err => {
+                    console.error("Failed to update location:", err);
+                });
+
+            } else if (window.mapModalContext === 'bulkEdit' && activeLocationInput) {
+                if (selectedPosition) {
+                    activeLocationInput.value = `${selectedPosition.lat.toFixed(6)}, ${selectedPosition.lng.toFixed(6)}`;
+                }
+            }
+            closeModal();
+        });
+    }
 
             const selectAllCheckbox = document.getElementById('select-all');
             const hiveCheckboxes = document.querySelectorAll('.hive-checkbox');
@@ -1123,6 +1034,62 @@ document.addEventListener('DOMContentLoaded', function () {
 
     @push('scripts')
     <script>
+        function apiaryEditor() {
+            return {
+                updateName(newName) {
+                    this.updateApiary('name', newName);
+                },
+                updateStatus(newStatus) {
+                    this.updateApiary('status', newStatus);
+                },
+                updateApiary(field, value) {
+                    return new Promise((resolve, reject) => {
+                        const payload = {
+                            [field]: value,
+                            _token: '{{ csrf_token() }}',
+                            _method: 'PATCH'
+                        };
+
+                        fetch('{{ route('apiaries.update', $apiary) }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(payload)
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(err => reject(err));
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Success:', data);
+                            resolve(data);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error al actualizar el apiario: ' + error.message);
+                            reject(error);
+                        });
+                    });
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const statusDropdown = document.getElementById('status-dropdown');
+            if(statusDropdown) {
+                statusDropdown.addEventListener('change', function() {
+                    const newStatus = this.value;
+                    const editor = apiaryEditor();
+                    editor.updateStatus(newStatus);
+                });
+            }
+        });
+
         function initializeQrScanner() {
             const qrScannerModal = document.getElementById('qr-scanner-modal');
             const openQrScannerButton = document.getElementById('scan-qr-button');

@@ -98,21 +98,36 @@ class ApiaryController extends Controller
     public function update(Request $request, Apiary $apiary)
     {
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'location' => 'required|string|max:255',
-            'location_gps' => 'nullable|string|max:255',
-            'status' => 'required|string|in:' . implode(',', Apiary::getStatusOptions()),
+            'name' => 'sometimes|required|string|max:255',
+            'location' => 'sometimes|required|string|max:255',
+            'location_gps' => 'sometimes|nullable|string|max:255',
+            'status' => 'sometimes|required|string|in:' . implode(',', Apiary::getStatusOptions()),
         ]);
 
-        $originalStatus = $apiary->status;
+        $originalData = $apiary->toArray();
 
         $apiary->update($validatedData);
 
-        if ($originalStatus !== $validatedData['status']) {
-            $this->logActivity($apiary, "Estado del apiario actualizado a: {$validatedData['status']}.");
+        // Log specific changes
+        if (isset($validatedData['name']) && $originalData['name'] !== $validatedData['name']) {
+            $this->logActivity($apiary, "Nombre del apiario cambiado de '{$originalData['name']}' a '{$validatedData['name']}'.");
+        }
+        if (isset($validatedData['location']) && $originalData['location'] !== $validatedData['location']) {
+            $this->logActivity($apiary, "Ubicación del apiario cambiada a '{$validatedData['location']}'.");
+        }
+        if (isset($validatedData['status']) && $originalData['status'] !== $validatedData['status']) {
+            $this->logActivity($apiary, "Estado del apiario cambiado de '{$originalData['status']}' a '{$validatedData['status']}'.");
         }
 
-        return redirect()->route('apiaries.show', $apiary)->with('success', 'Apiary updated successfully.');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Apiario actualizado con éxito.',
+                'apiary' => $apiary->fresh(), // Return the updated model data
+            ]);
+        }
+
+        return redirect()->route('apiaries.show', $apiary)->with('success', 'Apiario actualizado con éxito.');
     }
 
     /**
