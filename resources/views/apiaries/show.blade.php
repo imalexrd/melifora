@@ -777,21 +777,6 @@ document.addEventListener('DOMContentLoaded', function () {
         closeModal();
     });
 
-    const toggleButton = document.getElementById('toggle-edit-form');
-            const editForm = document.getElementById('edit-apiary-form');
-
-            toggleButton.addEventListener('click', function () {
-                const isHidden = editForm.classList.contains('hidden');
-                editForm.classList.toggle('hidden');
-                toggleButton.textContent = isHidden ? '{{ __('Ocultar') }}' : '{{ __('Editar') }}';
-            });
-
-            // Auto-open form if there are validation errors
-            @if ($errors->any())
-                editForm.classList.remove('hidden');
-                toggleButton.textContent = '{{ __('Ocultar Formulario') }}';
-            @endif
-
             const selectAllCheckbox = document.getElementById('select-all');
             const hiveCheckboxes = document.querySelectorAll('.hive-checkbox');
             const bulkActionsDiv = document.getElementById('bulk-actions');

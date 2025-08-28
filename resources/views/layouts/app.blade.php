@@ -19,7 +19,12 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <!-- Google Maps -->
-        <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&callback=initMap" async defer></script>
+        <script>
+            // Define a global no-op function to prevent Google Maps API errors on pages without a map.
+            // The actual map initialization is handled within the specific view components.
+            window.initMap = function() {};
+        </script>
+        <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=places&callback=initMap" defer></script>
     </head>
  <body class="font-sans antialiased bg-background text-text-dark dark:bg-dark-background dark:text-dark-text-light">
         <div class="min-h-screen">
