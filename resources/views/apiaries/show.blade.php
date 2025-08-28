@@ -2,20 +2,80 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <style>
+                @keyframes gold-glow {
+                    0% { text-shadow: 0 0 5px #ffd700, 0 0 10px #ffd700, 0 0 15px #ffd700; }
+                    50% { text-shadow: 0 0 10px #fff, 0 0 20px #ffc300, 0 0 30px #ffc300; }
+                    100% { text-shadow: 0 0 5px #ffd700, 0 0 10px #ffd700, 0 0 15px #ffd700; }
+                }
+                .gold-animated-text {
+                    color: #ffd700;
+                    font-weight: bold;
+                    animation: gold-glow 2s infinite ease-in-out;
+                }
+            </style>
             <div class="bg-white rounded-lg shadow-lg overflow-hidden dark:bg-dark-surface">
                 <div class="p-6 bg-white border-b border-gray-200 dark:bg-dark-surface dark:border-gray-700 relative">
                     <div class="absolute top-0 left-0 bg-orange-500 text-white font-bold px-3 py-1 rounded-br-lg rounded-tl-lg">
                         Apiario
                     </div>
-                    <div class="flex justify-end items-center mb-4 space-x-2">
-                        <button type="button" class="open-create-hive-modal-button inline-flex items-center px-4 py-2 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-400 active:bg-yellow-600 focus:outline-none focus:border-yellow-700 focus:ring ring-yellow-300 disabled:opacity-25 transition ease-in-out duration-150">
-                            {{ __('Añadir Colmena') }}
-                        </button>
-                        <button id="open-delete-apiary-modal-button" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:border-red-700 focus:ring ring-red-300 disabled:opacity-25 transition ease-in-out duration-150">
-                            {{ __('Borrar') }}
-                        </button>
+
+                    <!-- Top Stats Header -->
+                    <div class="flex flex-col sm:flex-row justify-around items-stretch mb-6 pb-6 border-b dark:border-gray-700 -mx-6 px-6 space-y-4 sm:space-y-0">
+                        <!-- Status -->
+                        <div class="flex-1 p-4 bg-gray-50 rounded-lg text-center shadow dark:bg-gray-700 mx-2 flex flex-col justify-between">
+                            <p class="text-sm font-bold text-gray-800 dark:text-gray-300">{{ __('Estado') }}</p>
+                            @php
+                                $statusColorClass = match($apiary->status ?? 'Default') {
+                                    'Active' => 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 border-green-300 dark:border-green-700',
+                                    'Inactive' => 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 border-yellow-300 dark:border-yellow-700',
+                                    'Archived' => 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600',
+                                    default => 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600',
+                                };
+                            @endphp
+                            <select id="status-dropdown" name="status" class="mt-2 block w-full pl-3 pr-10 py-2 text-base focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md font-semibold {{ $statusColorClass }}">
+                                @foreach ($apiaryStatuses as $status)
+                                    <option value="{{ $status }}" @if($apiary->status == $status) selected @endif>{{ $status }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <!-- Hives -->
+                        <div class="flex-1 p-4 bg-gray-50 rounded-lg text-center shadow dark:bg-gray-700 mx-2 flex flex-col justify-between">
+                            <p class="text-sm font-bold text-gray-800 dark:text-gray-300">{{ __('Colmenas') }}</p>
+                            <p class="text-3xl font-extrabold text-gray-900 dark:text-gray-100">{{ $hives->total() }}</p>
+                        </div>
+                        <!-- Rating -->
+                        <div class="flex-1 p-4 bg-gray-50 rounded-lg text-center shadow dark:bg-gray-700 mx-2 flex flex-col justify-between">
+                            <p class="text-sm font-bold text-gray-800 dark:text-gray-300">{{ __('Rating Promedio') }}</p>
+                            @if($averageRating !== null)
+                                @php
+                                    $ratingColorClass = '';
+                                    if ($averageRating <= 10) $ratingColorClass = 'text-black dark:text-gray-300';
+                                    else if ($averageRating <= 20) $ratingColorClass = 'text-red-900 dark:text-red-500';
+                                    else if ($averageRating <= 30) $ratingColorClass = 'text-red-600 dark:text-red-400';
+                                    else if ($averageRating <= 45) $ratingColorClass = 'text-orange-500 dark:text-orange-400';
+                                    else if ($averageRating <= 55) $ratingColorClass = 'text-yellow-600 dark:text-yellow-500'; // Mustard
+                                    else if ($averageRating <= 70) $ratingColorClass = 'text-yellow-500 dark:text-yellow-400'; // Bright Yellow
+                                    else if ($averageRating <= 80) $ratingColorClass = 'text-green-500 dark:text-green-400'; // Light Green
+                                    else if ($averageRating <= 90) $ratingColorClass = 'text-green-600 dark:text-green-300'; // Bright Green
+                                    else $ratingColorClass = 'gold-animated-text';
+                                @endphp
+                                <p class="text-3xl font-extrabold flex items-center justify-center {{ $ratingColorClass }}">
+                                    {{ number_format($averageRating, 0) }}%
+                                    @if ($ratingColorClass !== 'gold-animated-text')
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    @endif
+                                </p>
+                            @else
+                                <p class="text-2xl font-bold text-gray-500 dark:text-gray-400">N/A</p>
+                            @endif
+                        </div>
                     </div>
-                    <div class="flex flex-col md:flex-row md:justify-between" x-data="apiaryEditor()">
+
+                    <!-- Main Content -->
+                    <div class="flex flex-col md:flex-row md:justify-center" x-data="apiaryEditor()">
                         <!-- Left Side: Image, Name, Location -->
                         <div class="flex items-center mb-4 md:mb-0">
                             <div class="mr-6 flex-shrink-0 text-center">
@@ -71,41 +131,8 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Right Side: Stats -->
-                        <div class="flex items-center space-x-4">
-                            <div class="p-4 bg-gray-50 rounded-lg text-center shadow dark:bg-gray-700">
-                                <p class="text-sm font-bold text-gray-800 dark:text-gray-300">{{ __('Estado') }}</p>
-                                <select id="status-dropdown" name="status" class="mt-2 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-gray-600 dark:border-gray-500 dark:text-white">
-                                    @foreach ($apiaryStatuses as $status)
-                                        <option value="{{ $status }}" @if($apiary->status == $status) selected @endif>{{ $status }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                             <div class="p-4 bg-gray-50 rounded-lg text-center shadow dark:bg-gray-700">
-                                <p class="text-sm font-bold text-gray-800 dark:text-gray-300">{{ __('Colmenas') }}</p>
-                                <p class="text-3xl font-extrabold text-gray-900 dark:text-gray-100">{{ $hives->total() }}</p>
-                            </div>
-                            <div class="p-4 bg-gray-50 rounded-lg text-center shadow dark:bg-gray-700">
-                                <p class="text-sm font-bold text-gray-800 dark:text-gray-300">{{ __('Rating Promedio') }}</p>
-                                @if($averageRating)
-                                    @php
-                                        $ratingColorClass = 'text-gray-500'; // Default
-                                        if ($averageRating >= 4) $ratingColorClass = 'text-green-500';
-                                        else if ($averageRating >= 2.5) $ratingColorClass = 'text-yellow-500';
-                                        else $ratingColorClass = 'text-red-500';
-                                    @endphp
-                                    <p class="text-3xl font-extrabold flex items-center justify-center {{ $ratingColorClass }}">
-                                        {{ number_format($averageRating, 1) }}
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-1" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
-                                    </p>
-                                @else
-                                    <p class="text-2xl font-bold text-gray-500 dark:text-gray-400">N/A</p>
-                                @endif
-                            </div>
-                        </div>
                     </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-600 mt-6 border-t pt-6 dark:border-gray-700 dark:text-dark-text-light">
                         <div>
                             <p class="text-gray-500 font-semibold dark:text-gray-400">{{ __('Creado el') }}</p>
@@ -115,6 +142,16 @@
                             <p class="text-gray-500 font-semibold dark:text-gray-400">{{ __('Actualizado el') }}</p>
                             <p class="font-medium">{{ $apiary->updated_at->format('d/m/Y H:i') }}</p>
                         </div>
+                    </div>
+
+                    <!-- Bottom Action Buttons -->
+                    <div class="mt-6 pt-6 border-t dark:border-gray-700 flex justify-end items-center space-x-2">
+                        <button type="button" class="open-create-hive-modal-button inline-flex items-center px-4 py-2 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-400 active:bg-yellow-600 focus:outline-none focus:border-yellow-700 focus:ring ring-yellow-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            {{ __('Añadir Colmena') }}
+                        </button>
+                        <button id="open-delete-apiary-modal-button" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:border-red-700 focus:ring ring-red-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            {{ __('Borrar') }}
+                        </button>
                     </div>
                 </div>
             </div>
