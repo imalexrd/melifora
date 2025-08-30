@@ -16,15 +16,11 @@
             </style>
             <div class="bg-white rounded-lg shadow-lg overflow-hidden dark:bg-dark-surface">
                 <div class="p-4 bg-white border-b border-gray-200 dark:bg-dark-surface dark:border-gray-700 relative" x-data="apiaryEditor()">
-                    <div class="absolute top-0 left-0 bg-orange-500 text-white font-bold px-3 py-1 rounded-br-lg rounded-tl-lg text-sm">
-                        Apiario
-                    </div>
-
                     <!-- Main Content -->
                     <div class="flex flex-col md:flex-row md:justify-center items-center mt-4">
                         <!-- Left Side: Image -->
                         <div class="mr-4 flex-shrink-0 text-center">
-                            <div class="p-2 bg-white rounded-lg shadow-md inline-block">
+                            <div class="p-2 bg-white rounded-lg shadow-md inline-block border-4 border-orange-500">
                                 {!! QrCode::size(100)->generate(route('apiaries.show', $apiary)) !!}
                             </div>
                         </div>
@@ -135,7 +131,16 @@
                     </div>
 
                     <!-- Bottom Action Buttons -->
-                    <div class="mt-4 pt-4 border-t dark:border-gray-700 flex justify-end items-center space-x-2">
+                    <div class="mt-4 pt-4 border-t dark:border-gray-700 flex justify-end items-center space-x-2 flex-wrap gap-2">
+                        <button type="button" id="global-inspect-button" class="inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-400 active:bg-blue-600 focus:outline-none focus:border-blue-700 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            {{ __('Inspección Global') }}
+                        </button>
+                        <button type="button" id="global-harvest-button" class="inline-flex items-center px-4 py-2 bg-green-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-400 active:bg-green-600 focus:outline-none focus:border-green-700 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            {{ __('Cosecha Global') }}
+                        </button>
+                        <button type="button" id="global-location-button" class="inline-flex items-center px-4 py-2 bg-purple-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-400 active:bg-purple-600 focus:outline-none focus:border-purple-700 focus:ring ring-purple-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            {{ __('Ubicación Global') }}
+                        </button>
                         <button type="button" class="open-create-hive-modal-button inline-flex items-center px-4 py-2 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-400 active:bg-yellow-600 focus:outline-none focus:border-yellow-700 focus:ring ring-yellow-300 disabled:opacity-25 transition ease-in-out duration-150">
                             {{ __('Añadir Colmena') }}
                         </button>
@@ -396,6 +401,97 @@
                             @endforelse
                         </ul>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Harvest Modal -->
+    <div id="harvest-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-10 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-dark-surface dark:border-gray-700">
+            <div class="mt-3">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 text-center dark:text-dark-text-dark">{{ __('Cosechar en Lote') }}</h3>
+                <div class="mt-4 px-7 py-3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="bulk-harvest_date" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Fecha de Cosecha') }}</label>
+                            <input id="bulk-harvest_date" type="date" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark" value="{{ date('Y-m-d') }}" required>
+                        </div>
+                        <div>
+                            <label for="bulk-origin" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Origen') }}</label>
+                            <input id="bulk-origin" type="text" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark" required>
+                        </div>
+                        <div>
+                            <label for="bulk-quantity_kg" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Cantidad (kg)') }}</label>
+                            <input id="bulk-quantity_kg" type="number" step="0.1" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
+                        </div>
+                        <div>
+                            <label for="bulk-color_tone" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Tono de Color') }}</label>
+                            <input id="bulk-color_tone" type="text" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark" required>
+                        </div>
+                    </div>
+                     <div class="mt-6">
+                        <label for="bulk-harvest-notes" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Notas Adicionales') }}</label>
+                        <textarea id="bulk-harvest-notes" rows="3" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark"></textarea>
+                    </div>
+                </div>
+                <div class="items-center px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button id="confirm-harvest-button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        {{ __('Confirmar Cosecha') }}
+                    </button>
+                    <button id="cancel-harvest-button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500 dark:border-gray-700">
+                        {{ __('Cancelar') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Location Modal -->
+    <div id="location-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-lg shadow-lg rounded-md bg-white dark:bg-dark-surface dark:border-gray-700">
+            <div class="mt-3">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 text-center dark:text-dark-text-dark">{{ __('Definir Ubicación Global') }}</h3>
+                <div class="mt-4 px-7 py-3">
+                    <div class="space-y-4">
+                        <div>
+                            <button id="use-apiary-location-button" class="w-full inline-flex justify-center items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M17.657 4.343a1 1 0 00-1.414 0L10 10.586 3.757 4.343a1 1 0 00-1.414 1.414L8.586 12l-6.243 6.243a1 1 0 101.414 1.414L10 13.414l6.243 6.243a1 1 0 001.414-1.414L11.414 12l6.243-6.243a1 1 0 000-1.414z" /></svg>
+                                {{ __('Heredar Ubicación del Apiario') }}
+                            </button>
+                            <p class="mt-2 text-sm text-gray-500 dark:text-dark-text-light">
+                                Todas las colmenas heredarán la ubicación actual del apiario: <strong>{{ $apiary->location ?: 'No definida' }}</strong>.
+                            </p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                                <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                            </div>
+                            <div class="relative flex justify-center">
+                                <span class="px-2 bg-white text-sm text-gray-500 dark:bg-dark-surface dark:text-dark-text-light">O</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="new-global-location" class="block font-medium text-sm text-gray-700 dark:text-dark-text-light">{{ __('Definir Nueva Ubicación Global') }}</label>
+                            <input id="new-global-location" type="text" placeholder="Nombre de la nueva ubicación" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
+                             <div class="flex items-center gap-2 mt-2">
+                                <input id="new-global-location-gps" type="text" placeholder="Coordenadas GPS (opcional)" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-dark-surface dark:border-gray-600 dark:text-dark-text-dark">
+                                <button type="button" id="open-global-map-modal" class="whitespace-nowrap inline-flex items-center px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="items-center px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button id="confirm-location-button-global" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 sm:ml-3 sm:w-auto sm:text-sm">
+                        {{ __('Confirmar Ubicación') }}
+                    </button>
+                    <button id="cancel-location-button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:w-auto sm:text-sm dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500 dark:border-gray-700">
+                        {{ __('Cancelar') }}
+                    </button>
                 </div>
             </div>
         </div>
@@ -947,9 +1043,20 @@ document.addEventListener('DOMContentLoaded', function () {
             const inspectModal = document.getElementById('inspect-modal');
             const cancelInspectButton = document.getElementById('cancel-inspect-button');
             const confirmInspectButton = document.getElementById('confirm-inspect-button');
+            const globalInspectButton = document.getElementById('global-inspect-button');
+
 
             inspectButton.addEventListener('click', () => inspectModal.classList.remove('hidden'));
             cancelInspectButton.addEventListener('click', () => inspectModal.classList.add('hidden'));
+
+            globalInspectButton.addEventListener('click', () => {
+                //select all hives
+                hiveCheckboxes.forEach(checkbox => {
+                    checkbox.checked = true;
+                });
+                updateBulkActionsVisibility();
+                inspectModal.classList.remove('hidden')
+            });
 
             confirmInspectButton.addEventListener('click', () => {
                 const hiveIds = getSelectedHiveIds();
@@ -971,6 +1078,111 @@ document.addEventListener('DOMContentLoaded', function () {
                 };
                 performBulkAction('inspect', hiveIds, data);
             });
+
+            // Bulk Harvest Modal Logic
+            const harvestModal = document.getElementById('harvest-modal');
+            const globalHarvestButton = document.getElementById('global-harvest-button');
+            const cancelHarvestButton = document.getElementById('cancel-harvest-button');
+            const confirmHarvestButton = document.getElementById('confirm-harvest-button');
+
+            globalHarvestButton.addEventListener('click', () => {
+                hiveCheckboxes.forEach(checkbox => { checkbox.checked = true; });
+                updateBulkActionsVisibility();
+                harvestModal.classList.remove('hidden');
+            });
+
+            cancelHarvestButton.addEventListener('click', () => {
+                harvestModal.classList.add('hidden');
+            });
+
+            confirmHarvestButton.addEventListener('click', () => {
+                const hiveIds = getSelectedHiveIds();
+                const data = {
+                    harvest_date: document.getElementById('bulk-harvest_date').value,
+                    origin: document.getElementById('bulk-origin').value,
+                    quantity_kg: document.getElementById('bulk-quantity_kg').value,
+                    color_tone: document.getElementById('bulk-color_tone').value,
+                    notes: document.getElementById('bulk-harvest-notes').value,
+                    // Assuming a default density for now, can be made dynamic if needed
+                    density: 1.42
+                };
+                performBulkAction('harvest', hiveIds, data);
+            });
+
+            // Global Location Modal Logic
+            const locationModal = document.getElementById('location-modal');
+            const globalLocationButton = document.getElementById('global-location-button');
+            const cancelLocationButton = document.getElementById('cancel-location-button');
+            const confirmLocationButtonGlobal = document.getElementById('confirm-location-button-global');
+            const useApiaryLocationButton = document.getElementById('use-apiary-location-button');
+            const newGlobalLocationInput = document.getElementById('new-global-location');
+            const newGlobalLocationGpsInput = document.getElementById('new-global-location-gps');
+            const openGlobalMapModalButton = document.getElementById('open-global-map-modal');
+
+            globalLocationButton.addEventListener('click', () => {
+                locationModal.classList.remove('hidden');
+            });
+            cancelLocationButton.addEventListener('click', () => {
+                locationModal.classList.add('hidden');
+            });
+
+            openGlobalMapModalButton.addEventListener('click', () => {
+                window.openMapForInput(newGlobalLocationGpsInput, newGlobalLocationInput);
+            });
+
+            useApiaryLocationButton.addEventListener('click', () => {
+                const location = '{{ addslashes($apiary->location) }}';
+                const locationGps = '{{ addslashes($apiary->location_gps) }}';
+                if (!location) {
+                    alert('El apiario no tiene una ubicación definida.');
+                    return;
+                }
+                if (confirm(`¿Estás seguro de que quieres establecer la ubicación de todas las colmenas y del apiario a "${location}"?`)) {
+                    updateGlobalLocation(location, locationGps);
+                }
+            });
+
+            confirmLocationButtonGlobal.addEventListener('click', () => {
+                const location = newGlobalLocationInput.value;
+                const locationGps = newGlobalLocationGpsInput.value;
+                if (!location) {
+                    alert('Por favor, introduce un nombre para la nueva ubicación.');
+                    return;
+                }
+                if (confirm(`¿Estás seguro de que quieres establecer la ubicación de TODAS las colmenas y del apiario a "${location}"?`)) {
+                    updateGlobalLocation(location, locationGps);
+                }
+            });
+
+            function updateGlobalLocation(location, location_gps) {
+                const payload = {
+                    location: location,
+                    location_gps: location_gps,
+                    _token: '{{ csrf_token() }}'
+                };
+
+                fetch('{{ route("apiaries.globalLocation", $apiary) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        alert(data.message || 'Ocurrió un error.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ocurrió un error al actualizar la ubicación global.');
+                });
+            }
+
 
             const bulkSliders = [
                 { id: 'bulk-population', valueId: 'bulk-population_value' },

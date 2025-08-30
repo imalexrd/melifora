@@ -6,11 +6,12 @@ use App\Models\Apiary;
 use App\Models\ApiaryNote;
 use App\Models\Hive;
 use App\Traits\LogsApiaryActivity;
+use App\Traits\LogsHiveActivity;
 use Illuminate\Http\Request;
 
 class ApiaryController extends Controller
 {
-    use LogsApiaryActivity;
+    use LogsApiaryActivity, LogsHiveActivity;
     /**
      * Display a listing of the resource.
      */
@@ -188,5 +189,35 @@ class ApiaryController extends Controller
         return response($svg)
             ->header('Content-Type', 'image/svg+xml')
             ->header('Content-Disposition', 'attachment; filename="qr-code-apiary-' . $apiary->slug . '.svg"');
+    }
+
+    public function updateGlobalLocation(Request $request, Apiary $apiary)
+    {
+        $validatedData = $request->validate([
+            'location' => 'required|string|max:255',
+            'location_gps' => 'nullable|string|max:255',
+        ]);
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($apiary, $validatedData) {
+            // Update the apiary
+            $apiary->update($validatedData);
+            $this->logActivity($apiary, "Ubicación global actualizada a '{$validatedData['location']}'.");
+
+            // Update all hives in the apiary
+            $apiary->hives()->update([
+                'location' => $validatedData['location'],
+                'location_gps' => $validatedData['location_gps'],
+            ]);
+
+            // Log activity for each hive
+            foreach ($apiary->hives as $hive) {
+                $this->logHiveActivity($hive, "Ubicación actualizada a '{$validatedData['location']}' como parte de una actualización global del apiario.");
+            }
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'La ubicación del apiario y todas sus colmenas ha sido actualizada con éxito.',
+        ]);
     }
 }

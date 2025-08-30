@@ -168,15 +168,15 @@ class HiveController extends Controller
     public function bulkActions(Request $request)
     {
         $validatedData = $request->validate([
-            'action' => 'required|in:move,delete,edit,inspect',
+            'action' => 'required|in:move,delete,edit,inspect,harvest',
             'hive_ids' => 'required|array',
             'hive_ids.*' => 'exists:hives,id',
             // Move action
             'apiary_id' => 'required_if:action,move|exists:apiaries,id',
             // Edit action
-            'type' => 'required_if:action,edit|in:' . implode(',', Hive::getTypeOptions()),
-            'location' => 'nullable|string|max:255',
-            'location_gps' => 'nullable|string|max:255',
+            'type' => 'sometimes|required_if:action,edit|in:' . implode(',', Hive::getTypeOptions()),
+            'location' => 'sometimes|string|max:255|nullable',
+            'location_gps' => 'sometimes|string|max:255|nullable',
             // Inspect action
             'inspection_date' => 'required_if:action,inspect|date',
             'queen_status' => 'required_if:action,inspect|string|in:' . implode(',', \App\Models\Inspection::getQueenStatusOptions()),
@@ -192,6 +192,12 @@ class HiveController extends Controller
             'social_states' => 'required_if:action,inspect|string|in:' . implode(',', \App\Models\Inspection::getSocialStatesOptions()),
             'season_states' => 'required_if:action,inspect|string|in:' . implode(',', \App\Models\Inspection::getSeasonStatesOptions()),
             'admin_states' => 'required_if:action,inspect|string|in:' . implode(',', \App\Models\Inspection::getAdminStatesOptions()),
+            // Harvest action
+            'harvest_date' => 'required_if:action,harvest|date',
+            'quantity_kg' => 'required_if:action,harvest|numeric|min:0',
+            'color_tone' => 'required_if:action,harvest|string',
+            'origin' => 'required_if:action,harvest|string',
+            'density' => 'required_if:action,harvest|numeric|min:0',
         ]);
 
         $hiveIds = $validatedData['hive_ids'];
@@ -215,14 +221,19 @@ class HiveController extends Controller
                 }
                 return response()->json(['success' => true, 'message' => 'Colmenas borradas exitosamente.']);
             case 'edit':
-                $updateData = [
-                    'type' => $validatedData['type'],
-                ];
-                if (array_key_exists('location', $validatedData) && !is_null($validatedData['location'])) {
+                $updateData = [];
+                if (isset($validatedData['type'])) {
+                    $updateData['type'] = $validatedData['type'];
+                }
+                if (array_key_exists('location', $validatedData)) {
                     $updateData['location'] = $validatedData['location'];
                 }
-                if (array_key_exists('location_gps', $validatedData) && !is_null($validatedData['location_gps'])) {
+                if (array_key_exists('location_gps', $validatedData)) {
                     $updateData['location_gps'] = $validatedData['location_gps'];
+                }
+
+                if (empty($updateData)) {
+                    return response()->json(['success' => false, 'message' => 'No fields to update.'], 400);
                 }
 
                 foreach ($hives as $hive) {
@@ -255,6 +266,26 @@ class HiveController extends Controller
                 }
 
                 return response()->json(['success' => true, 'message' => 'Inspección en lote creada exitosamente.']);
+            case 'harvest':
+                $harvestData = $request->only([
+                    'harvest_date',
+                    'quantity_kg',
+                    'color_tone',
+                    'origin',
+                    'notes',
+                    'density'
+                ]);
+
+                if (!empty($harvestData['quantity_kg']) && !empty($harvestData['density'])) {
+                    $harvestData['quantity_liters'] = $harvestData['quantity_kg'] / $harvestData['density'];
+                }
+
+                foreach ($hives as $hive) {
+                    $hive->harvests()->create($harvestData);
+                    $this->logActivity($hive, "Cosecha en lote de {$harvestData['quantity_kg']} kg registrada.");
+                }
+
+                return response()->json(['success' => true, 'message' => 'Cosecha en lote registrada exitosamente.']);
         }
 
         return response()->json(['success' => false, 'message' => 'Invalid action.'], 400);

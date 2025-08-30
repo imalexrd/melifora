@@ -29,6 +29,7 @@ Route::get('/hives/{hive}/qr', [HiveController::class, 'generateQrCode'])->name(
 Route::resource('hives', HiveController::class)->middleware(['auth', 'role:admin,superadmin']);
 Route::post('/hives/bulk-actions', [HiveController::class, 'bulkActions'])->name('hives.bulkActions')->middleware(['auth', 'role:admin,superadmin']);
 Route::resource('apiaries', ApiaryController::class)->middleware(['auth', 'role:admin,superadmin']);
+Route::post('/apiaries/{apiary}/global-location', [ApiaryController::class, 'updateGlobalLocation'])->name('apiaries.globalLocation')->middleware(['auth', 'role:admin,superadmin']);
 Route::get('/apiaries/{apiary}/qr', [ApiaryController::class, 'generateQrCode'])->name('apiaries.qr')->middleware(['auth', 'role:admin,superadmin']);
 Route::get('/apiaries/{apiary}/download-qr', [ApiaryController::class, 'downloadQr'])->name('apiaries.downloadQr')->middleware(['auth', 'role:admin,superadmin']);
 Route::resource('hive_supers', HiveSuperController::class)->middleware(['auth', 'role:admin,superadmin'])->only(['index', 'store']);
