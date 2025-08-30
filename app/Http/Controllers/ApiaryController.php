@@ -11,7 +11,10 @@ use Illuminate\Http\Request;
 
 class ApiaryController extends Controller
 {
-    use LogsApiaryActivity, LogsHiveActivity;
+    use LogsApiaryActivity, LogsHiveActivity {
+        LogsHiveActivity::logActivity as protected logHiveActivity;
+        LogsApiaryActivity::logActivity insteadof LogsHiveActivity;
+    }
     /**
      * Display a listing of the resource.
      */
